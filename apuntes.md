@@ -114,7 +114,145 @@
     + $ git commit -m "Creación del proyecto"
     + $ git push -u origin main
 
+## Diseño Entidad - Relación:
+1. Entidades:
+	1. **users**:
+        + id (INT).
+        + name (VARCHAR).
+        + email (VARCHAR).
+        + password (VARCHAR).
+	2. **audiences**:
+        + id (INT).
+        + name (VARCHAR).
+	3. **categories**:
+        + id (INT).
+        + name (VARCHAR).
+	4. **courses**:
+        + id (INT).
+        + title (VARCHAR).
+        + subtitle (VARCHAR).
+        + description (VARCHAR).
+        + status (INT).   
+	5. **descriptions**:
+        + id (INT).
+        + name (VARCHAR).
+	6. **goals**:
+        + id (INT).
+        + name (VARCHAR).
+	7. **lessons**:
+        + id (INT).
+        + name (VARCHAR).
+        + url (VARCHAR).
+        + iframe (VARCHAR).
+	8. **levels**:
+        + id (INT).
+        + name (VARCHAR).
+	9. **platforms**:
+        + id (INT).
+        + name (VARCHAR).
+	10. **prices**:
+        + id (INT).
+        + name (VARCHAR).
+        + value (INT).
+	11. **profiles**:
+        + id (INT).
+        + title (VARCHAR).
+        + biography (TEXT).
+        + website (VARCHAR).
+        + facebook (VARCHAR).
+        + lnkedin (VARCHAR).
+        + youtube (VARCHAR).
+	12.  **requirements**:
+        + id (INT).
+        + name (VARCHAR).
+	13. **reviews**:
+        + id (INT).
+        + comment (VARCHAR).
+        + rating (VARCHAR).
+	14. **sections**:
+        + id (INT).
+        + name (VARCHAR).
+	15. **observations**:
+		+ id (INT).
+		+ body (TEXT).
+2. Entidades polimórficas:
+	17. **comments**:
+        + id (INT).
+        + name (VARCHAR).
+        + commentable_id (INT).
+        + commentable_type (VARCHAR).
+	18. **images**:
+        + id (INT).
+        + url (VARCHAR).
+        + imageable_id (INT).
+        + imageable_type (VARCHAR).
+	19. **resources**:
+        + id (INT).
+        + url (VARCHAR).
+        + resourceable_id (INT).
+        + resourceable_type (VARCHAR).
+	20. **reactions**:	<!-- likes -->
+        + id (INT).
+        + value (INT).
+        + reactionable_id (INT).
+        + reactionable_type (VARCHAR).
+3. Entidades pivote:
+    1. **course_user**.
+    2. **lesson_user**.
+4. Relaciones:
+    1. **n:m courses - users**.
+    2. **1:n courses - audiences**.
+    3. **1:n courses - course_user**.
+    4. **1:n courses - goals**.
+    5. **1:n courses - requirements**.
+    6. **1:n courses - reviews**.
+    7. **1:n courses - sections**.
+    8. **1:n categories - courses**.
+    9. **n:m lessons - users**.
+    10. **1:n lesson - lesson_user**.
+    11. **1:1 lessons - descriptions**.
+    12. **1:n levels - courses**.
+    13. **1:n platforms - lessons**.
+    14. **1:n prices - courses**. 
+    15. **1:1 profiles - users**.
+    16. **1:n sections - lessons**.
+    17. **1:n users - comments**.
+    18. **1:n users - course_user**.  
+    19. **1:n users - lesson_user**.
+    20. **1:n users - likes**.
+    21. **1:n users - reviews**.
 
+## Creación de modelos y migraciones:
++ **Nota**: Estos comandos deben ejecutarse en el orden propuesto.
+1. Creación de modelos parte i:
+	+ $ php artisan make:model Level -m
+	+ $ php artisan make:model Category -m
+	+ $ php artisan make:model Price -m
+	+ $ php artisan make:model Course -m
+2. Creación migración para tabla pivote **course_user**:
+	+ $ php artisan make:migration create_course_user_table
+3. Creación de modelos parte ii:
+	+ $ php artisan make:model Review -m
+	+ $ php artisan make:model Profile -m
+	+ $ php artisan make:model Goal -m
+	+ $ php artisan make:model Requeriment -m
+	+ $ php artisan make:model Audience -m
+	+ $ php artisan make:model Section -m
+	+ $ php artisan make:model Platform -m
+	+ $ php artisan make:model Lesson -m
+	+ $ php artisan make:model Description -m
+4. Creación migración para tabla pivote **lesson_user**:
+	+ $ php artisan make:migration create_lesson_user_table
+5. Creación de modelos parte iii:
+	+ $ php artisan make:model Resource -m
+	+ $ php artisan make:model Comment -m
+	+ $ php artisan make:model Reaction -m
+	+ $ php artisan make:model Image -m
+	+ $ php artisan make:model Observation -m
+6. Crear commit:
+    + $ git add .
+    + $ git commit -m "Creación de modelos y migraciones"
+    + $ git push -u origin main
 
 
 ***
@@ -124,179 +262,13 @@
     ```
 
 ********* INICIO
-## Sección 2: Diseño y creación de la base de datos
 
-
-### Video 4. Diseño de la base de datos
-1. Crear **cursos.mwb** en la carpeta **000 Soportes**
-    + Abrir **MySQL Workbench**
-    + Dar clic en el icono de tablas relacionadas.
-    + Añadir un modelo dando clic en "+".
-    + Añadir un diagrama.
-    + Guardar el diagrama como **000 Soportes\cursos.mwb**
-1. Diseñar tabla **users**:
-    + Crear tabla **users**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45), NN.
-        + email: VARCHAR(45), NN.
-        + password: VARCHAR(45), NN.
-1. Diseñar tabla **profiles**:
-    + Crear tabla **profiles**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + title: VARCHAR(45).
-        + biography: TEXT(1000).
-        + website: VARCHAR(45).
-        + facebook: VARCHAR(45).
-        + lnkedin: VARCHAR(45).
-        + youtube: VARCHAR(45).
-1. Relacionar tabla **users** con tabla **profiles** (Relación 1:1)
-    + Dar clic en icono de relación 1:1 y luego seleccionar primero la tabla **profiles** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **courses**:
-    + Crear tabla **courses**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + title: VARCHAR(45), NN.
-        + subtitle: VARCHAR(45), NN.
-        + description: VARCHAR(45), NN.
-        + status: INT, NN.
-1. Relacionar tabla **users** con tabla **courses** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **courses** que es donde se debe crear la llave foranea.
-1. Diseñar tabla pivote entre **courses** y **users**:
-    + Crear tabla **course_user**
-1. Relacionar tabla **users** con tabla **course_user** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **course_user** que es donde se debe crear la llave foranea.
-1. Relacionar tabla **courses** con tabla **course_user** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **course_user** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **reviews** (Calificaciones de los cursos):
-    + Crear tabla **reviews**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + comment: VARCHAR(45).
-        + rating: VARCHAR(45).
-1. Relacionar tabla **users** con tabla **reviews** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **reviews** que es donde se debe crear la llave foranea.
-1. Relacionar tabla **courses** con tabla **reviews** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **reviews** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **levels**:
-    + Crear tabla **levels**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **levels** con tabla **courses** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **courses** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **categories**:
-    + Crear tabla **categories**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **categories** con tabla **courses** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **courses** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **prices**:
-    + Crear tabla **prices**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-        + value: INT.
-1. Relacionar tabla **prices** con tabla **courses** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **courses** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **goals** (Metas del curso):
-    + Crear tabla **goals**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **courses** con tabla **goals** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **goals** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **requirements** (Requerimientos del curso):
-    + Crear tabla **requirements**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **courses** con tabla **requirements** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **requirements** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **audiences** (Tipo de audiencia del curso):
-    + Crear tabla **requirements**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **courses** con tabla **audiences** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **audiences** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **sections** (Secciones de los curso):
-    + Crear tabla **sections**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **courses** con tabla **sections** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **sections** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **lessons** (Lecciones por sección):
-    + Crear tabla **lessons**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-        + url: VARCHAR(45).
-        + iframe: VARCHAR(45).
-1. Relacionar tabla **sections** con tabla **lessons** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **lessons** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **platforms** (Lecciones por sección):
-    + Crear tabla **platforms**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **platforms** con tabla **lessons** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **lessons** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **descriptions** (Descripción de la lección):
-    + Crear tabla **descriptions**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-1. Relacionar tabla **lessons** con tabla **descriptions** (Relación 1:1)
-    + Dar clic en icono de relación 1:1 y luego seleccionar primero la tabla **descriptions** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **resources** (Recursos de la lección):
-    + Crear tabla **resources**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + url: VARCHAR(45).
-        + resourceable_id: INT.
-        + resourceable_type: VARCHAR(45).
-1. Diseñar tabla pivote entre **lesson** y **users**:
-    + Crear tabla **lesson_user**
-1. Relacionar tabla **users** con tabla **lesson_user** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **lesson_user** que es donde se debe crear la llave foranea.
-1. Relacionar tabla **lesson** con tabla **lesson_user** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **lesson_user** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **comments**:
-    + Crear tabla **comments**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + name: VARCHAR(45).
-        + commentable_id: INT.
-        + commentable_type: VARCHAR(45).
-1. Relacionar tabla **users** con tabla **comments** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **comments** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **likes**:
-    + Crear tabla **likes**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + value: INT.
-        + likeable_id: INT.
-        + likeable_type: VARCHAR(45).
-1. Relacionar tabla **users** con tabla **likes** (Relación 1:n)
-    + Dar clic en icono de relación 1:n y luego seleccionar primero la tabla **likes** que es donde se debe crear la llave foranea.
-1. Diseñar tabla **images**:
-    + Crear tabla **images**
-    + Crear campos:
-        + id: INT, PK, NN.
-        + url: VARCHAR(45).
-        + imageable_id: INT.
-        + imageable_type: VARCHAR(45).
-1. Para seguir las convenciones de Laravel cambiar el nombre de todas las llaves foraneas a singular.
 
 
 ### Video 5. Creación de base de datos - Parte 1
 1. Crear modelo y migración Level:
     >
-        $ php artisan make:model Level -m
+        
 1. Agregar campo **name** a la migración **Level** en **database\migrations\2021_04_17_121231_create_levels_table.php**
     >
         ≡
@@ -309,10 +281,8 @@
             });
         }
         ≡
-1. Crear modelo y migración Category:
-    >
-        $ php artisan make:model Category -m
-1. Agregar campo **name** a la migración **Category** en **database\migrations\2021_04_17_121841_create_categories_table.php**
+
+2. Agregar campo **name** a la migración **Category** en **database\migrations\2021_04_17_121841_create_categories_table.php**
     >
         ≡
         public function up()
@@ -323,11 +293,8 @@
                 $table->timestamps();
             });
         }
-        ≡
-1. Crear modelo y migración Price:
-    >
-        $ php artisan make:model Price -m
-1. Agregar campos **name** y **value** a la migración **Price** en **database\migrations\2021_04_17_122207_create_prices_table.php**
+        ≡ 
+4. Agregar campos **name** y **value** a la migración **Price** en **database\migrations\2021_04_17_122207_create_prices_table.php**
     >
         ≡
         public function up()
@@ -340,10 +307,8 @@
             });
         }
         ≡
-1. Crear modelo y migración Course:
-    >
-        $ php artisan make:model Course -m
-1. Definir constantes relacionadas con el campo **status** del modelo **Course** en **app\Models\Course.php**
+  
+6. Definir constantes relacionadas con el campo **status** del modelo **Course** en **app\Models\Course.php**
     >
         ≡
         class Course extends Model
@@ -354,7 +319,7 @@
             const REVISION = 2;
             coNst PUBLICADO = 3;
         }
-1. Agregar campos y restricciones de llaves foraneas a la migración **Course** en **database\migrations\2021_04_17_122742_create_courses_table.php** y agregar llamada al modelo **Course**
+7. Agregar campos y restricciones de llaves foraneas a la migración **Course** en **database\migrations\2021_04_17_122742_create_courses_table.php** y agregar llamada al modelo **Course**
     >
         ≡
         use App\Models\Course;
@@ -384,10 +349,8 @@
             }
             ≡
         }
-1. Crear migración para tabla pivote **course_user**:
-    >
-        $ php artisan make:migration create_course_user_table
-1. Agregar campos para las llaves foraneas y sus restricciones a la migración **course_user** en **database\migrations\2021_04_17_133630_create_course_user_table.php**
+
+9. Agregar campos para las llaves foraneas y sus restricciones a la migración **course_user** en **database\migrations\2021_04_17_133630_create_course_user_table.php**
     >
         public function up()
         {
@@ -400,10 +363,8 @@
                 $table->timestamps();
             });
         }
-1. Crear modelo y migración Review:
-    >
-        $ php artisan make:model Review -m
-1. Agregar campos, llaves foraneas y restricciones a la migración **Review** en **database\migrations\2021_04_17_134806_create_reviews_table.php**
+
+11. Agregar campos, llaves foraneas y restricciones a la migración **Review** en **database\migrations\2021_04_17_134806_create_reviews_table.php**
     >
         ≡
         public function up()
@@ -420,10 +381,8 @@
             });
         }
         ≡
-1. Crear modelo y migración Profile:
-    >
-        $ php artisan make:model Profile -m
-1. Agregar campos, llave foranea y restricción a la migración **Profile** en **database\migrations\2021_04_17_135614_create_profiles_table.php**
+
+13. Agregar campos, llave foranea y restricción a la migración **Profile** en **database\migrations\2021_04_17_135614_create_profiles_table.php**
     >
         ≡
         public function up()
@@ -442,10 +401,10 @@
             });
         }
         ≡
-1. Ejecutar migraciones
+14. Ejecutar migraciones
     >
         $ php artisan migrate
-1. Establecer relación entre el modelo **User** y los modelos **Profile**, **Course** y **Review**.
+15. Establecer relación entre el modelo **User** y los modelos **Profile**, **Course** y **Review**.
     Modelo **User** (**app\Models\User.php**);
     >
         ≡
@@ -510,7 +469,7 @@
                 return $this->belongsTo('App\Models\User');
             }
         }
-1. Establecer relación entre el modelo **Course** y los meodelos **Review**, **Level**, **Category** y **Price**.
+16. Establecer relación entre el modelo **Course** y los meodelos **Review**, **Level**, **Category** y **Price**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -584,9 +543,6 @@
 
 
 ### Video 6. Creación de base de datos - Parte 2
-1. Crear modelo Requerimientos del curso con su migración:
-    >
-        $ php artisan make:model Requeriment -m
 1. Agregar campo **name** y llave foranea a la migración **Requeriment** en **database\migrations\2021_04_18_134250_create_requeriments_table.php**
     >
         ≡
@@ -601,10 +557,7 @@
             });
         }
         ≡
-1. Crear modelo para las metas del curso con su migración:
-    >
-        $ php artisan make:model Goal -m
-1. Agregar campo **name** y llave foranea a la migración **Goal** en **database\migrations\2021_04_18_134530_create_goals_table.php**
+2. Agregar campo **name** y llave foranea a la migración **Goal** en **database\migrations\2021_04_18_134530_create_goals_table.php**
     >
         ≡
         public function up()
@@ -618,10 +571,7 @@
             });
         }
         ≡
-1. Crear modelo Audience con su migración:
-    >
-        $ php artisan make:model Audience -m
-1. Agregar campo **name** y llave foranea a la migración **Audience** en **database\migrations\2021_04_18_134712_create_audiences_table.php**
+4. Agregar campo **name** y llave foranea a la migración **Audience** en **database\migrations\2021_04_18_134712_create_audiences_table.php**
     >
         ≡
         public function up()
@@ -635,10 +585,7 @@
             });
         }
         ≡
-1. Crear modelo Section con su migración:
-    >
-        $ php artisan make:model Section -m
-1. Agregar campo **name** y llave foranea a la migración **Section** en **database\migrations\2021_04_18_134820_create_sections_table.php**
+6. Agregar campo **name** y llave foranea a la migración **Section** en **database\migrations\2021_04_18_134820_create_sections_table.php**
     >
         ≡
         public function up()
@@ -652,10 +599,10 @@
             });
         }
         ≡
-1. Ejecutar las migraciones:
+7. Ejecutar las migraciones:
     >
         $ php artisan migrate
-1. Establecer relación entre el modelo **Course** y los modelos **Requeriment**, **Goal**, **Audience** y **Section**.
+8. Establecer relación entre el modelo **Course** y los modelos **Requeriment**, **Goal**, **Audience** y **Section**.
     Modelo **Course** (**app\Models\Course.php**);
     >
         ≡
@@ -726,10 +673,7 @@
                 return $this->belongsTo('App\Models\Course');
             }
         }
-1. Crear modelo Platform del curso con su migración:
-    >
-        $ php artisan make:model Platform -m
-1. Agregar campo **name** a la migración **Platform** en **database\migrations\2021_04_18_142158_create_platforms_table.php**
+10. Agregar campo **name** a la migración **Platform** en **database\migrations\2021_04_18_142158_create_platforms_table.php**
     >
         ≡
         public function up()
@@ -740,11 +684,8 @@
                 $table->timestamps();
             });
         }
-        ≡
-1. Crear modelo Lesson con su migración:
-    >
-        $ php artisan make:model Lesson -m
-1. Agregar campos y llaves foraneas a la migración **Lesson** en **database\migrations\2021_04_18_142530_create_lessons_table.php**
+        ≡ 
+11. Agregar campos y llaves foraneas a la migración **Lesson** en **database\migrations\2021_04_18_142530_create_lessons_table.php**
     >
         ≡
         public function up()
@@ -762,10 +703,7 @@
             });
         }
         ≡
-1. Crear modelo Description con su migración:
-    >
-        $ php artisan make:model Description -m
-1. Agregar campos y llaves foraneas a la migración **Description** en **database\migrations\2021_04_18_143318_create_descriptions_table.php**
+12. Agregar campos y llaves foraneas a la migración **Description** en **database\migrations\2021_04_18_143318_create_descriptions_table.php**
     >
         ≡
         public function up()
@@ -779,10 +717,8 @@
             });
         }
         ≡
-1. Crear migración para tabla pivote **lesson_user**:
-    >
-        $ php artisan make:migration create_lesson_user_table
-1. Agregar campos para las llaves foraneas y sus restricciones a la migración **lesson_user** en **database\migrations\2021_04_18_144934_create_lesson_user_table.php**
+
+14. Agregar campos para las llaves foraneas y sus restricciones a la migración **lesson_user** en **database\migrations\2021_04_18_144934_create_lesson_user_table.php**
     >
         public function up()
         {
@@ -795,10 +731,10 @@
                 $table->timestamps();
             });
         }
-1. Ejecutar migraciones:
+15. Ejecutar migraciones:
     >
         $ php artisan migrate
-1. Establecer relaciones entre el modelo **Lesson** y los modelos: **Section**, **Platform**, **Description** y **User**.
+16. Establecer relaciones entre el modelo **Lesson** y los modelos: **Section**, **Platform**, **Description** y **User**.
     Modelo **Lesson** (**app\Models\Lesson.php**)
     >
         ≡
@@ -872,9 +808,6 @@
 
 
 ### Video 7. Creación de base de datos - Parte 3
-1. Crear modelo Resource jutno con su migración:
-    >
-        $ php artisan make:model Resource -m
 1. Agregar campos a la migración de Resource en **database\migrations\2021_04_19_113720_create_resources_table.php**
     >
         public function up()
@@ -887,10 +820,7 @@
                 $table->timestamps();
             });
         }
-1. Crear modelo Comment jutno con su migración:
-    >
-        $ php artisan make:model Comment -m
-1. Agregar campos a la migración de Comment en **database\migrations\2021_04_19_114438_create_comments_table.php**
+2. Agregar campos a la migración de Comment en **database\migrations\2021_04_19_114438_create_comments_table.php**
     >
         public function up()
         {
@@ -904,10 +834,7 @@
                 $table->timestamps();
             });
         }
-1. Crear modelo Reaction jutno con su migración:
-    >
-        $ php artisan make:model Reaction -m
-1. Agregar constantes **LIKE** y **DISLIKE** al modelo **Reaction** en **app\Models\Reaction.php**
+3. Agregar constantes **LIKE** y **DISLIKE** al modelo **Reaction** en **app\Models\Reaction.php**
     >
         ≡
         class Reaction extends Model
@@ -916,10 +843,10 @@
             const LIKE = 1;
             const DISLIKE = 2;
         }
-1. Importar modelo **Reaction** a su migración en **database\migrations\2021_04_19_115056_create_reactions_table.php**
+4. Importar modelo **Reaction** a su migración en **database\migrations\2021_04_19_115056_create_reactions_table.php**
     >
         use App\Models\Reaction;
-1. Agregar campos a la migración de Reaction en **database\migrations\2021_04_19_115056_create_reactions_table.php**
+5. Agregar campos a la migración de Reaction en **database\migrations\2021_04_19_115056_create_reactions_table.php**
     >
         public function up()
         {
@@ -933,10 +860,7 @@
                 $table->timestamps();
             });
         }
-1. Crear modelo Image jutno con su migración:
-    >
-        $ php artisan make:model Image -m
-1. Agregar campos a la migración de Image en **database\migrations\2021_04_19_120629_create_images_table.php**
+7. Agregar campos a la migración de Image en **database\migrations\2021_04_19_120629_create_images_table.php**
     >
         public function up()
         {
@@ -948,10 +872,10 @@
                 $table->timestamps();
             });
         }
-1. Ejecutar migraciones:
+8. Ejecutar migraciones:
     >
         $ php artisan migrate
-1. Establecer relación polimorfica en el modelo **Comment** en **app\Models\Comment.php**
+9.  Establecer relación polimorfica en el modelo **Comment** en **app\Models\Comment.php**
     >
         ≡
         class Comment extends Model
@@ -961,7 +885,7 @@
                 return $this->morphTo();
             }
         }
-1. Establecer relación polimorfica en el modelo **Reaction** en **app\Models\Reaction.php**
+10. Establecer relación polimorfica en el modelo **Reaction** en **app\Models\Reaction.php**
     >
         ≡
         class Reaction extends Model
@@ -971,7 +895,7 @@
                 return $this->morphTo();
             }
         }
-1. Establecer relación polimorfica en el modelo **Image** en **app\Models\Image.php**
+11. Establecer relación polimorfica en el modelo **Image** en **app\Models\Image.php**
     >
         ≡
         class Image extends Model
@@ -981,7 +905,7 @@
                 return $this->morphTo();
             }
         }
-1. Establecer relación polimorfica en el modelo **Resource** en **app\Models\Resource.php**
+12. Establecer relación polimorfica en el modelo **Resource** en **app\Models\Resource.php**
     >
         ≡
         class Resource extends Model
@@ -991,7 +915,7 @@
                 return $this->morphTo();
             }
         }
-1. Establecer relaciones polimorficas entre el modelo **Lesson** y los modelos **Resource**, **Comment**, **Reaction** e **Image**.
+13. Establecer relaciones polimorficas entre el modelo **Lesson** y los modelos **Resource**, **Comment**, **Reaction** e **Image**.
     Modelo **Lesson** (**app\Models\Lesson.php**)
     >
         ≡
@@ -1029,7 +953,7 @@
                 return $this->morphMany('App\Models\Reaction','reactionable');
             }
         }
-1. Establecer relación polimorfica entre los modelos **Course** e **Image**.
+14. Establecer relación polimorfica entre los modelos **Course** e **Image**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -1041,7 +965,7 @@
                 return $this->morphOne('App\Models\Image','imageable');
             }
         }
-1. Establecer ralción **Course**, **Lesson**, **Section**.
+15. Establecer ralción **Course**, **Lesson**, **Section**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -1053,7 +977,7 @@
                 return $this->hasManyThrough('App\Models\Lesson', 'App\Models\Section');
             }
         }
-1. Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
+16. Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
     Modelo **User** (**app\Models\User.php**)
     >
         ≡
@@ -8246,9 +8170,6 @@ MINUTO 48
 
 
 ### Video 55. Observar cursos
-1. Crear modelo de observaciones del curso junto con sus migraciones:
-    >
-        $ php artisan make:model Observation -m
 1. Modificar método **up** da la migración **database\migrations\2021_06_14_112904_create_observations_table.php**:
     >
         public function up()
@@ -8261,7 +8182,7 @@ MINUTO 48
                 $table->timestamps();
             });
         }
-1. Habilitar la asignación masiva en modelo **app\Models\Observation.php**:
+2. Habilitar la asignación masiva en modelo **app\Models\Observation.php**:
     >
         ≡
         class Observation extends Model
@@ -8273,7 +8194,7 @@ MINUTO 48
                 'course_id'
             ];
         }       
-1. Agregar la relación Observation-Course:
+3. Agregar la relación Observation-Course:
     + **app\Models\Course.php**:
     >
         // Relación 1:1
@@ -8286,10 +8207,10 @@ MINUTO 48
         public function course(){
             return $this->belongsTo('App\Models\Course');
         }
-1. Ejecutar las migraciones:
+4. Ejecutar las migraciones:
     >
         $ php artisan migrate
-1. Modificar vista **resources\views\admin\courses\show.blade.php**:
+5. Modificar vista **resources\views\admin\courses\show.blade.php**:
     >
         ≡
                 <div class="order-1 lg:order-2">
@@ -8312,15 +8233,15 @@ MINUTO 48
                 </div>
             </div>
         </x-app-layout>
-1. Crear ruta para observar curso en **routes\admin.php**:
+6. Crear ruta para observar curso en **routes\admin.php**:
     >
         Route::get('courses/{course}/observation',[CourseController::class, 'observation'])->name('courses.observation');
-1. Crear método **observation** en el controlador **app\Http\Controllers\Admin\CourseController.php**:
+7. Crear método **observation** en el controlador **app\Http\Controllers\Admin\CourseController.php**:
     >
         public function observation(Course $course){
             return view('admin.courses.observation', compact('course'));
         }
-1. Crear vista **resources\views\admin\courses\observation.blade.php**:
+8. Crear vista **resources\views\admin\courses\observation.blade.php**:
     ##### CDN: https://ckeditor.com/ckeditor-5/download/?undefined-addons=
     ##### Activación: https://ckeditor.com/docs/ckeditor5/latest/builds/guides/quick-start.html
     >
@@ -8363,10 +8284,10 @@ MINUTO 48
                     } );
             </script>
         @stop
-1. Crear ruta para rechazar curso en **routes\admin.php**:
+9. Crear ruta para rechazar curso en **routes\admin.php**:
     >
         Route::post('courses/{course}/reject',[CourseController::class, 'reject'])->name('courses.reject');
-1. Crear método **reject** en el controlador **app\Http\Controllers\Admin\CourseController.php**:
+10. Crear método **reject** en el controlador **app\Http\Controllers\Admin\CourseController.php**:
     >
         public function reject(Request $request, Course $course){
             $request->validate([
@@ -8386,10 +8307,10 @@ MINUTO 48
     Importar:
     >
         use App\Mail\RejectCourse;
-1. Crear maillable para indicar al instructor que su curso se ha rechazado:
+11. Crear maillable para indicar al instructor que su curso se ha rechazado:
     >
         $ php artisan make:mail RejectCourse
-1. Programar controlador app\Mail\RejectCourse.php:
+12. Programar controlador app\Mail\RejectCourse.php:
     >
         <?php
 
@@ -8428,7 +8349,7 @@ MINUTO 48
                     ->subject('CURSO RECHAZADO');
             }
         }
-1. Crear vista **resources\views\mail\reject-course.blade.php**:
+13. Crear vista **resources\views\mail\reject-course.blade.php**:
     >
         <!DOCTYPE html>
         <html lang="es">
@@ -8450,10 +8371,10 @@ MINUTO 48
             {!! $course->observation->body !!}
         </body>
         </html>
-1. Para que los queue se ejecuten:
+14. Para que los queue se ejecuten:
     >
         $ php artisan queue:work
-1. Modificar plantilla **resources\views\layouts\instructor.blade.php**:
+15. Modificar plantilla **resources\views\layouts\instructor.blade.php**:
     >
         ≡
         <!-- Page Content -->
@@ -8480,15 +8401,15 @@ MINUTO 48
                     @endif
                 </ul>
                 ≡
-1. Crear ruta para mostrar las observaciones en **routes\instructor.php**:
+16. Crear ruta para mostrar las observaciones en **routes\instructor.php**:
     >
         Route::get('courses/{course}/observation', [CourseController::class, 'observation'])->name('courses.observation');
-1. Crear método **observation** en el controlador **app\Http\Controllers\Instructor\CourseController.php**:
+17. Crear método **observation** en el controlador **app\Http\Controllers\Instructor\CourseController.php**:
     >
         public function observation(Course $course){
             return view('instructor.courses.observation', compact('course'));
         }
-1. Crear la vista **resources\views\instructor\courses\observation.blade.php**:
+18. Crear la vista **resources\views\instructor\courses\observation.blade.php**:
     >
         <x-instructor-layout :course="$course">
             <h1 class="text-2xl font-bold">OBSERVACIONES DEL CURSO</h1>
@@ -8498,7 +8419,7 @@ MINUTO 48
                 {!! $course->observation->body !!}
             </div>
         </x-instructor-layout>
-1. Modificar el método **status** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
+19. Modificar el método **status** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
     >
         public function status(Course $course){
             $course->status = 2;
