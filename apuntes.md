@@ -254,157 +254,344 @@
     + $ git commit -m "Creación de modelos y migraciones"
     + $ git push -u origin main
 
+## Definición de las migraciones:
+1. Definición del método **up** para la migración **levels**:
+    ```php
+	public function up()
+	{
+		Schema::create('levels', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->timestamps();
+		});
+	}
+    ```
+2. Definición del método **up** para la migración **categories**:
+    ```php
+	public function up()
+	{
+		Schema::create('categories', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->timestamps();
+		});
+	}
+    ```
+3. Definición del método **up** para la migración **prices**:
+    ```php
+	public function up()
+	{
+		Schema::create('prices', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->float('value');
+			$table->timestamps();
+		});
+	}
+    ```
+4. Definición del método **up** para la migración **courses**:
+    ```php
+	public function up()
+	{
+		Schema::create('courses', function (Blueprint $table) {
+			$table->id();
+			$table->string('title');
+			$table->string('subtitle');
+			$table->text('description');
+			$table->enum('status', [Course::BORRADOR,Course::REVISION,Course::PUBLICADO])->default(Course::BORRADOR);
+			$table->string('slug');
+			$table->unsignedBigInteger('user_id');
+			$table->unsignedBigInteger('level_id')->nullable();
+			$table->unsignedBigInteger('category_id')->nullable();
+			$table->unsignedBigInteger('price_id')->nullable();
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->foreign('level_id')->references('id')->on('levels')->onDelete('set null');
+			$table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+			$table->foreign('price_id')->references('id')->on('prices')->onDelete('set null');
+			$table->timestamps();
+		});
+	}
+    ```
+    + Importar la definción del modelo **Course**:
+    ```php
+    use App\Models\Course;
+    ```
+    + Definir las constantes **BORRADOR**, **REVISION** y **PUBLICADO** en el modelo **Course**:
+    ```php
+    class Course extends Model
+    {
+        use HasFactory;
+
+        const BORRADOR = 1;
+        const REVISION = 2;
+        const PUBLICADO = 3;
+    }
+    ```
+5. Definición del método **up** para la migración **course_user**:
+    ```php
+	public function up()
+	{
+		Schema::create('course_user', function (Blueprint $table) {
+			$table->id();
+			$table->unsignedBigInteger('course_id');
+			$table->unsignedBigInteger('user_id');
+			$table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->timestamps();
+		});
+	}
+    ```
+6. Definición del método **up** para la migración **reviews**:
+    ```php
+	public function up()
+	{
+		Schema::create('reviews', function (Blueprint $table) {
+			$table->id();
+			$table->text('comment');
+			$table->integer('rating');
+			$table->unsignedBigInteger('user_id');
+			$table->unsignedBigInteger('course_id');
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+			$table->timestamps();
+		});
+	}
+    ```
+7. Definición del método **up** para la migración **profiles**:
+    ```php
+	public function up()
+	{
+		Schema::create('profiles', function (Blueprint $table) {
+			$table->id();
+			$table->string('title')->nullable();
+			$table->text('biography')->nullable();
+			$table->string('website')->nullable();
+			$table->string('facebook')->nullable();
+			$table->string('linkedin')->nullable();
+			$table->string('youtube')->nullable();
+			$table->unsignedBigInteger('user_id');
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->timestamps();
+		});
+	}
+    ```
+8. Definición del método **up** para la migración **goals**:
+    ```php
+	public function up()
+	{
+		Schema::create('goals', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->unsignedBigInteger('course_id');
+			$table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+			$table->timestamps();
+		});
+	}
+    ```
+9. Definición del método **up** para la migración **requeriments**:
+    ```php
+	public function up()
+	{
+		Schema::create('requeriments', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->unsignedBigInteger('course_id');
+			$table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+			$table->timestamps();
+		});
+	}
+    ```
+10. Definición del método **up** para la migración **audiences**:
+    ```php
+	public function up()
+	{
+		Schema::create('audiences', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->unsignedBigInteger('course_id');
+			$table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+			$table->timestamps();
+		});
+	}
+    ```
+11. Definición del método **up** para la migración **sections**:
+    ```php
+    public function up()
+    {
+        Schema::create('sections', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->unsignedBigInteger('course_id');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+12. Definición del método **up** para la migración **platforms**:
+    ```php
+    public function up()
+    {
+        Schema::create('platforms', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+    }
+    ```
+13. Definición del método **up** para la migración **lessons**:
+    ```php
+    public function up()
+    {
+        Schema::create('lessons', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('url');
+            $table->string('iframe');
+            $table->unsignedBigInteger('platform_id')->nullable();
+            $table->unsignedBigInteger('section_id');
+            $table->foreign('platform_id')->references('id')->on('platforms')->onDelete('set null');
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+14. Definición del método **up** para la migración **descriptions**:
+    ```php
+    public function up()
+    {
+        Schema::create('descriptions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->unsignedBigInteger('lesson_id');
+            $table->foreign('lesson_id')->references('id')->on('lessons')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+15. Definición del método **up** para la migración **lesson_user**:
+    ```php
+    public function up()
+    {
+        Schema::create('lesson_user', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('lesson_id');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('lesson_id')->references('id')->on('lessons')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+16. Definición del método **up** para la migración **resources**:
+    ```php
+    public function up()
+    {
+        Schema::create('resources', function (Blueprint $table) {
+            $table->id();
+            $table->string('url');
+            $table->unsignedBigInteger('resourceable_id');
+            $table->string('resourceable_type');
+            $table->timestamps();
+        });
+    }
+    ```
+17. Definición del método **up** para la migración **comments**:
+    ```php
+    public function up()
+    {
+        Schema::create('comments', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('commentable_id');
+            $table->string('commentable_type');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+18. Definición del método **up** para la migración **reactions**:
+    ```php
+    public function up()
+    {
+        Schema::create('reactions', function (Blueprint $table) {
+            $table->id();
+            $table->enum('value',[Reaction::LIKE, Reaction::DISLIKE]);
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('reactionable_id');
+            $table->string('reactionable_type');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+    + Importar la definción del modelo **Reaction**:
+    ```php
+    use App\Models\Reaction;
+    ```
+    + Definir las constantes **LIKE** y **DISLIKE** en el modelo **Reaction**:
+    ```php
+    class Reaction extends Model
+    {
+        use HasFactory;
+
+        const LIKE = 1;
+        const DISLIKE = 2;
+    }
+    ```
+19. Definición del método **up** para la migración **images**:
+    ```php
+    public function up()
+    {
+        Schema::create('images', function (Blueprint $table) {
+            $table->id();
+            $table->string('url');
+            $table->unsignedBigInteger('imageable_id');
+            $table->string('imageable_type');
+            $table->timestamps();
+        });
+    }
+    ```
+20. Definición del método **up** para la migración **observations**:
+    ```php
+    public function up()
+    {
+        Schema::create('observations', function (Blueprint $table) {
+            $table->id();
+            $table->text('body');
+            $table->unsignedBigInteger('course_id');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+    ```
+21. Ejecutar migraciones:
+    + $ php artisan migrate
+22. Crear commit:
+    + $ git add .
+    + $ git commit -m "Definición de las migracione"
+    + $ git push -u origin main
+
+
 
 ***
 ≡
     ```php
     ***
     ```
+22. Crear commit:
+    + $ git add .
+    + $ git commit -m "Definición de las migracione"
+    + $ git push -u origin main
 
 ********* INICIO
 
 
 
-### Video 5. Creación de base de datos - Parte 1
-1. Crear modelo y migración Level:
-    >
-        
-1. Agregar campo **name** a la migración **Level** en **database\migrations\2021_04_17_121231_create_levels_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('levels', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->timestamps();
-            });
-        }
-        ≡
+### Video 5. Creación de base de datos - Parte 1     
 
-2. Agregar campo **name** a la migración **Category** en **database\migrations\2021_04_17_121841_create_categories_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('categories', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->timestamps();
-            });
-        }
-        ≡ 
-4. Agregar campos **name** y **value** a la migración **Price** en **database\migrations\2021_04_17_122207_create_prices_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('prices', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->float('value');
-                $table->timestamps();
-            });
-        }
-        ≡
-  
-6. Definir constantes relacionadas con el campo **status** del modelo **Course** en **app\Models\Course.php**
-    >
-        ≡
-        class Course extends Model
-        {
-            use HasFactory;
 
-            const BORRADOR = 1;
-            const REVISION = 2;
-            coNst PUBLICADO = 3;
-        }
-7. Agregar campos y restricciones de llaves foraneas a la migración **Course** en **database\migrations\2021_04_17_122742_create_courses_table.php** y agregar llamada al modelo **Course**
-    >
-        ≡
-        use App\Models\Course;
-        ≡
-        class CreateCoursesTable extends Migration
-        {
-            ≡
-            public function up()
-            {
-                Schema::create('courses', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('title');
-                    $table->string('subtitle');
-                    $table->text('description');
-                    $table->enum('status', [Course::BORRADOR,Course::REVISION,Course::PUBLICADO])->default(Course::BORRADOR);
-                    $table->string('slug');
-                    $table->unsignedBigInteger('user_id');
-                    $table->unsignedBigInteger('level_id')->nullable();
-                    $table->unsignedBigInteger('category_id')->nullable();
-                    $table->unsignedBigInteger('price_id')->nullable();
-                    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                    $table->foreign('level_id')->references('id')->on('levels')->onDelete('set null');
-                    $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
-                    $table->foreign('price_id')->references('id')->on('prices')->onDelete('set null');
-                    $table->timestamps();
-                });
-            }
-            ≡
-        }
-
-9. Agregar campos para las llaves foraneas y sus restricciones a la migración **course_user** en **database\migrations\2021_04_17_133630_create_course_user_table.php**
-    >
-        public function up()
-        {
-            Schema::create('course_user', function (Blueprint $table) {
-                $table->id();
-                $table->unsignedBigInteger('course_id');
-                $table->unsignedBigInteger('user_id');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-
-11. Agregar campos, llaves foraneas y restricciones a la migración **Review** en **database\migrations\2021_04_17_134806_create_reviews_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('reviews', function (Blueprint $table) {
-                $table->id();
-                $table->text('comment');
-                $table->integer('rating');
-                $table->unsignedBigInteger('user_id');
-                $table->unsignedBigInteger('course_id');
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-
-13. Agregar campos, llave foranea y restricción a la migración **Profile** en **database\migrations\2021_04_17_135614_create_profiles_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('profiles', function (Blueprint $table) {
-                $table->id();
-                $table->string('title')->nullable();
-                $table->text('biography')->nullable();
-                $table->string('website')->nullable();
-                $table->string('facebook')->nullable();
-                $table->string('linkedin')->nullable();
-                $table->string('youtube')->nullable();
-                $table->unsignedBigInteger('user_id');
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-14. Ejecutar migraciones
-    >
-        $ php artisan migrate
-15. Establecer relación entre el modelo **User** y los modelos **Profile**, **Course** y **Review**.
+2.  Establecer relación entre el modelo **User** y los modelos **Profile**, **Course** y **Review**.
     Modelo **User** (**app\Models\User.php**);
     >
         ≡
@@ -469,7 +656,7 @@
                 return $this->belongsTo('App\Models\User');
             }
         }
-16. Establecer relación entre el modelo **Course** y los meodelos **Review**, **Level**, **Category** y **Price**.
+3.  Establecer relación entre el modelo **Course** y los meodelos **Review**, **Level**, **Category** y **Price**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -543,66 +730,10 @@
 
 
 ### Video 6. Creación de base de datos - Parte 2
-1. Agregar campo **name** y llave foranea a la migración **Requeriment** en **database\migrations\2021_04_18_134250_create_requeriments_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('requeriments', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->unsignedBigInteger('course_id');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-2. Agregar campo **name** y llave foranea a la migración **Goal** en **database\migrations\2021_04_18_134530_create_goals_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('goals', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->unsignedBigInteger('course_id');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-4. Agregar campo **name** y llave foranea a la migración **Audience** en **database\migrations\2021_04_18_134712_create_audiences_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('audiences', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->unsignedBigInteger('course_id');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-6. Agregar campo **name** y llave foranea a la migración **Section** en **database\migrations\2021_04_18_134820_create_sections_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('sections', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->unsignedBigInteger('course_id');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-7. Ejecutar las migraciones:
+1. Ejecutar las migraciones:
     >
         $ php artisan migrate
-8. Establecer relación entre el modelo **Course** y los modelos **Requeriment**, **Goal**, **Audience** y **Section**.
+2. Establecer relación entre el modelo **Course** y los modelos **Requeriment**, **Goal**, **Audience** y **Section**.
     Modelo **Course** (**app\Models\Course.php**);
     >
         ≡
@@ -673,68 +804,10 @@
                 return $this->belongsTo('App\Models\Course');
             }
         }
-10. Agregar campo **name** a la migración **Platform** en **database\migrations\2021_04_18_142158_create_platforms_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('platforms', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->timestamps();
-            });
-        }
-        ≡ 
-11. Agregar campos y llaves foraneas a la migración **Lesson** en **database\migrations\2021_04_18_142530_create_lessons_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('lessons', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->string('url');
-                $table->string('iframe');
-                $table->unsignedBigInteger('platform_id')->nullable();
-                $table->unsignedBigInteger('section_id');
-                $table->foreign('platform_id')->references('id')->on('platforms')->onDelete('set null');
-                $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-12. Agregar campos y llaves foraneas a la migración **Description** en **database\migrations\2021_04_18_143318_create_descriptions_table.php**
-    >
-        ≡
-        public function up()
-        {
-            Schema::create('descriptions', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->unsignedBigInteger('lesson_id');
-                $table->foreign('lesson_id')->references('id')->on('lessons')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-        ≡
-
-14. Agregar campos para las llaves foraneas y sus restricciones a la migración **lesson_user** en **database\migrations\2021_04_18_144934_create_lesson_user_table.php**
-    >
-        public function up()
-        {
-            Schema::create('lesson_user', function (Blueprint $table) {
-                $table->id();
-                $table->unsignedBigInteger('lesson_id');
-                $table->unsignedBigInteger('user_id');
-                $table->foreign('lesson_id')->references('id')->on('lessons')->onDelete('cascade');
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-15. Ejecutar migraciones:
+3.  Ejecutar migraciones:
     >
         $ php artisan migrate
-16. Establecer relaciones entre el modelo **Lesson** y los modelos: **Section**, **Platform**, **Description** y **User**.
+4.  Establecer relaciones entre el modelo **Lesson** y los modelos: **Section**, **Platform**, **Description** y **User**.
     Modelo **Lesson** (**app\Models\Lesson.php**)
     >
         ≡
@@ -808,74 +881,13 @@
 
 
 ### Video 7. Creación de base de datos - Parte 3
-1. Agregar campos a la migración de Resource en **database\migrations\2021_04_19_113720_create_resources_table.php**
-    >
-        public function up()
-        {
-            Schema::create('resources', function (Blueprint $table) {
-                $table->id();
-                $table->string('url');
-                $table->unsignedBigInteger('resourceable_id');
-                $table->string('resourceable_type');
-                $table->timestamps();
-            });
-        }
-2. Agregar campos a la migración de Comment en **database\migrations\2021_04_19_114438_create_comments_table.php**
-    >
-        public function up()
-        {
-            Schema::create('comments', function (Blueprint $table) {
-                $table->id();
-                $table->string('name');
-                $table->unsignedBigInteger('user_id');
-                $table->unsignedBigInteger('commentable_id');
-                $table->string('commentable_type');
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-3. Agregar constantes **LIKE** y **DISLIKE** al modelo **Reaction** en **app\Models\Reaction.php**
-    >
-        ≡
-        class Reaction extends Model
-        {
-            ≡
-            const LIKE = 1;
-            const DISLIKE = 2;
-        }
-4. Importar modelo **Reaction** a su migración en **database\migrations\2021_04_19_115056_create_reactions_table.php**
+1. Importar modelo **Reaction** a su migración en **database\migrations\2021_04_19_115056_create_reactions_table.php**
     >
         use App\Models\Reaction;
-5. Agregar campos a la migración de Reaction en **database\migrations\2021_04_19_115056_create_reactions_table.php**
-    >
-        public function up()
-        {
-            Schema::create('reactions', function (Blueprint $table) {
-                $table->id();
-                $table->enum('value',[Reaction::LIKE, Reaction::DISLIKE]);
-                $table->unsignedBigInteger('user_id');
-                $table->unsignedBigInteger('reactionable_id');
-                $table->string('reactionable_type');
-                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
-7. Agregar campos a la migración de Image en **database\migrations\2021_04_19_120629_create_images_table.php**
-    >
-        public function up()
-        {
-            Schema::create('images', function (Blueprint $table) {
-                $table->id();
-                $table->string('url');
-                $table->unsignedBigInteger('imageable_id');
-                $table->string('imageable_type');
-                $table->timestamps();
-            });
-        }
-8. Ejecutar migraciones:
+2. Ejecutar migraciones:
     >
         $ php artisan migrate
-9.  Establecer relación polimorfica en el modelo **Comment** en **app\Models\Comment.php**
+3.  Establecer relación polimorfica en el modelo **Comment** en **app\Models\Comment.php**
     >
         ≡
         class Comment extends Model
@@ -885,7 +897,7 @@
                 return $this->morphTo();
             }
         }
-10. Establecer relación polimorfica en el modelo **Reaction** en **app\Models\Reaction.php**
+4.  Establecer relación polimorfica en el modelo **Reaction** en **app\Models\Reaction.php**
     >
         ≡
         class Reaction extends Model
@@ -895,7 +907,7 @@
                 return $this->morphTo();
             }
         }
-11. Establecer relación polimorfica en el modelo **Image** en **app\Models\Image.php**
+5.  Establecer relación polimorfica en el modelo **Image** en **app\Models\Image.php**
     >
         ≡
         class Image extends Model
@@ -905,7 +917,7 @@
                 return $this->morphTo();
             }
         }
-12. Establecer relación polimorfica en el modelo **Resource** en **app\Models\Resource.php**
+6.  Establecer relación polimorfica en el modelo **Resource** en **app\Models\Resource.php**
     >
         ≡
         class Resource extends Model
@@ -915,7 +927,7 @@
                 return $this->morphTo();
             }
         }
-13. Establecer relaciones polimorficas entre el modelo **Lesson** y los modelos **Resource**, **Comment**, **Reaction** e **Image**.
+10. Establecer relaciones polimorficas entre el modelo **Lesson** y los modelos **Resource**, **Comment**, **Reaction** e **Image**.
     Modelo **Lesson** (**app\Models\Lesson.php**)
     >
         ≡
@@ -953,7 +965,7 @@
                 return $this->morphMany('App\Models\Reaction','reactionable');
             }
         }
-14. Establecer relación polimorfica entre los modelos **Course** e **Image**.
+11. Establecer relación polimorfica entre los modelos **Course** e **Image**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -965,7 +977,7 @@
                 return $this->morphOne('App\Models\Image','imageable');
             }
         }
-15. Establecer ralción **Course**, **Lesson**, **Section**.
+12. Establecer ralción **Course**, **Lesson**, **Section**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -977,7 +989,7 @@
                 return $this->hasManyThrough('App\Models\Lesson', 'App\Models\Section');
             }
         }
-16. Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
+13. Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
     Modelo **User** (**app\Models\User.php**)
     >
         ≡
@@ -8170,18 +8182,6 @@ MINUTO 48
 
 
 ### Video 55. Observar cursos
-1. Modificar método **up** da la migración **database\migrations\2021_06_14_112904_create_observations_table.php**:
-    >
-        public function up()
-        {
-            Schema::create('observations', function (Blueprint $table) {
-                $table->id();
-                $table->text('body');
-                $table->unsignedBigInteger('course_id');
-                $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-                $table->timestamps();
-            });
-        }
 2. Habilitar la asignación masiva en modelo **app\Models\Observation.php**:
     >
         ≡
@@ -9855,9 +9855,3 @@ MINUTO 48
     + ~ $ exit
 16. Salir de Heroku:
     + $ heroku logout
-
-
-
-17. Desconectar con repositorio Heroku:
-    + $ git remote rm heroku
-
