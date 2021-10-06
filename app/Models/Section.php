@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Section extends Model
 {
     use HasFactory;
+
+    // Ralción 1:n Section -Lesson
+    public function lessons(){
+        return $this->hasMany('App\Models\Lesson');
+    }
+
+    // Relación 1:n Course - Section (inversa)
+    public function course(){
+        return $this->belongsTo('App\Models\Course');
+    }
 }

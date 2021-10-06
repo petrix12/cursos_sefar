@@ -11,4 +11,14 @@ class Reaction extends Model
 
     const LIKE = 1;
     const DISLIKE = 2;
+
+    // Relación 1:n User - Reaction (inversa)
+    public function user(){
+        return $this->belongsTo('App\Models\User');
+    }
+
+    // Relación polimórfica
+    public function reactionable(){
+        return $this->morphTo();
+    }
 }

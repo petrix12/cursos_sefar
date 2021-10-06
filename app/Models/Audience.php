@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Audience extends Model
 {
     use HasFactory;
+
+    // Relación 1:n Course - Audience (inversa)
+    public function course(){
+        return $this->belongsTo('App\Models\Course');
+    }
 }

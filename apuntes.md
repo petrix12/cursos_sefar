@@ -572,6 +572,372 @@
     + $ git commit -m "Definición de las migracione"
     + $ git push -u origin main
 
+## Establecimiento de relaciones entre modelos:
+1. Establecer ralación en el modelo **User**:
+    ```php
+    class User extends Authenticatable
+    {
+        ≡
+        // Relación 1:1 User - Profile
+        public function profile(){
+            return $this->hasOne('App\Models\Profile');
+        }
+
+        // Relación 1:n Profesores y Cursos (User - Course)
+        public function courses_dictated(){
+            return $this->hasMany('App\Models\Course');
+        }
+
+        // Relación 1:n User - Review
+        public function reviews(){
+            return $this->hasMany('App\Models\Review');
+        }
+
+        // Relación 1:n User - Comment
+        public function comments(){
+            return $this->hasMany('App\Models\Comment');
+        }
+
+        // Relación 1:n User - Reaction
+        public function reactions(){
+            return $this->hasMany('App\Models\Reaction');
+        }
+
+        // Relación n:m Estudiantes y Cursos (User - Course)
+        public function courses_enrolled(){
+            return $this->belongsToMany('App\Models\Course');
+        }
+
+        // Relación n:m User - Lesson
+        public function lessons(){
+            return $this->belongsToMany('App\Models\Lesson');
+    }
+    ```
+2. Establecer ralación en el modelo **Profile**:
+    ```php
+    class Profile extends Model
+    {
+        ≡
+        // Relación 1:1 User - Profile (Inversa)
+        public function user(){
+            return $this->belongsTo('App\Models\User');
+        }
+    }
+    ```
+3. Establecer ralación en el modelo **Course**:
+    ```php
+    class Course extends Model
+    {
+        ≡
+        // Relación 1:1 Course - Observation
+        public function observation(){
+            return $this->hasOne('App\Models\Observation');
+        }
+
+        // Relación 1:n Course - Review
+        public function reviews(){
+            return $this->hasMany('App\Models\Review');
+        }
+
+        // Relación 1:n Course - Requirement
+        public function requirements(){
+            return $this->hasMany('App\Models\Requirement');
+        }
+
+        // Relación 1:n Course - Goal
+        public function goals(){
+            return $this->hasMany('App\Models\Goal');
+        }
+
+        // Relación 1:n Course - Audience
+        public function audiences(){
+            return $this->hasMany('App\Models\Audience');
+        }
+
+        // Relación 1:n Course - Section
+        public function sections(){
+            return $this->hasMany('App\Models\Section');
+        }
+
+        // Relación 1:n Profesores y Cursos (User - Course) (inversa)
+        public function teacher(){
+            return $this->belongsTo('App\Models\User', 'user_id');
+        }
+        
+        // Relación 1:n Level - Course (inversa)
+        public function level(){
+            return $this->belongsTo('App\Models\Level');
+        }
+
+        // Relación 1:n Category - Course (inversa)
+        public function category(){
+            return $this->belongsTo('App\Models\Category');
+        }
+
+        // Relación 1:n Price - Course (inversa)
+        public function price(){
+            return $this->belongsTo('App\Models\Price');
+        }
+
+        // Relación n:n Estudiantes y Cursos (User - Course) (inversa)
+        public function students(){
+            return $this->belongsToMany('App\Models\User');
+        }
+
+        //Relacion 1:1 polimórfica Course - Image
+        public function image(){
+            return $this->morphOne('App\Models\Image', 'imageable');
+        }
+
+        // Relación entre Course - Lesson y Section como tabla intermedia
+        public function lessons(){
+            return $this->hasManyThrough('App\Models\Lesson', 'App\Models\Section');
+        }
+    }
+    ```
+4. Establecer ralación en el modelo **Review**:
+    ```php
+    class Review extends Model
+    {
+        ≡
+        // Relación 1:n User - Review (inversa)
+        public function user(){
+            return $this->belongsTo('App\Models\User');
+        }
+
+        // Relación 1:n Course - Review (inversa)
+        public function course(){
+            return $this->belongsTo('App\Models\Course');
+        }
+    }
+    ```
+5. Establecer ralación en el modelo **Level**:
+    ```php
+    class Level extends Model
+    {
+        ≡
+        // Relación 1:n Level - Course
+        public function courses(){
+            return $this->hasMany('App\Models\Course');
+        }
+    }
+    ```
+6. Establecer ralación en el modelo **Category**:
+    ```php
+    class Category extends Model
+    {
+        ≡
+        // Relación 1:n Category - Course
+        public function courses(){
+            return $this->hasMany('App\Models\Course');
+        }
+    }
+    ```
+7. Establecer ralación en el modelo **Price**:
+    ```php
+    class Price extends Model
+    {
+        ≡
+        // Relación 1:n Price - Course
+        public function courses(){
+            return $this->hasMany('App\Models\Course');
+        }
+    }
+    ```
+8. Establecer ralación en el modelo **Requeriment**:
+    ```php
+    class Requeriment extends Model
+    {
+        ≡
+        // Relación 1:n Course - Requeriment (inversa)
+        public function course(){
+            return $this->belongsTo('App\Models\Course');
+        }
+    }
+    ```
+9. Establecer ralación en el modelo **Goal**:
+    ```php
+    class Goal extends Model
+    {
+        ≡
+        // Relación 1:n Course - Goal (inversa)
+        public function course(){
+            return $this->belongsTo('App\Models\Course');
+        }
+    }
+    ```
+10. Establecer ralación en el modelo **Audience**:
+    ```php
+    class Audience extends Model
+    {
+        ≡
+        // Relación 1:n Course - Audience (inversa)
+        public function course(){
+            return $this->belongsTo('App\Models\Course');
+        }
+    }
+    ```
+11. Establecer ralación en el modelo **Section**:
+    ```php
+    class Section extends Model
+    {
+        ≡
+        // Ralción 1:n Section -Lesson
+        public function lessons(){
+            return $this->hasMany('App\Models\Lesson');
+        }
+
+        // Relación 1:n Course - Section (inversa)
+        public function course(){
+            return $this->belongsTo('App\Models\Course');
+        }
+    }
+    ```
+12. Establecer ralación en el modelo **Lesson**:
+    ```php
+    class Lesson extends Model
+    {
+        ≡
+        // Relación 1:1 Lesson - Description
+        public function description(){
+            return $this->hasOne('App\Models\Description');
+        }
+
+        // Ralción 1:n Section -Lesson (inversa)
+        public function section(){
+            return $this->belongsTo('App\Models\Section');
+        }
+
+        // Ralción 1:n Platform -Lesson (inversa)
+        public function platform(){
+            return $this->belongsTo('App\Models\Platform');
+        }
+
+        // Relacion n:m Lesson - User
+        public function users(){
+            return $this->belongsToMany('App\Models\User');
+        }
+
+        // Relación 1:1 polimorfica Lesson - Resource
+        public function resource(){
+            return $this->morphOne('App\Models\Resource', 'resourceable');
+        }
+
+        // Relación 1:n polimorfica Lesson - Comment
+        public function comments(){
+            return $this->morphMany('App\Models\Comment', 'commentable');
+        }
+
+        // Relación 1:n polimorfica Lesson - Reaction
+        public function reactions(){
+            return $this->morphMany('App\Models\Reaction', 'reactionable');
+        }
+    }
+    ```
+13. Establecer ralación en el modelo **Platform**:
+    ```php
+    class Platform extends Model
+    {
+        ≡
+        // Ralación 1:n Platform -Lesson
+        public function lessons(){
+            return $this->hasMany('App\Models\Lesson');
+        }
+    }
+    ```
+14. Establecer ralación en el modelo **Description**:
+    ```php
+    class Description extends Model
+    {
+        ≡
+        // Relación 1:1 Lesson - Description (inversa)
+        public function lesson(){
+            return $this->belongsTo('App\Models\Lesson');
+        }
+    }
+    ```
+15. Establecer ralación en el modelo **Comment**:
+    ```php
+    class Comment extends Model
+    {
+        ≡
+        // Relación 1:n User - Reaction (inversa)
+        public function user(){
+            return $this->belongsTo('App\Models\User');
+        }
+
+        // Relación 1:n polimorfica
+        public function comments(){
+            return $this->morphMany('App\Models\Comment', 'commentable');
+        }
+
+        // Relación 1:n polimorfica
+        public function reactions(){
+            return $this->morphMany('App\Models\Reaction', 'reactionable');
+        }
+
+        // Relación polimórfica
+        public function commentable(){
+            return $this->morphTo();
+        }
+    }
+    ```
+16. Establecer ralación en el modelo **Image**:
+    ```php
+    class Image extends Model
+    {
+        ≡
+        // Relación polimórfica
+        public function imageable(){
+            return $this->morphTo();
+        }
+    }
+    ```
+17. Establecer ralación en el modelo **Observation**:
+    ```php
+    class Observation extends Model
+    {
+        ≡
+        // Relación 1:1 Course - Observation (inversa)
+        public function course(){
+            return $this->belongsTo('App\Models\Course');
+        }
+    }
+    ```
+18. Establecer ralación en el modelo **Reaction**:
+    ```php
+    class Reaction extends Model
+    {
+        ≡
+        // Relación 1:n User - Reaction (inversa)
+        public function user(){
+            return $this->belongsTo('App\Models\User');
+        }
+
+        // Relación polimórfica
+        public function reactionable(){
+            return $this->morphTo();
+        }
+    }
+    ```
+19. Establecer ralación en el modelo **Resource**:
+    ```php
+    class Resource extends Model
+    {
+        ≡
+        // Relación polimófica
+        public function resourceable(){
+            return $this->morphTo();
+        }
+    }
+    ```
+20. Crear commit:
+    + $ git add .
+    + $ git commit -m "Establecimiento de relaciones entre modelos"
+    + $ git push -u origin main
+
+
+
 
 
 ***
@@ -581,391 +947,14 @@
     ```
 22. Crear commit:
     + $ git add .
-    + $ git commit -m "Definición de las migracione"
+    + $ git commit -m "Definición de las migraciones"
     + $ git push -u origin main
 
 ********* INICIO
 
 
-
-### Video 5. Creación de base de datos - Parte 1     
-
-
-2.  Establecer relación entre el modelo **User** y los modelos **Profile**, **Course** y **Review**.
-    Modelo **User** (**app\Models\User.php**);
-    >
-        ≡
-        class User extends Authenticatable
-        {
-            ≡
-            // Relación 1:1 User - Profile
-            public function profile(){
-                return $this->hasOne('App\Models\Profile');
-            }
-
-            // Relación 1:n Profesores y Cursos (User - Course)
-            public function courses_dictated(){
-                return $this->hasMany('App\Models\Course');
-            }
-
-            // Relación n:n Estudiantes y Cursos (User - Course)
-            public function courses_enrolled(){
-                return $this->belongsToMany('App\Models\Course');
-            }
-
-            // Relación 1:n User - Review
-            public function reviews(){
-                return $this->hasMany('App\Models\Review');
-            }
-        }
-    Modelo **Profile** (**app\Models\Profile.php**)
-    >
-        ≡
-        class Profile extends Model
-        {
-            ≡
-            // Relación 1:1 Profile - User (Inversa)
-            public function user(){
-                return $this->belongsTo('App\Models\User');
-            }
-        }
-    Modelo **Course** (**app\Models\Course.php**)
-    >
-        ≡
-        class Course extends Model
-        {
-            ≡
-            // Relación 1:n Profesores y Cursos (User - Course) (inversa)
-            public function teacher(){
-                return $this->belongsTo('App\Models\User', 'user_id');
-            }
-
-            // Relación n:n Estudiantes y Cursos (User - Course) (inversa)
-            public function students(){
-                return $this->belongsToMany('App\Models\User');
-            }
-        }
-    Modelo **Review** (**app\Models\Review.php**)
-    >
-        ≡
-        class Review extends Model
-        {
-            ≡
-            // Relación 1:n User - Review (inversa)
-            public function user(){
-                return $this->belongsTo('App\Models\User');
-            }
-        }
-3.  Establecer relación entre el modelo **Course** y los meodelos **Review**, **Level**, **Category** y **Price**.
-    Modelo **Course** (**app\Models\Course.php**)
-    >
-        ≡
-        class Course extends Model
-        {
-            ≡
-            // Relación 1:n Course - Review
-            public function reviews(){
-                return $this->hasMany('App\Models\Review');
-            }
-
-            // Relación 1:n Price - Course (inversa)
-            public function price(){
-                return $this->belongsTo('App\Models\Price');
-            }
-
-            // Relación 1:n Level - Course (inversa)
-            public function level(){
-                return $this->belongsTo('App\Models\Level');
-            }
-
-            // Relación 1:n Category - Course (inversa)
-            public function category(){
-                return $this->belongsTo('App\Models\Category');
-            }
-        }
-    Modelo **Review** (**app\Models\Review.php**)
-    >
-        ≡
-        class Review extends Model
-        {
-            ≡   
-            // Relación 1:n Course - Review (inversa)
-            public function course(){
-                return $this->belongsTo('App\Models\Course');
-            }
-        }
-    Modelo **Level** (**app\Models\Level.php**)
-    >
-        ≡
-        class Level extends Model
-        {
-            ≡
-            // Relación 1:n Level - Course
-            public function courses(){
-                return $this->hasMany('App\Models\Course');
-            }
-        }
-    Modelo **Category** (**app\Models\Category.php**)
-    >
-        ≡
-        class Category extends Model
-        {
-            ≡
-            // Relación 1:n Category - Course
-            public function courses(){
-                return $this->hasMany('App\Models\Course');
-            }
-        }
-    Modelo **Price** (**app\Models\Price.php**)
-    >
-        ≡
-        class Price extends Model
-        {
-            ≡
-            // Relación 1:n Price - Course
-            public function courses(){
-                return $this->hasMany('App\Models\Course');
-            }
-        }
-
-
-### Video 6. Creación de base de datos - Parte 2
-1. Ejecutar las migraciones:
-    >
-        $ php artisan migrate
-2. Establecer relación entre el modelo **Course** y los modelos **Requeriment**, **Goal**, **Audience** y **Section**.
-    Modelo **Course** (**app\Models\Course.php**);
-    >
-        ≡
-        class Course extends Model
-        {
-            ≡   
-            // Relación 1:n Course - Requeriment
-            public function requeriments(){
-                return $this->hasMany('App\Models\Requeriment');
-            }
-
-            // Relación 1:n Course - Goal
-            public function goals(){
-                return $this->hasMany('App\Models\Goal');
-            }
-
-            // Relación 1:n Course - Audience
-            public function audiences(){
-                return $this->hasMany('App\Models\Audience');
-            }
-
-            // Relación 1:n Course - Section
-            public function sections(){
-                return $this->hasMany('App\Models\Section');
-            }
-        }
-    Modelo **Requeriment** (**app\Models\Requeriment.php**);
-    >
-        ≡
-        class Requeriment extends Model
-        {
-            ≡
-            // Relación 1:n Course - Requeriment (inversa)
-            public function course(){
-                return $this->belongsTo('App\Models\Course');
-            }
-        }
-    Modelo **Goal** (**app\Models\Goal.php**);
-    >
-        ≡
-        class Goal extends Model
-        {
-            ≡
-            // Relación 1:n Course - Goal (inversa)
-            public function course(){
-                return $this->belongsTo('App\Models\Course');
-            }
-        }
-    Modelo **Audience** (**app\Models\Audience.php**);
-    >
-        ≡
-        class Audience extends Model
-        {
-            ≡
-            // Relación 1:n Course - Audience (inversa)
-            public function course(){
-                return $this->belongsTo('App\Models\Course');
-            }
-        }
-    Modelo **Section** (**app\Models\Section.php**);
-    >
-        ≡
-        class Audience extends Section
-        {
-            ≡
-            // Relación 1:n Course - Section (inversa)
-            public function course(){
-                return $this->belongsTo('App\Models\Course');
-            }
-        }
-3.  Ejecutar migraciones:
-    >
-        $ php artisan migrate
-4.  Establecer relaciones entre el modelo **Lesson** y los modelos: **Section**, **Platform**, **Description** y **User**.
-    Modelo **Lesson** (**app\Models\Lesson.php**)
-    >
-        ≡
-        class Lesson extends Model
-        {
-            ≡
-            // Ralción 1:n Section -Lesson (inversa)
-            public function section(){
-                return $this->belongsTo('App\Models\Section');
-            }
-
-            // Ralción 1:n Platform -Lesson (inversa)
-            public function platform(){
-                return $this->belongsTo('App\Models\Platform');
-            }
-
-            // Relación 1:1 Lesson - Description
-            public function description(){
-                return $this->hasOne('App\Models\Description');
-            }
-
-            // Relacion n:n Lesson - User
-            public function users(){
-                return $this->belongsToMany('App\Models\User');
-            }        
-        }
-    Modelo **Section** (**app\Models\Section.php**)
-    >
-        ≡
-        class Section extends Model
-        {
-            ≡
-            // Ralción 1:n Section -Lesson
-            public function lessons(){
-                return $this->hasMany('App\Models\Lesson');
-            }
-        }
-    Modelo **Platform** (**app\Models\Platform.php**)
-    >
-        ≡
-        class Platform extends Model
-        {
-            ≡
-            // Ralción 1:n Platform -Lesson
-            public function lessons(){
-                return $this->hasMany('App\Models\Lesson');
-            }
-        }
-    Modelo **Description** (**app\Models\Description.php**)
-    >
-        ≡
-        class Description extends Model
-        {
-            ≡
-            // Relación 1:1 Lesson - Description (inversa)
-            public function lesson(){
-                return $this->belongsTo('App\Models\Lesson');
-            }
-        }
-    Modelo **User** (**app\Models\User.php**)
-    >
-        ≡
-        class User extends Model
-        {
-            ≡
-            // Relacion n:n Lesson - User (inversa)
-            public function lessons(){
-                return $this->belongsToMany('App\Models\Lesson');
-            }
-        }
-
-
 ### Video 7. Creación de base de datos - Parte 3
-1. Importar modelo **Reaction** a su migración en **database\migrations\2021_04_19_115056_create_reactions_table.php**
-    >
-        use App\Models\Reaction;
-2. Ejecutar migraciones:
-    >
-        $ php artisan migrate
-3.  Establecer relación polimorfica en el modelo **Comment** en **app\Models\Comment.php**
-    >
-        ≡
-        class Comment extends Model
-        {
-            ≡
-            public function commentable(){
-                return $this->morphTo();
-            }
-        }
-4.  Establecer relación polimorfica en el modelo **Reaction** en **app\Models\Reaction.php**
-    >
-        ≡
-        class Reaction extends Model
-        {
-            ≡
-            public function reactionable(){
-                return $this->morphTo();
-            }
-        }
-5.  Establecer relación polimorfica en el modelo **Image** en **app\Models\Image.php**
-    >
-        ≡
-        class Image extends Model
-        {
-            ≡
-            public function imageable(){
-                return $this->morphTo();
-            }
-        }
-6.  Establecer relación polimorfica en el modelo **Resource** en **app\Models\Resource.php**
-    >
-        ≡
-        class Resource extends Model
-        {
-            ≡
-            public function resourceable(){
-                return $this->morphTo();
-            }
-        }
-10. Establecer relaciones polimorficas entre el modelo **Lesson** y los modelos **Resource**, **Comment**, **Reaction** e **Image**.
-    Modelo **Lesson** (**app\Models\Lesson.php**)
-    >
-        ≡
-        class Lesson extends Model
-        {
-            ≡
-            // Relación 1:1 polimorfica Lesson - Resource
-            public function resource(){
-                return $this->morphOne('App\Models\Resource','resourceable');
-            }
-
-            // Relación 1:n polimorfica Lesson - Comment
-            public function comments(){
-                return $this->morphMany('App\Models\Comment','commentable');
-            }
-
-            // Relación 1:n polimorfica Lesson - Reaction
-            public function reactions(){
-                return $this->morphMany('App\Models\Reaction','reactionable');
-            }
-        }
-
-    Modelo **Comment** (**app\Models\Comment.php**)
-    >
-        ≡
-        class Comment extends Model
-        {
-            ≡
-            // Relación 1:n polimorfica
-            public function comments(){
-                return $this->morphMany('App\Models\Comment','commentable');
-            }
-            
-            public function reactions(){
-                return $this->morphMany('App\Models\Reaction','reactionable');
-            }
-        }
-11. Establecer relación polimorfica entre los modelos **Course** e **Image**.
+1.  Establecer relación polimorfica entre los modelos **Course** e **Image**.
     Modelo **Course** (**app\Models\Course.php**)
     >
         ≡
@@ -977,19 +966,7 @@
                 return $this->morphOne('App\Models\Image','imageable');
             }
         }
-12. Establecer ralción **Course**, **Lesson**, **Section**.
-    Modelo **Course** (**app\Models\Course.php**)
-    >
-        ≡
-        class Course extends Model
-        {
-            ≡
-            // Relación entre Course - Lesson y Section como tabla intermedia
-            public function lessons(){
-                return $this->hasManyThrough('App\Models\Lesson', 'App\Models\Section');
-            }
-        }
-13. Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
+2.  Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
     Modelo **User** (**app\Models\User.php**)
     >
         ≡
@@ -1006,31 +983,6 @@
                 return $this->hasMany('App\Models\Reaction');
             }
         }
-    Modelo **Comment** (**app\Models\Comment.php**)
-    >
-        ≡
-        class Comment extends Model
-        {
-            ≡
-            // Relación 1:n User - Reaction (inversa)
-            public function user(){
-                return $this->belongsTo('App\Models\User');
-            }
-        }
-    Modelo **Reaction** (**app\Models\Reaction.php**)
-    >
-        ≡
-        class Reaction extends Model
-        {
-            ≡
-            // Relación 1:n User - Reaction (inversa)
-            public function user(){
-                return $this->belongsTo('App\Models\User');
-            }
-        }
-
-
-
 
 ### Video 8. Habilitar asignación masiva
 1. Definir campos de asignación para el modelo **Audience** (app\Models\Audience.php):
@@ -8194,23 +8146,7 @@ MINUTO 48
                 'course_id'
             ];
         }       
-3. Agregar la relación Observation-Course:
-    + **app\Models\Course.php**:
-    >
-        // Relación 1:1
-        public function observation(){
-            return $this->hasOne('App\Models\Observation');
-        }
-    + **app\Models\Observation.php**
-    >
-        // Relación 1:1 inversa
-        public function course(){
-            return $this->belongsTo('App\Models\Course');
-        }
-4. Ejecutar las migraciones:
-    >
-        $ php artisan migrate
-5. Modificar vista **resources\views\admin\courses\show.blade.php**:
+3. Modificar vista **resources\views\admin\courses\show.blade.php**:
     >
         ≡
                 <div class="order-1 lg:order-2">
@@ -8233,7 +8169,7 @@ MINUTO 48
                 </div>
             </div>
         </x-app-layout>
-6. Crear ruta para observar curso en **routes\admin.php**:
+4. Crear ruta para observar curso en **routes\admin.php**:
     >
         Route::get('courses/{course}/observation',[CourseController::class, 'observation'])->name('courses.observation');
 7. Crear método **observation** en el controlador **app\Http\Controllers\Admin\CourseController.php**:

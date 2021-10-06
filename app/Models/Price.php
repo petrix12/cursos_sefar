@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Price extends Model
 {
     use HasFactory;
+
+    // Relación 1:n Price - Course
+    public function courses(){
+        return $this->hasMany('App\Models\Course');
+    }
 }

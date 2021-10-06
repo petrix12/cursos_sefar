@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Observation extends Model
 {
     use HasFactory;
+
+    // Relación 1:1 Course - Observation (inversa)
+    public function course(){
+        return $this->belongsTo('App\Models\Course');
+    }
 }
