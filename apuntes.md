@@ -320,8 +320,8 @@
     ```php
     class Course extends Model
     {
-        use HasFactory;
-
+        ≡
+        // Constantes de estado del curso
         const BORRADOR = 1;
         const REVISION = 2;
         const PUBLICADO = 3;
@@ -533,8 +533,8 @@
     ```php
     class Reaction extends Model
     {
-        use HasFactory;
-
+        ≡
+        // Constantes de apreciación del curso
         const LIKE = 1;
         const DISLIKE = 2;
     }
@@ -936,6 +936,105 @@
     + $ git commit -m "Establecimiento de relaciones entre modelos"
     + $ git push -u origin main
 
+## Habilitar asignación masiva en los modelos:
+1. Establecer campos de asignación masiva para el modelo **Audience**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+2. Establecer campos de asignación masiva para el modelo **Category**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+3. Establecer campos de asignación masiva para el modelo **Comment**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+4. Establecer campos de asignación masiva para el modelo **Course**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id', 'status'];
+    ```
+5. Establecer campos de asignación masiva para el modelo **Description**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+6. Establecer campos de asignación masiva para el modelo **Goal**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+7. Establecer campos de asignación masiva para el modelo **Image**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+8. Establecer campos de asignación masiva para el modelo **Lesson**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+9. Establecer campos de asignación masiva para el modelo **Level**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+10. Establecer campos de asignación masiva para el modelo **Observation**:
+    ```php
+    // Asignación masiva
+    protected $fillable = [
+        'body',
+        'course_id'
+    ];
+    ```
+11. Establecer campos de asignación masiva para el modelo **Platform**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+12. Establecer campos de asignación masiva para el modelo **Price**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+13. Establecer campos de asignación masiva para el modelo **Profile**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+14. Establecer campos de asignación masiva para el modelo **Reaction**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+15. Establecer campos de asignación masiva para el modelo **Requeriment**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+16. Establecer campos de asignación masiva para el modelo **Resource**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+17. Establecer campos de asignación masiva para el modelo **Review**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+18. Establecer campos de asignación masiva para el modelo **Section**:
+    ```php
+    // Asignación masiva
+    protected $guarded = ['id'];
+    ```
+19. Crear commit:
+    + $ git add .
+    + $ git commit -m "Habilitar asignación masiva en los modelos"
+    + $ git push -u origin main
+
 
 
 
@@ -945,183 +1044,12 @@
     ```php
     ***
     ```
-22. Crear commit:
+1. Crear commit:
     + $ git add .
     + $ git commit -m "Definición de las migraciones"
     + $ git push -u origin main
 
 ********* INICIO
-
-
-### Video 7. Creación de base de datos - Parte 3
-1.  Establecer relación polimorfica entre los modelos **Course** e **Image**.
-    Modelo **Course** (**app\Models\Course.php**)
-    >
-        ≡
-        class Course extends Model
-        {
-            ≡
-            // Relación 1:1 polimorfica Course - Image
-            public function image(){
-                return $this->morphOne('App\Models\Image','imageable');
-            }
-        }
-2.  Relación entre el modelo **User** y los modelos **Comment** y **Reaction**.
-    Modelo **User** (**app\Models\User.php**)
-    >
-        ≡
-        class User extends Model
-        {
-            ≡
-            // Relación 1:n User - Comment
-            public function comments(){
-                return $this->hasMany('App\Models\Comment');
-            }
-
-            // Relación 1:n User - Reaction
-            public function reaction(){
-                return $this->hasMany('App\Models\Reaction');
-            }
-        }
-
-### Video 8. Habilitar asignación masiva
-1. Definir campos de asignación para el modelo **Audience** (app\Models\Audience.php):
-    >
-        ≡
-        class Audience extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Category** (app\Models\Category.php):
-    >
-        ≡
-        class Category extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Comment** (app\Models\Comment.php):
-    >
-        ≡
-        class Comment extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Course** (app\Models\Course.php):
-    >
-        ≡
-        class Course extends Model
-        {
-            protected $guarded = ['id', 'status'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Description** (app\Models\Description.php):
-    >
-        ≡
-        class Description extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Goal** (app\Models\Goal.php):
-    >
-        ≡
-        class Goal extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Image** (app\Models\Image.php):
-    >
-        ≡
-        class Image extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Lesson** (app\Models\Lesson.php):
-    >
-        ≡
-        class Lesson extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Level** (app\Models\Level.php):
-    >
-        ≡
-        class Level extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Platform** (app\Models\Platform.php):
-    >
-        ≡
-        class Platform extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Price** (app\Models\Price.php):
-    >
-        ≡
-        class Price extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Profile** (app\Models\Profile.php):
-    >
-        ≡
-        class Profile extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Reaction** (app\Models\Reaction.php):
-    >
-        ≡
-        class Reaction extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Requeriment** (app\Models\Requeriment.php):
-    >
-        ≡
-        class Requeriment extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Resource** (app\Models\Resource.php):
-    >
-        ≡
-        class Resource extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Review** (app\Models\Review.php):
-    >
-        ≡
-        class Review extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-1. Definir campos de asignación para el modelo **Section** (app\Models\Section.php):
-    >
-        ≡
-        class Section extends Model
-        {
-            protected $guarded = ['id'];
-            ≡
-        }
-
 
 ### Video 9. Llenar la bbdd con datos de prueba
 1. Generar seeder para usuarios:
@@ -8133,20 +8061,8 @@ MINUTO 48
          Mail::to($course->teacher->email)->queue($mail);
 
 
-### Video 55. Observar cursos
-2. Habilitar la asignación masiva en modelo **app\Models\Observation.php**:
-    >
-        ≡
-        class Observation extends Model
-        {
-            use HasFactory;
-
-            protected $fillable = [
-                'body',
-                'course_id'
-            ];
-        }       
-3. Modificar vista **resources\views\admin\courses\show.blade.php**:
+### Video 55. Observar cursos       
+1. Modificar vista **resources\views\admin\courses\show.blade.php**:
     >
         ≡
                 <div class="order-1 lg:order-2">
@@ -8169,10 +8085,10 @@ MINUTO 48
                 </div>
             </div>
         </x-app-layout>
-4. Crear ruta para observar curso en **routes\admin.php**:
+2. Crear ruta para observar curso en **routes\admin.php**:
     >
         Route::get('courses/{course}/observation',[CourseController::class, 'observation'])->name('courses.observation');
-7. Crear método **observation** en el controlador **app\Http\Controllers\Admin\CourseController.php**:
+3. Crear método **observation** en el controlador **app\Http\Controllers\Admin\CourseController.php**:
     >
         public function observation(Course $course){
             return view('admin.courses.observation', compact('course'));

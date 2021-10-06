@@ -9,6 +9,9 @@ class Lesson extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
     // Relación 1:1 Lesson - Description
     public function description(){
         return $this->hasOne('App\Models\Description');

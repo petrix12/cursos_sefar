@@ -9,6 +9,10 @@ class Course extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id', 'status'];
+
+    // Constantes de estado del curso
     const BORRADOR = 1;
     const REVISION = 2;
     const PUBLICADO = 3;

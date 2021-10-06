@@ -9,6 +9,9 @@ class Description extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
     // Relación 1:1 Lesson - Description (inversa)
     public function lesson(){
         return $this->belongsTo('App\Models\Lesson');

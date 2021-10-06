@@ -9,6 +9,9 @@ class Section extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
     // Ralción 1:n Section -Lesson
     public function lessons(){
         return $this->hasMany('App\Models\Lesson');

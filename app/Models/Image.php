@@ -9,6 +9,9 @@ class Image extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
     // Relación polimórfica
     public function imageable(){
         return $this->morphTo();

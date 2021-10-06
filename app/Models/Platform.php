@@ -9,6 +9,9 @@ class Platform extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
     // Ralación 1:n Platform -Lesson
     public function lessons(){
         return $this->hasMany('App\Models\Lesson');

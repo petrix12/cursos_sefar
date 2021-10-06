@@ -9,6 +9,10 @@ class Reaction extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
+    // Constantes de apreciación del curso
     const LIKE = 1;
     const DISLIKE = 2;
 

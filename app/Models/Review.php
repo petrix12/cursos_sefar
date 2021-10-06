@@ -9,6 +9,9 @@ class Review extends Model
 {
     use HasFactory;
 
+    // Asignación masiva
+    protected $guarded = ['id'];
+
     // Relación 1:n User - Review (inversa)
     public function user(){
         return $this->belongsTo('App\Models\User');
