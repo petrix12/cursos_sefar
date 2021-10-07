@@ -461,7 +461,7 @@
     {
         Schema::create('descriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->text('name');
             $table->unsignedBigInteger('lesson_id');
             $table->foreign('lesson_id')->references('id')->on('lessons')->onDelete('cascade');
             $table->timestamps();
@@ -1051,7 +1051,7 @@
     class User extends Authenticatable
     {
         ≡
-        use HasRole;
+        use HasRoles;
         ≡
     }
     ```
@@ -1418,9 +1418,12 @@
     ```php
     use Illuminate\Support\Facades\Storage;
     ```
-21. Restablecer la base de datos y ejecutar los seeders:
+
+21. Generar enlace a almacenamiento:
+    + $ php artisan storage:link
+22. Restablecer la base de datos y ejecutar los seeders:
     + $ php artisan migrate:fresh --seed
-22. Crear commit:
+23. Crear commit:
     + $ git add .
     + $ git commit -m "Generaración de datos de prueba"
     + $ git push -u origin main
@@ -1880,9 +1883,6 @@
 3. Generar APP_KEY:
     >
         $ php artisan key:generate
-4. Generar enlace a almacenamiento:
-    >
-        $ php artisan storage:link 
 5. Refrescar la base de datos:
     >
         $ php artisan migrate:fresh --seed
