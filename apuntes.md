@@ -1,6 +1,7 @@
 # Plataforma de **Cursos Sefar**
 + **Plataforma en producción en AWS**:
 + **Plataforma de prueba en Heroku**: https://cursos-sefar.herokuapp.com
++ **Plataforma de prueba en local**: http://cursos.sefar.test
 + **Repositorio en GitHub**: https://github.com/petrix12/cursos_sefar
 
 ## Antes de iniciar:
@@ -1418,7 +1419,6 @@
     ```php
     use Illuminate\Support\Facades\Storage;
     ```
-
 21. Generar enlace a almacenamiento:
     + $ php artisan storage:link
 22. Restablecer la base de datos y ejecutar los seeders:
@@ -1427,6 +1427,80 @@
     + $ git add .
     + $ git commit -m "Generaración de datos de prueba"
     + $ git push -u origin main
+
+## Integración de plantilla AdminLTE
++ [Laravel AdminLTE](https://github.com/jeroennoten/Laravel-AdminLTE)
++ [Plantilla AdminLTE](https://adminlte.io/themes/v3/index.html)
+1. Modificar el provider **app\Providers\RouteServiceProvider.php**:
+    ```php
+    ≡
+    class RouteServiceProvider extends ServiceProvider
+    {
+        ≡
+        public const HOME = '/';
+        ≡
+        public function boot()
+        {
+            ≡
+            $this->routes(function () {
+                ≡
+                Route::middleware('web', 'auth')
+                    ->prefix('admin')
+                    ->namespace($this->namespace)
+                    ->group(base_path('routes/admin.php'));
+            });
+        }
+        ≡
+    }
+    ≡
+    ```
+2. Crear archivo de rutas **routes\admin.php**:
+    ```php
+    <?php
+
+    use Illuminate\Support\Facades\Route;
+    use App\Http\Controllers\Admin\HomeController;
+
+    Route::get('',[HomeController::class, 'index']);
+    ```    
+3. Crear contralador **HomeController** para administrador:
+    + $ php artisan make:controller Admin\HomeController
+4. Definir el método **index** en el controlador **HomeController**:
+    ```php
+    public function index(){
+        return view('admin.index');
+    }
+    ```
+5. Diseñar vista para pruebas **resources\views\admin\index.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'Curso Sefar Universal')
+
+    @section('content_header')
+        <h1>Coders Free</h1>
+    @stop
+
+    @section('content')
+        <p>Coders Free</p>
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="#">
+    @stop
+
+    @section('js')
+
+    @stop
+    ```
+6. Instalar AdminLTE: 
+	+ $ composer require jeroennoten/laravel-adminlte
+    + $ php artisan adminlte:install
+7. Crear commit:
+    + $ git add .
+    + $ git commit -m "Integración de plantilla AdminLTE"
+    + $ git push -u origin main
+
 
 
 
@@ -1442,118 +1516,7 @@
 
 ********* INICIO
 
-### Video 9. Llenar la bbdd con datos de prueba 
-19. Generar los seeder en cursos para los requerimientos, metas, audiencias y secciones en **database\seeders\CourseSeeder.php**
-    Importar modelos **Requeriment**, **Goal**, **Audience** y **Section**:
-    >
-        use App\Models\Audience;
-        use App\Models\Goal;
-        use App\Models\Requeriment;
-        use App\Models\Section;
-    Programar método **run**:
-    >
-        public function run()
-        {
-            $courses = Course::factory(40)->create();
-            foreach($courses as $course){
-                ≡
-                Requeriment::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                Goal::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                Audience::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                Section::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-            }
-        }
-
 ## Sección 3: Frontend de la aplicación
-
-### Viedo 10. Instalar la plantilla AdminLTE
-##### Documentación: https://github.com/jeroennoten/Laravel-AdminLTE
-##### Plantilla: https://adminlte.io/themes/v3/index.html
-1. En **app\Providers\RouteServiceProvider.php**:
-    Cambiar:
-    >
-        public const HOME = '/dashboard';
-    Por:
-    >
-        public const HOME = '/';
-1. Crear archivo de rutas **routes\admin.php**
-    >
-        <?php
-
-        use Illuminate\Support\Facades\Route;
-        use App\Http\Controllers\Admin\HomeController;
-
-        Route::get('',[HomeController::class, 'index']);
-1. Establecer a **routes\admin.php** como archivo de rutas en **app\Providers\RouteServiceProvider.php** modificando el método **boot**
-    >
-        public function boot()
-        {
-            $this->configureRateLimiting();
-
-            $this->routes(function () {
-                Route::prefix('api')
-                    ->middleware('api')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/api.php'));
-
-                Route::middleware('web')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/web.php'));
-
-                Route::middleware('web', 'auth')
-                    ->prefix('admin')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/admin.php'));
-            });
-        }        
-1. Definir contralador para administrador:
-    >
-        $ php artisan make:controller Admin\HomeController
-1. Crear método **index** en el controlador **Admin\HomeController**:
-    >
-        public function index(){
-            return view('admin.index');
-        }
-1. Integrar AdminLTE: 
-	>
-		$ composer require jeroennoten/laravel-adminlte
-1. Ejecutar: 
-	>
-		$ php artisan adminlte:install
-1. Crear vista **resources\views\admin\index.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Coders Free</h1>
-        @stop
-
-        @section('content')
-            <p>Coders Free</p>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-
-        @stop
-
-
 ### Viedo 11. Reutilizar la plantilla Jetstream
 1. Modificar plantilla **resources\views\layouts\app.blade.php**
     >
