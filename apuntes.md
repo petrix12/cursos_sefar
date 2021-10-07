@@ -1035,7 +1035,395 @@
     + $ git commit -m "Habilitar asignación masiva en los modelos"
     + $ git push -u origin main
 
+## Instalación de Laravel Permission
++ [Laravel Permission](https://spatie.be/docs/laravel-permission/v3/basic-usage/basic-usage)
+1. Instalar Laravel Permission (sistema de roles y persmisos):
+    + $ composer require spatie/laravel-permission
+2. Publicar las vistas de Laravel Permission:
+    + $ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+3. Ejecutar las migraciones:
+    + $ php artisan migrate
+4. Implementar el trait **HasRoles** en el modelo **User**:
+    ```php
+    ≡
+    use Spatie\Permission\Traits\HasRoles;
 
+    class User extends Authenticatable
+    {
+        ≡
+        use HasRole;
+        ≡
+    }
+    ```
+5. Crear commit:
+    + $ git add .
+    + $ git commit -m "Instalación de Laravel Permission"
+    + $ git push -u origin main
+
+## Generaración de datos de prueba:
+1. Creación de factories:
+    + $ php artisan make:factory CourseFactory
+    + $ php artisan make:factory ImageFactory
+    + $ php artisan make:factory RequerimentFactory
+    + $ php artisan make:factory GoalFactory
+    + $ php artisan make:factory AudienceFactory
+    + $ php artisan make:factory SectionFactory
+    + $ php artisan make:factory DescriptionFactory
+    + $ php artisan make:factory LessonFactory
+    + $ php artisan make:factory ReviewFactory
+2. Programar el método **definition** del factory **CourseFactory**:
+    ```php
+    public function definition()
+    {
+        $title = $this->faker->sentence();
+
+        return [
+            'title' => $title,
+            'subtitle' => $this->faker->sentence(),
+            'description' => $this->faker->paragraph(),
+            'status' => $this->faker->randomElement([Course::BORRADOR, Course::REVISION, Course::PUBLICADO]),
+            'slug' => Str::slug($title),
+            'user_id' => $this->faker->randomElement([1, 2, 3, 4, 5]),
+            'level_id' => Level::all()->random()->id,
+            'category_id' => Category::all()->random()->id,
+            'price_id' => Price::all()->random()->id,
+        ];
+    }
+    ```
+    + Importar la definición de las clases:
+    ```php
+    use App\Models\Category;
+    use App\Models\Course;
+    use App\Models\Level;
+    use App\Models\Price;
+    use Illuminate\Support\Str;
+    ```
+3. Programar el método **definition** del factory **ImageFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'url' => 'courses/' . $this->faker->image('public/storage/courses', 640, 480, null, false)
+        ];
+    }
+    ```
+4. Programar el método **definition** del factory **RequerimentFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->sentence()
+        ];
+    }
+    ```
+5. Programar el método **definition** del factory **GoalFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->sentence()
+        ];
+    }
+    ```
+6. Programar el método **definition** del factory **AudienceFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->sentence()
+        ];
+    }
+    ```
+7. Programar el método **definition** del factory **SectionFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->sentence()
+        ];
+    }
+    ```
+8. Programar el método **definition** del factory **DescriptionFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->paragraph()
+        ];
+    }
+    ```
+9. Programar el método **definition** del factory **LessonFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'name' => $this->faker->sentence(),
+            'url' => 'https://youtu.be/DgDxAzbkOSs',
+            'iframe' => '<iframe width="560" height="315" src="https://www.youtube.com/embed/DgDxAzbkOSs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+            'platform_id' => 1
+        ];
+    }
+    ```
+10. Programar el método **definition** del factory **ReviewFactory**:
+    ```php
+    public function definition()
+    {
+        return [
+            'comment' => $this->faker->text(),
+            'rating' => $this->faker->randomElement([3, 4, 5]),
+            'user_id' => User::all()->random()->id
+        ];
+    }
+    ```
+    + Importar la definición del modelo User:
+    ```php
+    use App\Models\User;
+    ```
+11. Creación de seeders:
+    + $ php artisan make:seeder UserSeeder
+    + $ php artisan make:seeder LevelSeeder
+    + $ php artisan make:seeder CategorySeeder
+    + $ php artisan make:seeder PriceSeeder
+    + $ php artisan make:seeder CourseSeeder
+    + $ php artisan make:seeder PlatformSeeder
+    + $ php artisan make:seeder RoleSeeder
+    + $ php artisan make:seeder PermissionSeeder
+12. Programar método **run** del seeder **UserSeeder**:
+    ```php
+    public function run()
+    {
+        $user = User::create([
+            'name' => 'Pedro Jesús Bazó Canelón',
+            'email' => 'bazo.pedro@gmail.com',
+            'password' => bcrypt('12345678')
+        ]);
+        $user->assignRole('Admin');
+        User::factory(99)->create();
+    }
+    ```
+    + Importar la definición del modelo **User**:
+    ```php
+    use App\Models\User;
+    ```
+13. Programar método **run** del seeder **LevelSeeder**:
+    ```php
+    public function run()
+    {
+        Level::create([
+            'name' => 'Nivel básico'
+        ]);
+
+        Level::create([
+            'name' => 'Nivel intermedio'
+        ]);
+
+        Level::create([
+            'name' => 'Nivel avanzado'
+        ]);
+    }
+    ```
+    + Importar la definición del modelo **Level**:
+    ```php
+    use App\Models\Level;
+    ```
+14. Programar método **run** del seeder **CategorySeeder**:
+    ```php
+    public function run()
+    {
+        Category::create([
+            'name' => 'Genealogía'
+        ]);
+
+        Category::create([
+            'name' => 'Bibliotecología'
+        ]);
+
+        Category::create([
+            'name' => 'Gerencial'
+        ]);
+
+        Category::create([
+            'name' => 'Sistemas'
+        ]);
+
+        Category::create([
+            'name' => 'Ventas'
+        ]);
+
+        Category::create([
+            'name' => 'Atención al cliente'
+        ]);
+
+        Category::create([
+            'name' => 'Herramienta informática'
+        ]);
+    }
+    ```
+    + Importar la definición del modelo **Category**:
+    ```php
+    use App\Models\Category;
+    ```
+15. Programar método **run** del seeder **PriceSeeder**:
+    ```php
+    public function run()
+    {
+        Price::create([
+            'name' => 'Gratis',
+            'value' => 0
+        ]);
+
+        Price::create([
+            'name' => '19.99 US$ (nivel 1)',
+            'value' => 19.99
+        ]);
+
+        Price::create([
+            'name' => '49.99 US$ (nivel 2)',
+            'value' => 49.99
+        ]);
+
+        Price::create([
+            'name' => '99.99 US$ (nivel 2)',
+            'value' => 99.99
+        ]);
+    }
+    ```
+    + Importar la definición del modelo **Price**:
+    ```php
+    use App\Models\Price;
+    ```
+16. Programar método **run** del seeder **CourseSeeder**:
+    ```php
+    public function run()
+    {
+        $courses = Course::factory(100)->create();
+
+        foreach ($courses as $course) {
+            Review::factory(5)->create([
+                'course_id' => $course->id
+            ]);
+            Image::factory(1)->create([
+                'imageable_id' => $course->id,
+                'imageable_type' => 'App\Models\Course'
+            ]);
+
+            Requeriment::factory(4)->create([
+                'course_id' => $course->id
+            ]);
+
+            Goal::factory(4)->create([
+                'course_id' => $course->id
+            ]);
+
+            Audience::factory(4)->create([
+                'course_id' => $course->id
+            ]);
+
+            $sections = Section::factory(4)->create(['course_id' => $course->id]);
+
+            foreach ($sections as $section) {
+                $lessons = Lesson::factory(4)->create(['section_id' => $section->id]);
+
+                foreach ($lessons as $lesson) {
+                    Description::factory(1)->create(['lesson_id' => $lesson->id]);
+                }
+            }
+        }
+    }
+    ```
+    + Importar las siguientes definiciones de clases:
+    ```php
+    use App\Models\Audience;
+    use App\Models\Course;
+    use App\Models\Description;
+    use App\Models\Goal;
+    use App\Models\Image;
+    use App\Models\Lesson;
+    use App\Models\Requeriment;
+    use App\Models\Review;
+    use App\Models\Section;
+    ```
+17. Programar método **run** del seeder **PlatformSeeder**:
+    ```php
+    public function run()
+    {
+        Platform::create([
+            'name' => 'Youtube'
+        ]);
+
+        Platform::create([
+            'name' => 'Vimeo'
+        ]);
+    }
+    ```
+    + Importar la definición del modelo **Platform**:
+    ```php
+    use App\Models\Platform;
+    ```
+18. Programar método **run** del seeder **RoleSeeder**:
+    ```php
+    public function run()
+    {
+        $role = Role::create(['name' => 'Admin']);
+        $role->permissions()->attach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+
+        $role = Role::create(['name' => 'Instructor']);
+        $role->syncPermissions(['Crear cursos', 'Leer cursos', 'Actualizar cursos', 'Eliminar cursos']);
+    }
+    ```
+    + Importar la definición del modelo **Role**:
+    ```php
+    use Spatie\Permission\Models\Role;
+    ```
+19. Programar método **run** del seeder **PermissionSeeder**:
+    ```php
+    public function run()
+    {
+        Permission::create(['name' => 'Crear cursos']);
+        Permission::create(['name' => 'Leer cursos']);
+        Permission::create(['name' => 'Actualizar cursos']);
+        Permission::create(['name' => 'Eliminar cursos']);
+        Permission::create(['name' => 'Ver dashboard']);
+        Permission::create(['name' => 'Crear role']);
+        Permission::create(['name' => 'Listar role']);
+        Permission::create(['name' => 'Editar role']);
+        Permission::create(['name' => 'Eliminar role']);
+        Permission::create(['name' => 'Leer usuarios']);
+        Permission::create(['name' => 'Editar usuarios']);
+    }
+    ```
+    + Importar la definición del modelo **Permission**:
+    ```php
+    use Spatie\Permission\Models\Permission;
+    ```
+20. Programar método **run** del seeder **DatabaseSeeder**:
+    ```php
+    public function run()
+    {
+        Storage::deleteDirectory('courses');
+        Storage::makeDirectory('courses');
+        
+        $this->call(PermissionSeeder::class);
+        $this->call(RoleSeeder::class);
+
+        $this->call(UserSeeder::class);
+        $this->call(LevelSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(PriceSeeder::class);
+        $this->call(PlatformSeeder::class);
+        $this->call(CourseSeeder::class);
+    }
+    ```
+    + Importar la definición del facade **Storage**:
+    ```php
+    use Illuminate\Support\Facades\Storage;
+    ```
+21. Restablecer la base de datos y ejecutar los seeders:
+    + $ php artisan migrate:fresh --seed
+22. Crear commit:
+    + $ git add .
+    + $ git commit -m "Generaración de datos de prueba"
+    + $ git push -u origin main
 
 
 
@@ -1051,219 +1439,8 @@
 
 ********* INICIO
 
-### Video 9. Llenar la bbdd con datos de prueba
-1. Generar seeder para usuarios:
-    >
-        $ php artisan make:seeder UserSeeder
-1. En el seeder de usuario (database\seeders\UserSeeder.php):
-    Importar modelo **User**:
-    >
-        use App\Models\User;
-    Programar método **run**:
-    >
-        public function run()
-        {
-            User::create([
-                'name' => 'Pedro Jesús Bazó Canelón',
-                'email' => 'bazo.pedro@gmail.com',
-                'password' => bcrypt('12345678')
-            ]);
-
-            User::factory(99)->create();
-        }
-1. Invocar seeder de usuario desde método **run** de **database\seeders\DatabaseSeeder.php**
-    >
-        public function run()
-        {
-            $this->call(UserSeeder::class);
-        }
-1. Generar seeder para niveles, categorias y precios:
-    >
-        $ php artisan make:seeder LevelSeeder
-        $ php artisan make:seeder CategorySeeder
-        $ php artisan make:seeder PriceSeeder
-1. En el seeder de niveles (database\seeders\LevelSeeder.php):
-    Importar modelo **Level**:
-    >
-        use App\Models\Level;
-    Programar método **run**:
-    >
-        public function run()
-        {
-            Level::create([
-                'name' => 'Nivel básico'
-            ]);
-
-            Level::create([
-                'name' => 'Nivel intermedio'
-            ]);
-            
-            Level::create([
-                'name' => 'Nivel avanzado'
-            ]);
-        }
-1. Invocar seeder de niveles desde método **run** de **database\seeders\DatabaseSeeder.php**
-    >
-        public function run()
-        {
-            ≡
-            $this->call(LevelSeeder::class);
-        }
-1. En el seeder de categorias (database\seeders\CategorySeeder.php):
-    Importar modelo **Category**:
-    >
-        use App\Models\Category;
-    Programar método **run**:
-    >
-        public function run()
-        {
-            Category::create([
-                'name' => 'Desarrollo web'
-            ]);
-
-            Category::create([
-                'name' => 'Diseño web'
-            ]);
-            
-            Category::create([
-                'name' => 'Programación'
-            ]);
-        }
-1. Invocar seeder de precios desde método **run** de **database\seeders\DatabaseSeeder.php**
-    >
-        public function run()
-        {
-            ≡
-            $this->call(CategorySeeder::class);
-        }
-1. En el seeder de precios (database\seeders\PriceSeeder.php):
-    Importar modelo **Price**:
-    >
-        use App\Models\Price;
-    Programar método **run**:
-    >
-        public function run()
-        {
-            Price::create([
-                'name' => 'Gratis',
-                'value' => 0
-            ]);
-
-            Price::create([
-                'name' => '19.99 US$ (nivel 1)',
-                'value' => 19.99
-            ]);
-
-            Price::create([
-                'name' => '49.99 US$ (nivel 2)',
-                'value' => 49.99
-            ]);
-
-            Price::create([
-                'name' => '99.99 US$ (nivel 3)',
-                'value' => 99.99
-            ]);
-        }
-1. Invocar seeder de precios desde método **run** de **database\seeders\DatabaseSeeder.php**
-    >
-        public function run()
-        {
-            ≡
-            $this->call(PriceSeeder::class);
-        }
-1. Refrescar la base de datos y ejecutar los seeder:
-    >
-        $ php artisan migrate:fresh --seed
-1. Generar seeder para cursos:
-    >
-        $ php artisan make:seeder CourseSeeder
-1. Generar factory para cursos:
-    >
-        $ php artisan make:factory CourseFactory
-1. Programar el método **definition** del factory cursos (database\factories\CourseFactory.php);
-    >
-        public function definition()
-        {
-            $title = $this->faker->sentence();
-            return [
-                'title' => $title,
-                'subtitle' => $this->faker->sentence(),
-                'description' => $this->faker->paragraph(),
-                'status' => $this->faker->randomElement([Course::BORRADOR, Course::REVISION, Course::PUBLICADO]),
-                'slug' => Str::slug($title),
-                'user_id' => User::all()->random()->id,
-                'level_id' => Level::all()->random()->id,
-                'category_id' => Category::all()->random()->id,
-                'price_id' => Price::all()->random()->id
-            ];
-        }
-    Importar los modelos Course, User, Level, Category y Price y la clase Str:
-    >
-        use App\Models\Category;
-        use App\Models\Course;
-        use App\Models\Level;
-        use App\Models\Price;
-        use App\Models\User;
-        use Illuminate\Support\Str;
-1. En el seeder de cursos (database\seeders\CourseSeeder.php):
-    Importar modelos **Course** e **Image**:
-    >
-        use App\Models\Course;
-        use App\Models\Image;
-    Programar método **run**:
-    >
-        public function run()
-        {
-            $courses = Course::factory(40)->create();
-            foreach($courses as $course){
-                Image::factory(1)->create([
-                    'imageable_id' => $course->id,
-                    'imageable_type' => 'App\Models\Course'
-                ]);
-            }   
-1. Invocar seeder de cursos desde método **run** de **database\seeders\DatabaseSeeder.php**
-    >
-        public function run()
-        {
-            ≡
-            $this->call(CourseSeeder::class);
-        }
-1. Generar factory para imagenes de cursos:
-    >
-        $ php artisan make:factory ImageFactory
-1. Programar el método **definition** del factory imagenes (database\factories\ImageFactory.php);
-    >
-        ***
-1. Indicar la creación de la carpeta **storage/cursos** en **database\seeders\DatabaseSeeder.php**
-    Importar clase **Storage**:
-    >
-        use Illuminate\Support\Facades\Storage;
-    Programar en el método **run** la creación de la carpeta
-    >
-        public function run()
-        {
-            Storage::deleteDirectory('cursos');
-            Storage::makeDirectory('cursos');
-            ≡
-        }
-1. Refrescar la base de datos y ejecutar los seeder:
-    >
-        $ php artisan migrate:fresh --seed
-1. Generar factory para los requerimientos, metas, audiencias y secciones:
-    >
-        $ php artisan make:factory RequerimentFactory
-        $ php artisan make:factory GoalFactory
-        $ php artisan make:factory AudienceFactory
-        $ php artisan make:factory SectionFactory
-1. Para los factory requerimientos, metas, audiencias y secciones, programar la generación campo **name** en el método **definition** de sus respectivos factories.
-    >
-        public function definition()
-        {
-            return [
-                'name' => $this->faker->sentence()
-            ];
-        }
-1. Generar los seeder en cursos para los requerimientos, metas, audiencias y secciones en **database\seeders\CourseSeeder.php**
+### Video 9. Llenar la bbdd con datos de prueba 
+19. Generar los seeder en cursos para los requerimientos, metas, audiencias y secciones en **database\seeders\CourseSeeder.php**
     Importar modelos **Requeriment**, **Goal**, **Audience** y **Section**:
     >
         use App\Models\Audience;
@@ -1294,109 +1471,8 @@
                 ]);
             }
         }
-1. Refrescar la base de datos y ejecutar los seeder:
-    >
-        $ php artisan migrate:fresh --seed
-1. Generar seeder para plataformas:
-    >
-        $ php artisan make:seeder PlatformSeeder
-1. Importar el modelo **Platform** y programar método **run** para el seeder plataformas (database\seeders\PlatformSeeder.php)
-    Importar modelo:
-    >
-        use App\Models\Platform;
-    Método:
-    >
-        public function run()
-        {
-            Platform::create([
-                'name' => 'youtube'
-            ]);
-
-            Platform::create([
-                'name' => 'Vimeo'
-            ]);
-        }
-1. Agregar el seede Platform a **database\seeders\DatabaseSeeder.php** (antes de CourseSeeder)
-    >
-        public function run()
-        {
-            Storage::deleteDirectory('cursos');
-            Storage::makeDirectory('cursos');
-
-            $this->call(UserSeeder::class);
-            $this->call(LevelSeeder::class);
-            $this->call(CategorySeeder::class);
-            $this->call(PriceSeeder::class);
-            $this->call(PlatformSeeder::class);
-            $this->call(CourseSeeder::class);
-        }  
-1. Crear factory para las descripciones:
-    >
-        $ php artisan make:factory DescriptionFactory
-1. Programar método **definition** de **database\factories\DescriptionFactory.php**
-    >
-        public function definition()
-        {
-            return [
-                'name' => $this->faker->paragraph()
-            ];
-        }  
-1. Generar factory para lecciones:
-    >
-     $ php artisan make:factory LessonFactory
-1. Programar método **definition** en **database\factories\LessonFactory.php**
-    >
-        public function definition()
-        {
-            return [
-                'name' => $this->faker->sentence(),
-                'url' => 'https://youtu.be/z3-Et7jh_gg',
-                'iframe' => '<iframe width="727" height="409" src="https://www.youtube.com/embed/KakNd654JMA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-                'platfomr_id' => 1
-            ];
-        }
-1. Redefinir método **run** en **database\seeders\CourseSeeder.php**
-    >
-        public function run()
-        {
-            $courses = Course::factory(40)->create();
-            foreach($courses as $course){
-                Image::factory(1)->create([
-                    'imageable_id' => $course->id,
-                    'imageable_type' => 'App\Models\Course'
-                ]);
-
-                Requeriment::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                Goal::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                Audience::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                $sections = Section::factory(4)->create([
-                    'course_id' => $course->id
-                ]);
-
-                foreach ($sections as $section) {
-                    $lessons = Lesson::factory(4)->create(['section_id' => $section->id]);
-                    foreach ($lessons as $lesson) {
-                        Description::factory(1)->create(['lesson_id' => $lesson->id]);
-                    }
-                }
-            }
-        }
-    Importar modelos Lesson y Description:
-        use App\Models\Lesson;
-        use App\Models\Description;
-
 
 ## Sección 3: Frontend de la aplicación
-
 
 ### Viedo 10. Instalar la plantilla AdminLTE
 ##### Documentación: https://github.com/jeroennoten/Laravel-AdminLTE
@@ -1789,44 +1865,25 @@
         </x-app-layout>
 
 
-### Viedo 12. Clonar repositorio con el avance del curso
-###### Repositorio: https://github.com/coders-free/udemy
-1. Modificar método **definition** en **database\factories\CourseFactory.php**
-    >
-        public function definition()
-        {
-            $title = $this->faker->sentence();
-            return [
-                'title' => $title,
-                'subtitle' => $this->faker->sentence(),
-                'description' => $this->faker->paragraph(),
-                'status' => $this->faker->randomElement([Course::BORRADOR, Course::REVISION, Course::PUBLICADO]),
-                'slug' => Str::slug($title),
-                'user_id' => 1, // User::all()->random()->id,
-                'level_id' => Level::all()->random()->id,
-                'category_id' => Category::all()->random()->id,
-                'price_id' => Price::all()->random()->id
-            ];
-        }   
-1. Eliminar proyecto.
-1. Clonar repositorio https://github.com/coders-free/udemy
+### Viedo 12. Clonar repositorio con el avance del curso   
+2. Clonar repositorio https://github.com/coders-free/udemy
     >
         $ git clone https://github.com/coders-free/udemy.git
-1. Cambiar el nombre de la carpeta del proyecto de **udemy** a **codersfree**.
+3. Cambiar el nombre de la carpeta del proyecto de **udemy** a **codersfree**.
 1. Instalar las dependencias de **composer** y **npm**.
     >
         $ composer install
         $ npm install
-1. Crear archivo **.env** a partir de **.env.example** y modificar las siguientes variables de entorno:
+2. Crear archivo **.env** a partir de **.env.example** y modificar las siguientes variables de entorno:
     + APP_URL=http://codersfree.test
     + DB_DATABASE=codersfree
-1. Generar APP_KEY:
+3. Generar APP_KEY:
     >
         $ php artisan key:generate
-1. Generar enlace a almacenamiento:
+4. Generar enlace a almacenamiento:
     >
         $ php artisan storage:link 
-1. Refrescar la base de datos:
+5. Refrescar la base de datos:
     >
         $ php artisan migrate:fresh --seed
 
@@ -2022,16 +2079,6 @@
             </head>
             ≡­
         </html>
-1. Modificar método run de **database\seeders\CourseSeeder.php**
-    >
-        public function run()
-        {
-            $courses = Course::factory(100)->create();
-            ≡
-        }
-1. Ejecutar:
-    >
-        $ php artisan migrate:fresh --seed
 1. Modificar el método **__invoke** de **app\Http\Controllers\HomeController.php**
     >
         public function __invoke()
@@ -3449,34 +3496,6 @@ MINUTO 48
         ≡
 
 
-### Video 28. Instalar Laravel Permission
-###### https://spatie.be/docs/laravel-permission/v3/basic-usage/basic-usage
-1. Instalar Laravel Permission (sistema de roles y persmisos):
-    >
-        $ composer require spatie/laravel-permission
-1. Publicar las vistas de Laravel Permission:
-    >
-        $ php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
-1. Ejecutar las migraciones:
-    >
-        $ php artisan migrate
-1. Modificar modelo **User** en **app\Models\User.php**:
-    Importar a la cabecera:
-    >
-        use Spatie\Permission\Traits\HasRoles;
-    Indicar a la clase User que se usará la libreria anterior:
-    >
-        class User extends Authenticatable
-        {
-            use HasApiTokens;
-            use HasFactory;
-            use HasProfilePhoto;
-            use Notifiable;
-            use TwoFactorAuthenticatable;
-            use HasRoles;  
-            ≡
-
-
 ### Video 29. Agregar permisos y preparar entorno de trabajo
 1. Ejecutar Tinker e ingresar permisos:
     >
@@ -4371,84 +4390,7 @@ MINUTO 48
 1. Modificar ruta **courses.index** en **routes\instructor.php**:
     >
         Route::get('courses', InstructorCourses::class)->middleware('can:Leer cursos')->name('courses.index');
-1. Crear seeder para generar roles permisos:
-    >
-        $ php artisan make:seeder RoleSeeder
-        $ php artisan make:seeder PermissionSeeder
-1. Modificar seeder **database\seeders\PermissionSeeder.php**:
-    >
-        <?php
-
-        namespace Database\Seeders;
-
-        use Illuminate\Database\Seeder;
-        use Spatie\Permission\Models\Permission;
-
-        class PermissionSeeder extends Seeder
-        {
-            /**
-            * Run the database seeds.
-            *
-            * @return void
-            */
-            public function run()
-            {
-                Permission::create(['name' => 'Crear cursos']);
-                Permission::create(['name' => 'Leer cursos']);
-                Permission::create(['name' => 'Actualizar cursos']);
-                Permission::create(['name' => 'Eliminar cursos']);
-                Permission::create(['name' => 'Ver dashboard']);
-                Permission::create(['name' => 'Crear role']);
-                Permission::create(['name' => 'Listar role']);
-                Permission::create(['name' => 'Editar role']);
-                Permission::create(['name' => 'Eliminar role']);
-                Permission::create(['name' => 'Leer usuarios']);
-                Permission::create(['name' => 'Editar usuarios']);
-            }
-        }
-1. Modificar seeder **database\seeders\RoleSeeder.php**:
-    >
-        <?php
-
-        namespace Database\Seeders;
-
-        use Illuminate\Database\Seeder;
-        use Spatie\Permission\Models\Role;
-
-        class RoleSeeder extends Seeder
-        {
-            /**
-            * Run the database seeds.
-            *
-            * @return void
-            */
-            public function run()
-            {
-                $role = Role::create(['name' => 'Admin']);
-                $role->permissions()->attach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-
-                $role = Role::create(['name' => 'Instructor']);
-                $role->syncPermissions(['Crear cursos', 'Leer cursos', 'Actualizar cursos', 'Eliminar cursos']);
-            }
-        }
-1. Incluir los seeder de permisos y roles en método **run** de **database\seeders\DatabaseSeeder.php**:
-    >
-        public function run()
-        {
-            Storage::deleteDirectory('cursos');
-            Storage::makeDirectory('cursos');
-            
-            $this->call(PermissionSeeder::class);
-            $this->call(RoleSeeder::class);
-
-            $this->call(UserSeeder::class);
-            $this->call(LevelSeeder::class);
-            $this->call(CategorySeeder::class);
-            $this->call(PriceSeeder::class);
-            $this->call(PlatformSeeder::class);
-            $this->call(CourseSeeder::class);
-        }
-1. Modificar el método **run** del seeder **database\seeders\UserSeeder.php**:
+2. Modificar el método **run** del seeder **database\seeders\UserSeeder.php**:
     >
         public function run()
         {
@@ -4462,10 +4404,10 @@ MINUTO 48
 
             User::factory(99)->create();
         }  
-1. Ejecutar:
+3. Ejecutar:
     >
         $ php artisan migrate:fresh --seed
-1. Modificar archivo de configuración **config\adminlte.php**:
+4. Modificar archivo de configuración **config\adminlte.php**:
     >
         ≡
         'menu' => [
@@ -4500,10 +4442,10 @@ MINUTO 48
                 'active'    => ['admin/users*'],
             ],
             ≡
-1. Proteger ruta **home** en **routes\admin.php**:
+5. Proteger ruta **home** en **routes\admin.php**:
     >
         Route::get('', [HomeController::class, 'index'])->middleware('can:Ver dashboard')->name('home');
-1. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\RoleController.php** para proteger las rutas **roles**:
+6. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\RoleController.php** para proteger las rutas **roles**:
     >
         ≡
         class RoleController extends Controller
@@ -4515,7 +4457,7 @@ MINUTO 48
                 $this->middleware('can:Eliminar role')->only('destroy');
             }
             ≡
-1. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\UserController.php** para proteger las rutas **users**:
+7. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\UserController.php** para proteger las rutas **users**:
     >
         ≡
         class UserController extends Controller
@@ -5534,34 +5476,8 @@ MINUTO 48
                             ->where('user_id', auth()->user()->id)
                             ->latest('id')
                             ->paginate(8);
-1. En **database\factories\ImageFactory.php**:
-    Cambiar:
-    >
-        public function definition()
-        {
-            return [
-                'url' => 'cursos/' . $this->faker->image('public/storage/cursos', 640, 480, null, false),
-            ];
-        }    
-    Por:
-    >
-        public function definition()
-        {
-            return [
-                'url' => 'courses/' . $this->faker->image('public/storage/courses', 640, 480, null, false),
-            ];
-        }
-1. En **database\seeders\DatabaseSeeder.php**:
-    Cambiar:
-    >
-        Storage::deleteDirectory('cursos');
-        Storage::makeDirectory('cursos');
-    Por:
-    >
-        Storage::deleteDirectory('courses');
-        Storage::makeDirectory('courses');
-1. Borrar el directorio **storage\app\public\cursos**.
-1. Ejecutar:
+3. Borrar el directorio **storage\app\public\cursos**.
+4. Ejecutar:
     >
         $ php artisan migrate:fresh --seed
 
@@ -7275,19 +7191,7 @@ MINUTO 48
         </aside>
         ≡
 
-
-
-
-
 ### Video 49. Agregar policies a los cursos
-1. Reemplazar línea de código en **database\factories\CourseFactory.php**:
-    Cambiar:
-    + 'user_id' => 1,
-    Por:
-    + 'user_id' => $this->faker->randomElement([1, 2, 3, 4, 5]),
-1. Reestablecer la base de datos:
-    >
-        $ php artisan migrate:fresh --seed
 1. Crear método **dicatated** en **app\Policies\CoursePolicy.php**:
     >
         public function dicatated(User $user, Course $course){
@@ -9149,47 +9053,13 @@ MINUTO 48
 
 
 ### Video 59. Reseñas del curso
-1. Crear factory para reseñas:
-    >
-        $ php artisan make:factory ReviewFactory
-1. Programar el campo **definition** en el factory **database\factories\ReviewFactory.php**:
-    >
-        public function definition()
-        {
-            return [
-                'comment' => $this->faker->text(),
-                'rating' => $this->faker->randomElement([3, 4, 5]),
-                'user_id' => User::all()->random()->id
-            ];
-        }
-    Importar:
-    >
-        use App\Models\User;
-1. Modificar el método **run** del seeder **database\seeders\CourseSeeder.php**:
-    >
-        public function run()
-        {
-            $courses = Course::factory(100)->create();
-
-            foreach ($courses as $course) {
-                Review::factory(5)->create([
-                    'course_id' => $course->id
-                ]);
-                Image::factory(1)->create([
-                    'imageable_id' => $course->id,
-                    'imageable_type' => 'App\Models\Course'
-                ]);
-                ≡
-    Importar:
-    >
-        use App\Models\Review;
-1. Reestablecer la base de datos:
+3. Reestablecer la base de datos:
     >
         $ php artisan migrate:fresh --seed
 1. Crear componente de livewire para mostrar reseñas:
     >
         $ php artisan make:livewire CoursesReviews
-1. Programar el controlador del **componente app\Http\Livewire\CoursesReviews.php**:
+2. Programar el controlador del **componente app\Http\Livewire\CoursesReviews.php**:
     >
         <?php
 
@@ -9223,7 +9093,7 @@ MINUTO 48
                 ]);
             }
         }
-1. Diseñar vista del componente **resources\views\livewire\courses-reviews.blade.php**:
+3. Diseñar vista del componente **resources\views\livewire\courses-reviews.blade.php**:
     >
         <section class="mt-4">
             <h1 class="font-bold text-3xl text-gray-800 mb-2">Valoración</h1>
@@ -9278,7 +9148,7 @@ MINUTO 48
                 </div>
             </div>
         </section>
-1. Modificar la vista **resources\views\courses\show.blade.php**:
+4. Modificar la vista **resources\views\courses\show.blade.php**:
     >
         ≡
             <section>
@@ -9298,7 +9168,7 @@ MINUTO 48
             @livewire('courses-reviews', ['course' => $course])
         </div>
         ≡
-1. Crear método **valued** en **app\Policies\CoursePolicy.php** para evitar que un usuario realice más de una reseña:
+5. Crear método **valued** en **app\Policies\CoursePolicy.php** para evitar que un usuario realice más de una reseña:
     >
         public function valued(User $user, Course $course){
             if(Review::where('user_id', $user->id)->where('course_id', $course->id)->count()){
