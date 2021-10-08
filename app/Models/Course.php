@@ -12,11 +12,39 @@ class Course extends Model
     // Asignación masiva
     protected $guarded = ['id', 'status'];
 
+    protected $withCount = ['students', 'reviews'];
+
     // Constantes de estado del curso
     const BORRADOR = 1;
     const REVISION = 2;
     const PUBLICADO = 3;
 
+    public function getRatingAttribute(){
+        if($this->reviews_count){
+            return round($this->reviews->avg('rating'), 1);
+        }else{
+            return 5;
+        }
+    }
+
+    public function getRouteKeyName(){
+        return "slug";
+    }
+
+    // Query scope Category
+    public function scopeCategory($query, $category_id){
+        if($category_id){
+            return $query->where('category_id', $category_id);
+        }
+    }
+
+    // Query scope Level
+    public function scopeLevel($query, $level_id){
+        if($level_id){
+            return $query->where('level_id', $level_id);
+        }
+    }
+    
     // Relación 1:1 Course - Observation
     public function observation(){
         return $this->hasOne('App\Models\Observation');
