@@ -12,6 +12,13 @@ class Lesson extends Model
     // Asignación masiva
     protected $guarded = ['id'];
 
+    // Esta función es un atributo: get[Completed]Attribute
+    // Comprueba si una lección esta completada
+    public function getCompletedAttribute(){
+        // Para traernos el registro del usuario autentificado
+        return $this->users->contains(auth()->user()->id);
+    }
+
     // Relación 1:1 Lesson - Description
     public function description(){
         return $this->hasOne('App\Models\Description');

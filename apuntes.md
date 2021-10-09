@@ -642,7 +642,7 @@
 
         // Relación 1:n Course - Requirement
         public function requirements(){
-            return $this->hasMany('App\Models\Requirement');
+            return $this->hasMany('App\Models\Requeriment');
         }
 
         // Relación 1:n Course - Goal
@@ -2228,10 +2228,12 @@
         </div>
     </article>
     ```
-17. Crear vista **resources\views\courses\show.blade.php**:
+17. Crear componente de livewire para mostrar reseñas:
+    + $ php artisan make:livewire CoursesReviews
+18. Crear vista **resources\views\courses\show.blade.php**:
     ```php
     <x-app-layout>
-        <section class="bg-gray-700 py-12 mb-12">
+        <section class="cfvSefar py-12 mb-12">
             <div class="container grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <figure>
                     <img class="h-60 w-full object-cover" src="{{ Storage::url($course->image->url )}}" alt="">
@@ -2240,7 +2242,7 @@
                     <h1 class="text-4xl">{{ $course->title }}</h1>
                     <h2 class="text-xl mb-3">{{ $course->subtitle }}</h2>
                     <p class="mb-2"><i class="fas fa-chart-line"></i> Nivel: {{ $course->level->name }}</p>
-                    <p class="mb-2"><i class=""></i> Categoría: {{ $course->category->name }}</p>
+                    <p class="mb-2"><i class="fas fa-globe"></i> Categoría: {{ $course->category->name }}</p>
                     <p class="mb-2"><i class="fas fa-users"></i> Matriculados: {{ $course->students_count }}</p>
                     <p><i class="far fa-star"></i> Calificación: {{ $course->rating }}</p>
                 </div>
@@ -2318,7 +2320,7 @@
                                 </form>
                             @else
                                 <p class="text-2xl font-bold text-gray-500 mt-3 mb-2">US$ {{ $course->price->value }}</p>
-                                <a href="{{ route('payment.checkout', $course) }}" class="btn btn-danger btn-block">Comprar este curso</a>
+                                <a href="#" class="btn btn-danger btn-block">Comprar este curso</a>
                             @endif
                         @endcan
                     </div>
@@ -2344,7 +2346,7 @@
         </div>
     </x-app-layout>
     ```
-18. Modificar la plantilla **resources\views\navigation-menu.blade.php**:
+19. Modificar la plantilla **resources\views\navigation-menu.blade.php**:
     ```php
     @php
         $nav_links = [
@@ -2362,9 +2364,9 @@
     @endphp
     ≡
     ```
-19. Crear componente de livewire **CoursesIndex**:
+20. Crear componente de livewire **CoursesIndex**:
     + $ php artisan make:livewire CoursesIndex
-20. Modificar componente livewire **resources\views\livewire\courses-index.blade.php**:
+21. Modificar componente livewire **resources\views\livewire\courses-index.blade.php**:
     ```php
     <div>
         <div class="bg-gray-200 mb-16">
@@ -2413,7 +2415,7 @@
         </div>
     </div>
     ```
-21. Modificar el controlador **app\Http\Livewire\CoursesIndex.php**:
+22. Modificar el controlador **app\Http\Livewire\CoursesIndex.php**:
     ```php
     <?php
 
@@ -2449,7 +2451,7 @@
         }
     }
     ```
-22. Deshabilitar la clase container de tailwind en **tailwind.config.js**:
+23. Deshabilitar la clase container de tailwind en **tailwind.config.js**:
     ```js
     module.exports = {
         ≡
@@ -2461,7 +2463,7 @@
         plugins: [require('@tailwindcss/ui')],
     };
     ```      
-23. Crear archivo de **estilos resources\css\commom.css**:
+24. Crear archivo de **estilos resources\css\commom.css**:
     ```css
     .container{
         @apply max-w-7xl mx-auto px-4;
@@ -2479,6 +2481,21 @@
         @apply text-xl text-gray-700 mb-2 leading-6;
     }
 
+    .embed-responsive{
+        position: relative;
+        overflow: hidden;
+        padding-top: 56.25%;
+    }
+
+    .embed-responsive iframe{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
     @media(min-width:640px){
         .container{
             @apply px-6;
@@ -2492,7 +2509,7 @@
     }
     ```
     + [Documentación Tailwind Container](https://tailwindcss.com/docs/container)
-24. Crear archivo de **resources\css\buttons.css**
+25. Crear archivo de **resources\css\buttons.css**
     ```css
     .btn {
         @apply font-bold py-2 px-4 rounded;
@@ -2519,13 +2536,13 @@
     }
     ```
     + [Tailwind Buttons Component](https://v1.tailwindcss.com/components/buttons)
-25. Importar **resources\css\commom.css** en **resources\css\app.css**:
+27. Importar **resources\css\commom.css** en **resources\css\app.css**:
     ```php
     ≡
     @import 'commom.css';
     @import 'buttons.css';
     ```
-26. Compilar los nuevos estilos:
+28. Compilar los nuevos estilos:
     + $ npm run watch
     + En caso de error:
         + $ npm uninstall cross-env (Luego borrar el directorio node_modules)
@@ -2541,7 +2558,7 @@
         + $ npm install cross-env
         + $ npm install
         + $ npm run dev
-27. En la plantilla **resources\views\navigation-menu.blade.php**:
+29. En la plantilla **resources\views\navigation-menu.blade.php**:
     Cambiars:
     ```php
     class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -2550,9 +2567,9 @@
     ```php
     class="container"
     ```
-28. Crear políticas de acceso a llevar curso o continuar curso:
+30. Crear políticas de acceso a llevar curso o continuar curso:
     + $ php artisan make:policy CoursePolicy
-29. Crear método **enrolled** a la política **app\Policies\CoursePolicy.php**:
+31. Crear método **enrolled** a la política **app\Policies\CoursePolicy.php**:
     ```php
     public function enrolled(User $user, Course $course){
         return $course->students->contains($user->id);
@@ -2562,12 +2579,248 @@
     ```php
     use App\Models\Course;
     ```
-30. Crear commit:
+32. Crear commit:
     + $ git add .
     + $ git commit -m "Diseño del Frontend de la aplicación"
     + $ git push -u origin main
 
+## Control del avance del curso
+1. Crear componente livewire para el status de cursos:
+    + $ php artisan make:livewire CourseStatus
+2. Redefinir la ruta **courses.status** en **routes\web.php**:
+    ```php
+    Route::get('course-status/{course}', CourseStatus::class)->name('courses.status')->middleware('auth');
+    ```
+    + Importar la definción del controlador del componente **CourseStatus**
+    ```php
+    use App\Http\Livewire\CourseStatus;
+    ```
+3. Diseñar vista **resources\views\livewire\course-status.blade.php**:
+    ```php
+    <div class="mt-8">
+        <div class="container grid grid-cols-3 gap-8">
+            <div class="col-span-2">
+                <div class="embed-responsive">
+                    {!! $current->iframe !!}
+                </div>
+                <h1 class="text-3xl text-gray-600 font-bold mt-4">
+                {{ $current->name }} 
+                </h1>
+                @if ($current->description)
+                    <div class="text-gray-600">
+                        {{ $current->description->name }}
+                    </div>
+                @endif
 
+                <div class="flex items-center mt-4 cursor-pointer">
+                    <i class="fas fa-toggle-off text-2xl text-gray-600"></i>
+                    <p class="text-sm ml-2">Marcar esta unidad como culminada</p>
+                </div>
+
+                <div class="card mt-2">
+                    <div class="card-body flex text-gray-500 font-bold">
+                        @if ($this->previous)
+                            <a wire:click="changeLesson({{ $this->previous }})" class="cursor-pointer">Tema anterior</a>
+                        @endif
+                        @if ($this->next)
+                            <a wire:click="changeLesson({{ $this->next }})" class="ml-auto cursor-pointer">Siguiente tema</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="text-2xl leading-8 text-center mb-4">{{ $course->title }}</h1>
+                    <div class="flex items-center">
+                        <figure>
+                            <img class="h-12 w-12 object-cover rounded-full mr-4" src="{{ $course->teacher->profile_photo_url }}" alt="">
+                        </figure>
+                        <div>
+                            <p>{{ $course->teacher->name }}</p>
+                            <a class="text-blue-500 text-sm" href="">{{ '@' . Str::slug($course->teacher->name, '') }}</a>
+                        </div>
+                    </div>
+
+                    <p class="text-gray-600 text-sm mt-2">20% completado</p>
+                    <div class="relative pt-1">
+                        <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                            <div style="width:30%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                        </div>
+                    </div>
+
+                    <ul>
+                        @foreach ($course->sections as $section)
+                            <li class="text-gray-600 mb-4">
+                                <a class="font-bold text-base inline-block mb-2">{{ $section->name }}</a>
+                                <ul>
+                                    @foreach ($section->lessons as $lesson)
+                                        <li class="flex">
+                                            <div>
+                                                @if ($lesson->completed)
+                                                    @if ($current->id == $lesson->id)
+                                                        <span class="inline-block w-4 h-4 border-2 border-yellow-300 rounded-full mr-2 mt-1"></span>
+                                                    @else
+                                                        <span class="inline-block w-4 h-4 bg-yellow-300 rounded-full mr-2 mt-1"></span>
+                                                    @endif
+                                                @else
+                                                    @if ($current->id == $lesson->id)
+                                                        <span class="inline-block w-4 h-4 border-2 border-gray-500 rounded-full mr-2 mt-1"></span>
+                                                    @else
+                                                        <span class="inline-block w-4 h-4 bg-gray-500 rounded-full mr-2 mt-1"></span>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                            <a class="cursor-pointer" wire:click="changeLesson({{ $lesson }})" >{{ $lesson->name }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    ```
+    + La barra de progreso se tomó de:
+        + https://www.creative-tim.com/learning-lab/tailwind-starter-kit/documentation/css/progressbars
+4. Programar controlador del componente **CourseStatus** **app\Http\Livewire\CourseStatus.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Livewire;
+
+    use App\Models\Course;
+    use App\Models\Lesson;
+    use Livewire\Component;
+    use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+    class CourseStatus extends Component
+    {
+        use AuthorizesRequests;
+        public $course, $current;
+
+        // atrapa el slug del curso en la url (el método debe llamarse mount)
+        public function mount(Course $course){
+            $this->course = $course;
+            foreach($course->lessons as $lesson){
+                if(!$lesson->completed){
+                    $this->current = $lesson;
+                    break;
+                }
+            }
+
+            // En caso de que todas las lecciones esten completadas
+            if(!$this->current){
+                $this->current = $course->lessons->last();
+            }
+
+            // Verifica si el usuario tiene autorización para ingresar al curso
+            $this->authorize('enrolled', $course);
+        }
+
+        public function render()
+        {
+            return view('livewire.course-status');
+        }
+
+        // MÉTODOS
+
+        public function changeLesson(Lesson $lesson){
+            $this->current = $lesson;
+        }
+
+        public function completed(){
+            if($this->current->completed){
+                // Eliminar registro
+                $this->current->users()->detach(auth()->user()->id);
+            }else{
+                // Agregar registro
+                $this->current->users()->attach(auth()->user()->id);
+            }
+            $this->current = Lesson::find($this->current->id);
+            $this->course = Course::find($this->course->id);
+        }
+
+        // PROPIEDADES COMPUTADAS
+
+        // Propiedad computada para index
+        public function getIndexProperty(){
+            return $this->course->lessons->pluck('id')->search($this->current->id);
+        }
+
+        // Propiedad computada para previous
+        public function getPreviousProperty(){
+            if($this->index == 0){
+                return null;
+            }else{
+                return $this->course->lessons[$this->index - 1];
+            }
+        }
+
+        // Propiedad computada para next
+        public function getNextProperty(){
+            if($this->index == $this->course->lessons->count() - 1){
+                return null;
+            }else{
+                return $this->course->lessons[$this->index + 1];
+            }
+        }
+        
+        // Propiedad computada para advance
+        public function getAdvanceProperty(){
+            $i = 0;
+            foreach ($this->course->lessons as $lesson) {
+                if($lesson->completed){
+                    $i++;
+                }
+            }
+            $advance = ($i * 100)/($this->course->lessons->count());
+            return round($advance, 2);
+        }
+
+        public function download(){
+            return response()->download(storage_path('app/public/' . $this->current->resource->url));
+        }
+    }
+    ```
+5. Agregar atributo para comprobar si una lección esta completada en el controlador **app\Models\Lesson.php**:
+    ```php
+    ≡
+    class Lesson extends Model
+    {
+        ≡
+        protected $guarded = ['id'];
+
+        // Esta función es un atributo: get[Completed]Attribute
+        // Comprueba si una lección esta completada
+        public function getCompletedAttribute(){
+            // Para traernos el registro del usuario autentificado
+            return $this->users->contains(auth()->user()->id);
+        }
+        ≡
+    }
+    ```
+6. Crear método **published** en **app\Policies\CoursePolicy.php** para proteger rutas:
+    ```php
+    public function published(?User $user, Course $course){
+        if($course->status == 3){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    ```
+7. Crear commit:
+    + $ git add .
+    + $ git commit -m "Control del avance del curso"
+    + $ git push -u origin main
+
+
+
+mmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+mmmmmmmmmmmmmmmmmmmmmmmmmmm
 
 
 
@@ -2581,631 +2834,11 @@
     + $ git commit -m "Definición de las migraciones"
     + $ git push -u origin main
 
+
+
 ********* INICIO
 
-
-## Sección 4: Control del avance del curso
-
-### Viedo 21. Componente Livewire de vista completa
-1. Modificar la ruta **courses.status** en **routes\web.php**:
-    >
-        Route::get('course-status/{course}', [CourseController::class, 'status'])->name('courses.status');
-1. Generar el método **status** en el controlador **app\Http\Controllers\CourseController.php**:
-    >
-        public function status(Course $course){
-            return view('courses.status', compact('course'));
-        }
-1. Crear vista **resources\views\courses\status.blade.php**:
-    >
-        <x-app-layout>
-            @livewire('course-status')
-        </x-app-layout>
-1. Crear componente para el status de cursos:
-    >
-        $ php artisan make:livewire CourseStatus
-1. Diseñar vista **resources\views\livewire\course-status.blade.php**:
-    >
-        <div>
-            <h1>{{ $course->title }}</h1>
-        </div>
-1. En el archivo de rutas **routes\web.php**:
-    Importar el componente:
-    >
-        use App\Http\Livewire\CourseStatus;
-    Modificar ruta **courses.status**:
-    >
-        Route::get('course-status/{course}', CourseStatus::class)->name('courses.status');
-1. Eliminar método **status** en el controlador **app\Http\Controllers\CourseController.php**.
-1. Eliminar vista **resources\views\courses\status.blade.php**.
-1. Programar controlador del componente **CourseStatus** **app\Http\Livewire\CourseStatus.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Course;
-        use Livewire\Component;
-
-        class CourseStatus extends Component
-        {
-            public $course;
-
-            // atrapa el slug del curso en la url (el método debe llamarse mount)
-            public function mount(Course $course){
-                $this->course = $course;
-            }
-
-            public function render()
-            {
-                return view('livewire.course-status');
-            }
-        }
-
-
-### Viedo 22. Recuperando información que se va a mostrar
-1. Modificar la vista **resources\views\livewire\course-status.blade.php**:
-    >
-        <div class="mt-8">
-            <div class="container grid grid-cols-3 gap-8">
-                <div class="col-span-2">
-                    {!! $current->iframe !!}
-                    {{ $current->name }}
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h1>{{ $course->title }}</h1>
-                        <div class="flex items-center">
-                            <figure>
-                                <img src="{{ $course->teacher->profile_photo_url }}" alt="">
-                            </figure>
-                            <div>
-                                <p>{{ $course->teacher->name }}</p>
-                                <a class="text-blue-500" href="">{{ '@' . Str::slug($course->teacher->name, '') }}</a>
-                            </div>
-                        </div>
-                        <ul>
-                            @foreach ($course->sections as $section)
-                                <li>
-                                    <a class="font-bold">{{ $section->name }}</a>
-                                    <ul>
-                                        @foreach ($section->lessons as $lesson)
-                                            <li>
-                                                <a href="">{{ $lesson->id }}
-                                                    @if ($lesson->completed)
-                                                        (Completado)
-                                                    @endif
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-1. Agregar atributo para comprobar si una lección esta completada en el controlador **app\Models\Lesson.php**:
-    >
-        ≡
-        class Lesson extends Model
-        {
-            use HasFactory;
-
-            protected $guarded = ['id'];
-
-            // Esta función es un atributo: get[Completed]Attribute
-            // Comprueba si una lección esta completada
-            public function getCompletedAttribute(){
-                // Para traernos el registro del usuario autentificado
-                return $this->users->contains(auth()->user()->id);
-            }
-            ≡
-1. Modificar controlador **app\Http\Livewire\CourseStatus.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Course;
-        use Livewire\Component;
-
-        class CourseStatus extends Component
-        {
-            public $course;
-            public $current;
-
-            // atrapa el slug del curso en la url (el método debe llamarse mount)
-            public function mount(Course $course){
-                $this->course = $course;
-                foreach($course->lessons as $lesson){
-                    if(!$lesson->completed){
-                        $this->current = $lesson;
-                        break;
-                    }
-                }
-            }
-
-            public function render()
-            {
-                return view('livewire.course-status');
-            }
-        }    
-
-
-### Viedo 23. Habilitar botones next y previous
-1. Modificar controlador **app\Http\Livewire\CourseStatus.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Course;
-        use App\Models\Lesson;
-        use Livewire\Component;
-
-        class CourseStatus extends Component
-        {
-            public $course, $current;
-
-            // atrapa el slug del curso en la url (el método debe llamarse mount)
-            public function mount(Course $course){
-                $this->course = $course;
-                foreach($course->lessons as $lesson){
-                    if(!$lesson->completed){
-                        $this->current = $lesson;
-                        break;
-                    }
-                }
-            }
-
-            public function render()
-            {
-                return view('livewire.course-status');
-            }
-
-            public function changeLesson(Lesson $lesson){
-                $this->current = $lesson;
-            }
-
-            // Propiedad computada para index
-            public function getIndexProperty(){
-                return $this->course->lessons->pluck('id')->search($this->current->id);
-            }
-
-            // Propiedad computada para previous
-            public function getPreviousProperty(){
-                if($this->index == 0){
-                    return null;
-                }else{
-                    return $this->course->lessons[$this->index - 1];
-                }
-            }
-
-            // Propiedad computada para next
-            public function getNextProperty(){
-                if($this->index == $this->course->lessons->count() - 1){
-                    return null;
-                }else{
-                    return $this->course->lessons[$this->index + 1];
-                }
-            }   
-        }
-1. Modificar vista **resources\views\livewire\course-status.blade.php**:
-    >
-        <div class="mt-8">
-            <div class="container grid grid-cols-3 gap-8">
-                <div class="col-span-2">
-                    {!! $current->iframe !!}
-                    {{ $current->name }}
-                    <p>Indice: {{ $this->index }}</p>
-                    <p>Previous: 
-                        @if ($this->previous)
-                            {{ $this->previous->id }}
-                        @endif   
-                    </p>
-                    <p>Next: 
-                        @if ($this->next)
-                            {{ $this->next->id }}
-                        @endif
-                    </p>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h1>{{ $course->title }}</h1>
-                        <div class="flex items-center">
-                            <figure>
-                                <img src="{{ $course->teacher->profile_photo_url }}" alt="">
-                            </figure>
-                            <div>
-                                <p>{{ $course->teacher->name }}</p>
-                                <a class="text-blue-500" href="">{{ '@' . Str::slug($course->teacher->name, '') }}</a>
-                            </div>
-                        </div>
-                        <ul>
-                            @foreach ($course->sections as $section)
-                                <li>
-                                    <a class="font-bold">{{ $section->name }}</a>
-                                    <ul>
-                                        @foreach ($section->lessons as $lesson)
-                                            <li>
-                                                <a class="cursor-pointer" wire:click="changeLesson({{ $lesson }})" >{{ $lesson->id }}
-                                                    @if ($lesson->completed)
-                                                        (Completado)
-                                                    @endif
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-### Viedo 24. Dar estilos a la página
-1. Agregar estilos a **resources\css\commom.css**:
-    >
-        .embed-responsive{
-            position: relative;
-            overflow: hidden;
-            padding-top: 56.25%;
-        }
-
-        .embed-responsive iframe{
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }   
-1. Compilar los estilos creados:
-    >
-        $ npm run dev
-1. Modificar la vista **resources\views\livewire\course-status.blade.php**:
-    >
-        <div class="mt-8">
-            <div class="container grid grid-cols-3 gap-8">
-                <div class="col-span-2">
-                    <div class="embed-responsive">
-                        {!! $current->iframe !!}
-                    </div>
-                    <h1 class="text-3xl text-gray-600 font-bold mt-4">
-                    {{ $current->name }} 
-                    </h1>
-                    @if ($current->description)
-                        <div class="text-gray-600">
-                            {{ $current->description->name }}
-                        </div>
-                    @endif
-
-                    <div class="flex items-center mt-4 cursor-pointer">
-                        <i class="fas fa-toggle-off text-2xl text-gray-600"></i>
-                        <p class="text-sm ml-2">Marcar esta unidad como culminada</p>
-                    </div>
-
-                    <div class="card mt-2">
-                        <div class="card-body flex text-gray-500 font-bold">
-                            @if ($this->previous)
-                                <a wire:click="changeLesson({{ $this->previous }})" class="cursor-pointer">Tema anterior</a>
-                            @endif
-                            @if ($this->next)
-                                <a wire:click="changeLesson({{ $this->next }})" class="ml-auto cursor-pointer">Siguiente tema</a>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h1 class="text-2xl leading-8 text-center mb-4">{{ $course->title }}</h1>
-                        <div class="flex items-center">
-                            <figure>
-                                <img class="h-12 w-12 object-cover rounded-full mr-4" src="{{ $course->teacher->profile_photo_url }}" alt="">
-                            </figure>
-                            <div>
-                                <p>{{ $course->teacher->name }}</p>
-                                <a class="text-blue-500 text-sm" href="">{{ '@' . Str::slug($course->teacher->name, '') }}</a>
-                            </div>
-                        </div>
-
-                        <p class="text-gray-600 text-sm mt-2">20% completado</p>
-                        <div class="relative pt-1">
-                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                                <div style="width:30%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
-                            </div>
-                        </div>
-
-                        <ul>
-                            @foreach ($course->sections as $section)
-                                <li class="text-gray-600 mb-4">
-                                    <a class="font-bold text-base inline-block mb-2">{{ $section->name }}</a>
-                                    <ul>
-                                        @foreach ($section->lessons as $lesson)
-                                            <li class="flex">
-                                                <div>
-                                                    @if ($lesson->completed)
-                                                        @if ($current->id == $lesson->id)
-                                                            <span class="inline-block w-4 h-4 border-2 border-yellow-300 rounded-full mr-2 mt-1"></span>
-                                                        @else
-                                                            <span class="inline-block w-4 h-4 bg-yellow-300 rounded-full mr-2 mt-1"></span>
-                                                        @endif
-                                                    @else
-                                                        @if ($current->id == $lesson->id)
-                                                            <span class="inline-block w-4 h-4 border-2 border-gray-500 rounded-full mr-2 mt-1"></span>
-                                                        @else
-                                                            <span class="inline-block w-4 h-4 bg-gray-500 rounded-full mr-2 mt-1"></span>
-                                                        @endif
-                                                    @endif
-                                                </div>
-                                                <a class="cursor-pointer" wire:click="changeLesson({{ $lesson }})" >{{ $lesson->name }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    La barra de progreso se tomó de:
-        https://www.creative-tim.com/learning-lab/tailwind-starter-kit/documentation/css/progressbars
-
-
-### Viedo 25. Marcar unidad como culminada
-1. Modificar vista del componente **resources\views\livewire\course-status.blade.php**:
-    >
-        <div class="mt-8">
-            <div class="container grid grid-cols1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2">
-                    <div class="embed-responsive">
-                        {!! $current->iframe !!}
-                    </div>
-                    <h1 class="text-3xl text-gray-600 font-bold mt-4">
-                    {{ $current->name }} 
-                    </h1>
-                    @if ($current->description)
-                        <div class="text-gray-600">
-                            {{ $current->description->name }}
-                        </div>
-                    @endif
-
-                    <div class="flex items-center mt-4 cursor-pointer" wire:click="completed">
-                        @if ($current->completed)
-                            <i class="fas fa-toggle-on text-2xl text-blue-600"></i>
-                        @else
-                            <i class="fas fa-toggle-off text-2xl text-gray-600"></i>
-                        @endif
-                        <p class="text-sm ml-2">Marcar esta unidad como culminada</p>
-                    </div>
-
-                    <div class="card mt-2">
-                        <div class="card-body flex text-gray-500 font-bold">
-                            @if ($this->previous)
-                                <a wire:click="changeLesson({{ $this->previous }})" class="cursor-pointer">Tema anterior</a>
-                            @endif
-                            @if ($this->next)
-                                <a wire:click="changeLesson({{ $this->next }})" class="ml-auto cursor-pointer">Siguiente tema</a>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h1 class="text-2xl leading-8 text-center mb-4">{{ $course->title }}</h1>
-                        <div class="flex items-center">
-                            <figure>
-                                <img class="h-12 w-12 object-cover rounded-full mr-4" src="{{ $course->teacher->profile_photo_url }}" alt="">
-                            </figure>
-                            <div>
-                                <p>{{ $course->teacher->name }}</p>
-                                <a class="text-blue-500 text-sm" href="">{{ '@' . Str::slug($course->teacher->name, '') }}</a>
-                            </div>
-                        </div>
-
-                        <p class="text-gray-600 text-sm mt-2">{{ $this->advance . '%' }} completado</p>
-                        <div class="relative pt-1">
-                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                                <div style="width:{{ $this->advance . '%' }}" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 transition-all duration-500"></div>
-                            </div>
-                        </div>
-
-                        <ul>
-                            @foreach ($course->sections as $section)
-                                <li class="text-gray-600 mb-4">
-                                    <a class="font-bold text-base inline-block mb-2">{{ $section->name }}</a>
-                                    <ul>
-                                        @foreach ($section->lessons as $lesson)
-                                            <li class="flex">
-                                                <div>
-                                                    @if ($lesson->completed)
-                                                        @if ($current->id == $lesson->id)
-                                                            <span class="inline-block w-4 h-4 border-2 border-yellow-300 rounded-full mr-2 mt-1"></span>
-                                                        @else
-                                                            <span class="inline-block w-4 h-4 bg-yellow-300 rounded-full mr-2 mt-1"></span>
-                                                        @endif
-                                                    @else
-                                                        @if ($current->id == $lesson->id)
-                                                            <span class="inline-block w-4 h-4 border-2 border-gray-500 rounded-full mr-2 mt-1"></span>
-                                                        @else
-                                                            <span class="inline-block w-4 h-4 bg-gray-500 rounded-full mr-2 mt-1"></span>
-                                                        @endif
-                                                    @endif
-                                                </div>
-                                                <a class="cursor-pointer" wire:click="changeLesson({{ $lesson }})" >{{ $lesson->name }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-1. Modificar controlador del componente **app\Http\Livewire\CourseStatus.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Course;
-        use App\Models\Lesson;
-        use Livewire\Component;
-
-        class CourseStatus extends Component
-        {
-            public $course, $current;
-
-            // atrapa el slug del curso en la url (el método debe llamarse mount)
-            public function mount(Course $course){
-                $this->course = $course;
-                foreach($course->lessons as $lesson){
-                    if(!$lesson->completed){
-                        $this->current = $lesson;
-                        break;
-                    }
-                }
-
-                // En caso de que todas las lecciones esten completadas
-                if(!$this->current){
-                    $this->current = $course->lessons->last();
-                }
-            }
-
-            public function render()
-            {
-                return view('livewire.course-status');
-            }
-
-            // MÉTODOS
-
-            public function changeLesson(Lesson $lesson){
-                $this->current = $lesson;
-            }
-
-            public function completed(){
-                if($this->current->completed){
-                    // Eliminar registro
-                    $this->current->users()->detach(auth()->user()->id);
-                }else{
-                    // Agregar registro
-                    $this->current->users()->attach(auth()->user()->id);
-                }
-                $this->current = Lesson::find($this->current->id);
-                $this->course = Course::find($this->course->id);
-            }
-
-            // PROPIEDADES COMPUTADAS
-
-            // Propiedad computada para index
-            public function getIndexProperty(){
-                return $this->course->lessons->pluck('id')->search($this->current->id);
-            }
-
-            // Propiedad computada para previous
-            public function getPreviousProperty(){
-                if($this->index == 0){
-                    return null;
-                }else{
-                    return $this->course->lessons[$this->index - 1];
-                }
-            }
-
-            // Propiedad computada para next
-            public function getNextProperty(){
-                if($this->index == $this->course->lessons->count() - 1){
-                    return null;
-                }else{
-                    return $this->course->lessons[$this->index + 1];
-                }
-            }
-            
-            // Propiedad computada para advance
-            public function getAdvanceProperty(){
-                $i = 0;
-                foreach ($this->course->lessons as $lesson) {
-                    if($lesson->completed){
-                        $i++;
-                    }
-                }
-                $advance = ($i * 100)/($this->course->lessons->count());
-                return round($advance, 2);
-            }
-        }
-
-
-### Viedo 26. Proteger rutas
-1. Modificar el controlador **app\Http\Livewire\CourseStatus.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Course;
-        use App\Models\Lesson;
-        use Livewire\Component;
-        use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-        class CourseStatus extends Component
-        {
-            use AuthorizesRequests;
-            public $course, $current;
-
-            // atrapa el slug del curso en la url (el método debe llamarse mount)
-            public function mount(Course $course){
-                $this->course = $course;
-                foreach($course->lessons as $lesson){
-                    if(!$lesson->completed){
-                        $this->current = $lesson;
-                        break;
-                    }
-                }
-
-                // En caso de que todas las lecciones esten completadas
-                if(!$this->current){
-                    $this->current = $course->lessons->last();
-                }
-
-                // Verifica si el usuario tiene autorización para ingresar al curso
-                $this->authorize('enrolled', $course);
-            }
-            ≡
-        }
-1. Modificar ruta **courses.status** en **routes\web.php**:
-            
-    >
-        Route::get('course-status/{course}', CourseStatus::class)->name('courses.status')->middleware('auth');
-1. Crear método **published** en **app\Policies\CoursePolicy.php**:
-    >
-        public function published(?User $user, Course $course){
-            if($course->status == 3){
-                return true;
-            }else{
-                return false;
-            }
-        }
-1. Modificar método **show** en **app\Http\Controllers\CourseController.php**:
-    >
-        public function show(Course $course){
-            $this->authorize('published', $course);
-
-            $similares = Course::where('category_id', $course->category_id)
-                            ->where('id','!=',$course->id)
-                            ->where('status', 3)
-                            ->latest('id')
-                            ->take(5)
-                            ->get();
-            return view('courses.show',compact('course', 'similares'));
-        }
-
-
 ## Sección 5: Roles y permisos
-
 
 ### Video 27. Generar las rutas de acceso para los instructores
 1. Crear archivo de rutas **routes\instructor.php**:
@@ -8826,9 +8459,6 @@
 3. Reestablecer la base de datos:
     >
         $ php artisan migrate:fresh --seed
-1. Crear componente de livewire para mostrar reseñas:
-    >
-        $ php artisan make:livewire CoursesReviews
 2. Programar el controlador del **componente app\Http\Livewire\CoursesReviews.php**:
     >
         <?php
@@ -9322,6 +8952,7 @@
     + $ heroku config:add APP_KEY=base64:7+xjR4WKXqdpQdmx1C4kudxVqWx5WgUVcuKoOPQ//Ug=
     + $ heroku config:add APP_DEBUG=false
     + $ heroku config:add APP_URL=https://cursos-sefar.herokuapp.com
+    + $ heroku config:add FILESYSTEM_DRIVER=public
 13. Crear base de datos Postgre SQL desde la terminal:
     + $ heroku addons:create heroku-postgresql:hobby-dev
     + $ heroku pg:credentials:url
@@ -9342,8 +8973,19 @@
     + $ heroku config:add DB_PASSWORD={password}
 15. Ejecutar migraciones:
     + $ heroku run bash
+    + $ php artisan storage:link 
     + ~ $ php artisan migrate --seed
         + Do you really wish to run this command? (yes/no) [no]: **yes**
     + ~ $ exit
 16. Salir de Heroku:
     + $ heroku logout
+
+## Para correr seeders en Heroku
++ $ heroku login
++ $ heroku git:remote -a cursos-sefar
++ $ heroku run bash
++ $ composer update
++ $ php artisan migrate:fresh
++ $ php artisan db:seed
++ $ exit
++ $ heroku logout

@@ -57,7 +57,7 @@ class Course extends Model
 
     // Relación 1:n Course - Requirement
     public function requirements(){
-        return $this->hasMany('App\Models\Requirement');
+        return $this->hasMany('App\Models\Requeriment');
     }
 
     // Relación 1:n Course - Goal

@@ -1,5 +1,5 @@
   <x-app-layout>
-    <section class="bg-gray-700 py-12 mb-12">
+    <section class="cfvSefar py-12 mb-12">
         <div class="container grid grid-cols-1 lg:grid-cols-2 gap-6">
             <figure>
                 <img class="h-60 w-full object-cover" src="{{ Storage::url($course->image->url )}}" alt="">
@@ -8,7 +8,7 @@
                 <h1 class="text-4xl">{{ $course->title }}</h1>
                 <h2 class="text-xl mb-3">{{ $course->subtitle }}</h2>
                 <p class="mb-2"><i class="fas fa-chart-line"></i> Nivel: {{ $course->level->name }}</p>
-                <p class="mb-2"><i class=""></i> Categoría: {{ $course->category->name }}</p>
+                <p class="mb-2"><i class="fas fa-globe"></i> Categoría: {{ $course->category->name }}</p>
                 <p class="mb-2"><i class="fas fa-users"></i> Matriculados: {{ $course->students_count }}</p>
                 <p><i class="far fa-star"></i> Calificación: {{ $course->rating }}</p>
             </div>
@@ -86,7 +86,7 @@
                             </form>
                         @else
                             <p class="text-2xl font-bold text-gray-500 mt-3 mb-2">US$ {{ $course->price->value }}</p>
-                            <a href="{{ route('payment.checkout', $course) }}" class="btn btn-danger btn-block">Comprar este curso</a>
+                            <a href="#" class="btn btn-danger btn-block">Comprar este curso</a>
                         @endif
                     @endcan
                 </div>
