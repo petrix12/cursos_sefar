@@ -2819,20 +2819,22 @@
 ## Implementación de roles y permisos
 + https://hackerthemes.com/bootstrap-cheatsheet
 + https://github.com/jeroennoten/Laravel-AdminLTE/wiki
-1. Crear componentes para cursos de instructores:
-    + $ php artisan make:livewire instructor-courses
-2. Crear archivo de rutas **routes\instructor.php**:
+1. Crear controlador para administrar las rutas relacionadas con los cursos de los instructores:
+    + $ php artisan make:controller Instructor\CourseController -r
+2. Crear componentes para cursos de instructores:
+    + $ php artisan make:livewire Instructor/CoursesIndex
+3. Crear archivo de rutas **routes\instructor.php**:
     ```php
     <?php
 
-    use App\Http\Livewire\InstructorCourses;
+    use App\Http\Controllers\Instructor\CourseController;
     use Illuminate\Support\Facades\Route;
 
     Route::redirect('', 'instructor/courses');
 
-    Route::get('courses', InstructorCourses::class)->middleware('can:Leer cursos')->name('courses.index');
+    Route::resource('courses', CourseController::class)->names('courses');
     ```
-3. Registrar el nuevo archivo de rutas **instructor** y modificar **admin** en el método **boot** del provider **app\Providers\RouteServiceProvider.php**:
+4. Registrar el nuevo archivo de rutas **instructor** y modificar **admin** en el método **boot** del provider **app\Providers\RouteServiceProvider.php**:
     ```php
     public function boot()
     {
@@ -2853,7 +2855,7 @@
         });
     }
     ```
-4. Modificar plantilla **resources\views\navigation-menu.blade.php**:
+5. Modificar plantilla **resources\views\navigation-menu.blade.php**:
     ```php
     ≡
     <nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow">
@@ -3345,7 +3347,7 @@
     @stop
 
     @section('content')
-        @livewire('admin-users')
+        @livewire('admin.users-index')
     @stop
 
     @section('css')
@@ -3396,18 +3398,18 @@
     @stop
     ```
 21. Crear componente de livewire para administrar usuarios:
-    + $ php artisan make:livewire admin-users
-22. Programar controlador del componente **app\Http\Livewire\AdminUsers.php**:
+    + $ php artisan make:livewire Admin/UsersIndex
+22. Programar controlador del componente **app\Http\Livewire\Admin\UsersIndex.php**:
     ```php
     <?php
 
-    namespace App\Http\Livewire;
+    namespace App\Http\Livewire\Admin;
 
     use App\Models\User;
     use Livewire\Component;
     use Livewire\WithPagination;
 
-    class AdminUsers extends Component
+    class UsersIndex extends Component
     {
         use WithPagination;
 
@@ -3420,7 +3422,7 @@
             $users = User::where('name', 'LIKE', '%' . $this->search . '%')
                         ->orWhere('email', 'LIKE', '%' . $this->search . '%')
                         ->paginate(8);
-            return view('livewire.admin-users', compact('users'));
+            return view('livewire.admin.users-index', compact('users'));
         }
 
         public function limpiar_page(){
@@ -3428,7 +3430,7 @@
         }
     }
     ```
-23. Diseñar vista del componente **resources\views\livewire\admin-users.blade.php**:
+23. Diseñar vista del componente **resources\views\livewire\admin\users-index.blade.php**:
     ```php
     <div>
         <div class="card">
@@ -3485,8 +3487,6 @@
         ≡
     }
     ```
-    >
-
 25. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\UserController.php** para proteger las rutas **users**:
     ```php
     ≡
@@ -3499,7 +3499,36 @@
         ≡
     }
     ```
-26. Crear commit:
+26. Modificar el controlador del componente **app\Http\Livewire\Instructor\CoursesIndex.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Livewire\Instructor;
+
+    use App\Models\Course;
+    use Livewire\Component;
+    use Livewire\WithPagination;
+
+    class CoursesIndex extends Component
+    {
+        use WithPagination;
+
+        public $search;
+
+        public function render()
+        {
+            $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
+                                ->where('user_id', auth()->user()->id)
+                                ->paginate(8);
+            return view('livewire.instructor.courses-index', compact('courses'));
+        }
+
+        public function limpiar_page(){
+            $this->reset('page');
+        }
+    }
+    ```
+27. Crear commit:
     + $ git add .
     + $ git commit -m "Implementación de roles y permisos"
     + $ git push -u origin main
@@ -3517,7 +3546,6 @@
     ***
     ```
 mmmmmmmmmmmmmmmmmmmmmmmmmmm
-
 
 mmmmmmmmmmmmmmmmmmmmmmmmmmm
 
@@ -3541,34 +3569,6 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
 
 
 ### Video 33. Mostrar el listado de cursos de un instructor
-1. Modificar el controlador **app\Http\Livewire\InstructorCourses.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Course;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-
-        class InstructorCourses extends Component
-        {
-            use WithPagination;
-
-            public $search;
-
-            public function render()
-            {
-                $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
-                                    ->where('user_id', auth()->user()->id)
-                                    ->paginate(8);
-                return view('livewire.instructor-courses', compact('courses'));
-            }
-
-            public function limpiar_page(){
-                $this->reset('page');
-            }
-        }
 1. Diseñar la vista **resources\views\livewire\instructor-courses.blade.php**:
     ##### https://tailwindui.com/preview
     >
@@ -3706,9 +3706,6 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
         Route::redirect('', 'instructor/courses');
 
         Route::resource('courses', CourseController::class)->names('courses');
-1. Crear controlador para administrar las rutas relacionadas con los cursos de los instructores:
-    >
-        $ php artisan make:controller Instructor\CourseController -r
 1. Programar controlador **app\Http\Controllers\Instructor\CourseController.php**:
     >
         <?php
@@ -3812,155 +3809,6 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
     **resources\views\instructor\courses\show.blade.php**:
     >
         <x-app-layout></x-app-layout>
-1. Reubicar y cambiar nombre a componente controlador de livewire:
-    De:
-    >
-        app\Http\Livewire\InstructorCourses.php
-    A:
-    >
-        app\Http\Livewire\Instructor\CoursesIndex.php
-1. Modificar el controlador del componente **app\Http\Livewire\Instructor\CoursesIndex.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Course;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-
-        class CoursesIndex extends Component
-        {
-            use WithPagination;
-
-            public $search;
-
-            public function render()
-            {
-                $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
-                                    ->where('user_id', auth()->user()->id)
-                                    ->paginate(8);
-                return view('livewire.instructor.courses-index', compact('courses'));
-            }
-
-            public function limpiar_page(){
-                $this->reset('page');
-            }
-        }
-1. Reubicar y cambiar nombre a componente vista de livewire:
-    De:
-    >
-        resources\views\livewire\instructor-courses.blade.php
-    A:
-    >
-        resources\views\livewire\instructor\courses-index.blade.php
-1. Cambiar nombre a componente controlador de livewire:
-    De:
-    >
-        app\Http\Livewire\CourseIndex.php
-    A:
-    >
-        app\Http\Livewire\CoursesIndex.php
-1. Modificar controlador **app\Http\Livewire\CoursesIndex.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\Category;
-        use App\Models\Course;
-        use App\Models\Level;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-
-        class CoursesIndex extends Component
-        {
-            use WithPagination;
-            
-            public $category_id;
-            public $level_id;
-
-            public function render()
-            {
-                $categories = Category::all();
-                $levels = Level::all();
-                $courses = Course::where('status', 3)
-                    ->category($this->category_id)
-                    ->level($this->level_id)
-                    ->latest('id')
-                    ->paginate(8);
-                return view('livewire.courses-index', compact('courses', 'categories', 'levels'));
-            }
-
-            public function resetFilters(){
-                $this->reset(['category_id','level_id']);
-            }
-        }
-2. Reubicar y cambiar nombre a componente controlador de livewire:
-    De:
-    >
-        app\Http\Livewire\AdminUsers.php
-    A:
-    >
-        app\Http\Livewire\Admin\UsersIndex.php
-3. Modificar el controlador del componente **app\Http\Livewire\Admin\UsersIndex.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Admin;
-
-        use App\Models\User;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-
-        class UsersIndex extends Component
-        {
-            use WithPagination;
-
-            protected $paginationTheme = "bootstrap";
-
-            public $search;
-
-            public function render()
-            {
-                $users = User::where('name', 'LIKE', '%' . $this->search . '%')
-                            ->orWhere('email', 'LIKE', '%' . $this->search . '%')
-                            ->paginate(8);
-                return view('livewire.admin.users-index', compact('users'));
-            }
-
-            public function limpiar_page(){
-                $this->reset('page');
-            }
-        }
-4. Reubicar y cambiar nombre a componente vista de livewire:
-    De:
-    >
-        resources\views\livewire\admin-users.blade.php
-    A:
-    >
-        resources\views\livewire\admin\users-index.blade.php
-5. Modificar vista **resources\views\admin\users\index.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Lista de usuarios</h1>
-        @stop
-
-        @section('content')
-            @livewire('admin.users-index')
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
 
 
 ### Video 35. Formulario para actualizar información básica de curso
@@ -8632,3 +8480,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
 + $ php artisan db:seed
 + $ exit
 + $ heroku logout
+
+## Algunos comandos Git:
++ Para regresar al último commit:
+    + $ git reset --hard
