@@ -1475,14 +1475,14 @@
     ```php
     @extends('adminlte::page')
 
-    @section('title', 'Curso Sefar Universal')
+    @section('title', 'Cursos Sefar Universal')
 
     @section('content_header')
-        <h1>Coders Free</h1>
+        <h1>Cursos Sefar Universal</h1>
     @stop
 
     @section('content')
-        <p>Coders Free</p>
+        <p>Cursos Sefar Universal</p>
     @stop
 
     @section('css')
@@ -2816,926 +2816,55 @@
     + $ git commit -m "Control del avance del curso"
     + $ git push -u origin main
 
-
-
-mmmmmmmmmmmmmmmmmmmmmmmmmmm
-
-mmmmmmmmmmmmmmmmmmmmmmmmmmm
-
-
-
-***
-≡
-    ```php
-    ***
-    ```
-1. Crear commit:
-    + $ git add .
-    + $ git commit -m "Definición de las migraciones"
-    + $ git push -u origin main
-
-
-
-********* INICIO
-
-## Sección 5: Roles y permisos
-
-### Video 27. Generar las rutas de acceso para los instructores
-1. Crear archivo de rutas **routes\instructor.php**:
-    >
-        <?php
-
-        use App\Http\Livewire\InstructorCourses;
-        use Illuminate\Support\Facades\Route;
-
-        Route::redirect('', 'instructor/courses');
-
-        Route::get('courses', InstructorCourses::class)->name('courses.index');
-1. Modificar método **boot** de la clase **RouteServiceProvider** en **app\Providers\RouteServiceProvider.php**:
-    >
-        public function boot()
-        {
-            $this->configureRateLimiting();
-
-            $this->routes(function () {
-                Route::prefix('api')
-                    ->middleware('api')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/api.php'));
-
-                Route::middleware('web')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/web.php'));
-
-                Route::middleware('web', 'auth')
-                    ->prefix('admin')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/admin.php'));
-
-                Route::middleware('web', 'auth')
-                    ->name('instructor.')
-                    ->prefix('instructor')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/instructor.php'));
-            });
-        }
+## Implementación de roles y permisos
++ https://hackerthemes.com/bootstrap-cheatsheet
++ https://github.com/jeroennoten/Laravel-AdminLTE/wiki
 1. Crear componentes para cursos de instructores:
-    >
-        $ php artisan make:livewire instructor-courses
-1. Modificar plantilla **resources\views\navigation-dropdown.blade.php**:
-    >
+    + $ php artisan make:livewire instructor-courses
+2. Crear archivo de rutas **routes\instructor.php**:
+    ```php
+    <?php
+
+    use App\Http\Livewire\InstructorCourses;
+    use Illuminate\Support\Facades\Route;
+
+    Route::redirect('', 'instructor/courses');
+
+    Route::get('courses', InstructorCourses::class)->middleware('can:Leer cursos')->name('courses.index');
+    ```
+3. Registrar el nuevo archivo de rutas **instructor** y modificar **admin** en el método **boot** del provider **app\Providers\RouteServiceProvider.php**:
+    ```php
+    public function boot()
+    {
         ≡
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
-
-                @auth   
-        ≡
-                        <x-slot name="content">
-                            <!-- Account Management -->
-                            <div class="block px-4 py-2 text-xs text-gray-400">
-                                {{ __('Manage Account') }}
-                            </div>
-
-                            <x-jet-dropdown-link href="{{ route('profile.show') }}">
-                                Perfil
-                            </x-jet-dropdown-link>
-
-                            <x-jet-dropdown-link href="{{ route('instructor.courses.index') }}">
-                                Instructor
-                            </x-jet-dropdown-link>
-        ≡
-        <!-- Responsive Settings Options -->
-        @auth
-
-            <div class="pt-4 pb-1 border-t border-gray-200">
-        ≡
-                <div class="mt-3 space-y-1">
-                    <!-- Account Management -->
-                    <x-jet-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                        Perfil
-                    </x-jet-responsive-nav-link>
-
-                    <x-jet-responsive-nav-link href="{{ route('instructor.courses.index') }}" :active="request()->routeIs('instructor.courses.index')">
-                        Instructor
-                    </x-jet-responsive-nav-link>       
-        ≡
-
-
-### Video 29. Agregar permisos y preparar entorno de trabajo
-1. Ejecutar Tinker e ingresar permisos:
-    >
-        $ php artisan tinker
-        >>> use Spatie\Permission\Models\Permission;
-        >>> Permission::create(['name' => 'Crear cursos']);
-        >>> Permission::create(['name' => 'Leer cursos']);
-        >>> Permission::create(['name' => 'Actualizar cursos']);
-        >>> Permission::create(['name' => 'Eliminar cursos']);
-        >>> exit
-1. Crear controlador para administrar roles:
-    >
-        $ php artisan make:controller Admin/RoleController -r
-1. Importar el modelo Role de Laravel Permission en **app\Http\Controllers\Admin\RoleController.php**:
-    >
-        use Spatie\Permission\Models\Role;
-1. Modificar el controlador Role en **app\Http\Controllers\Admin\RoleController.php**:
-    >
-        <?php
-
-        namespace App\Http\Controllers\Admin;
-
-        use App\Http\Controllers\Controller;
-        use Illuminate\Http\Request;
-        use Spatie\Permission\Models\Role;
-
-        class RoleController extends Controller
-        {
-            /**
-            * Display a listing of the resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function index()
-            {
-                return view('admin.roles.index');
-            }
-
-            /**
-            * Show the form for creating a new resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function create()
-            {
-                return view('admin.roles.create');
-            }
-
-            /**
-            * Store a newly created resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @return \Illuminate\Http\Response
-            */
-            public function store(Request $request)
-            {
-                //
-            }
-
-            /**
-            * Display the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function show(Role $role)
-            {
-                return view('admin.roles.show', compact('role'));
-            }
-
-            /**
-            * Show the form for editing the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function edit(Role $role)
-            {
-                return view('admin.roles.edit', compact('role'));
-            }
-
-            /**
-            * Update the specified resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function update(Request $request, Role $role)
-            {
-                //
-            }
-
-            /**
-            * Remove the specified resource from storage.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function destroy(Role $role)
-            {
-                //
-            }
-        }
-1. Crear vistas del CRUD Role:
-    + **index.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Coders Free</h1>
-        @stop
-
-        @section('content')
-            <p>Welcome to this beautiful admin panel.</p>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-    + **create.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Coders Free</h1>
-        @stop
-
-        @section('content')
-            <p>Welcome to this beautiful admin panel.</p>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-    + **show.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Coders Free</h1>
-        @stop
-
-        @section('content')
-            <p>Welcome to this beautiful admin panel.</p>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-    + **edit.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Coders Free</h1>
-        @stop
-
-        @section('content')
-            <p>Welcome to this beautiful admin panel.</p>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-1. Generar ruta para el CRUD Role en **routes\admin.php**:
-    >
-        Route::get('', [HomeController::class, 'index'])->name('home');
-1. Modificar **config\adminlte.php**:
-    >
-        <?php
-
-        return [
-
+        $this->routes(function () {
             ≡
+            Route::middleware('web', 'auth')
+                ->name('admin.')
+                ->prefix('admin')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/admin.php'));
 
-            'logo' => '<b>Coders</b>FREE',
-            'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'logo_img_class' => 'brand-image img-circle elevation-3',
-            'logo_img_xl' => null,
-            'logo_img_xl_class' => 'brand-image-xs',
-            'logo_img_alt' => 'AdminLTE',
-
-            ≡
-
-            'use_route_url' => false,
-
-            'dashboard_url' => '/',
-
-            'logout_url' => 'logout',
-
-            'login_url' => 'login',
-
-            'register_url' => 'register',
-
-            'password_reset_url' => 'password/reset',
-
-            'password_email_url' => 'password/email',
-
-            'profile_url' => false,
-
-            ≡
-
-            'menu' => [
-                [
-                    'text' => 'search',
-                    'search' => true,
-                    'topnav' => true,
-                ],
-                [
-                    'text' => 'blog',
-                    'url'  => 'admin/blog',
-                    'can'  => 'manage-blog',
-                ],
-                [
-                    'text'        => 'Dashboard',
-                    'route'         => 'admin.home',
-                    'icon'        => 'fas fa-fw fa-tachometer-alt',
-                ],
-                [
-                    'text'        => 'Lista de roles',
-                    'route'         => 'admin.roles.index',
-                    'icon'        => 'fas fa-fw fa-users-cog',
-                ],
-                ['header' => 'account_settings'],
-                [
-                    'text' => 'profile',
-                    'url'  => 'admin/settings',
-                    'icon' => 'fas fa-fw fa-user',
-                ],
+            Route::middleware('web', 'auth')
+                ->name('instructor.')
+                ->prefix('instructor')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/instructor.php'));
+        });
+    }
+    ```
+4. Modificar plantilla **resources\views\navigation-menu.blade.php**:
+    ```php
+    ≡
+    <nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow">
+        <!-- Primary Navigation Menu -->
+        <div class="container">
+            <div class="flex justify-between h-16">
                 ≡
-            ],
-
-            ≡
-        ];
-1. Darle nombre a la ruta raíz en **routes\admin.php**:
-    >
-        Route::get('', [HomeController::class, 'index'])->name('home');
-1. Modificar método **boot** en **app\Providers\RouteServiceProvider.php**:
-    >
-        public function boot()
-        {
-            $this->configureRateLimiting();
-
-            $this->routes(function () {
-                ≡
-                Route::middleware('web', 'auth')
-                    ->name('admin.')
-                    ->prefix('admin')
-                    ->namespace($this->namespace)
-                    ->group(base_path('routes/admin.php'));
-                ≡
-            });
-        }
-
-
-### Video 30. Crear un CRUD para roles
-###### https://hackerthemes.com/bootstrap-cheatsheet/
-###### https://github.com/jeroennoten/Laravel-AdminLTE/wiki
-1. Modificar el controlador **app\Http\Controllers\Admin\RoleController.php**:
-    >
-        <?php
-
-        namespace App\Http\Controllers\Admin;
-
-        use App\Http\Controllers\Controller;
-        use Illuminate\Http\Request;
-        use Spatie\Permission\Models\Role;
-        use Spatie\Permission\Models\Permission;
-
-        class RoleController extends Controller
-        {
-            /**
-            * Display a listing of the resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function index()
-            {
-                $roles = Role::all();
-                return view('admin.roles.index', compact('roles'));
-            }
-
-            /**
-            * Show the form for creating a new resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function create()
-            {
-                $permissions = Permission::all();
-                return view('admin.roles.create', compact('permissions'));
-            }
-
-            /**
-            * Store a newly created resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @return \Illuminate\Http\Response
-            */
-            public function store(Request $request)
-            {
-                $request->validate([
-                    'name' => 'required',
-                    'permissions' => 'required'
-                ]);
-                
-                $role = Role::create([
-                    'name' => $request->name
-                ]);
-
-                $role->permissions()->attach($request->permissions);
-
-                return redirect()->route('admin.roles.index')->with('info', 'El rol se creo satisfactoriamente');
-            }
-
-            /**
-            * Display the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function show(Role $role)
-            {
-                return view('admin.roles.show', compact('role'));
-            }
-
-            /**
-            * Show the form for editing the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function edit(Role $role)
-            {
-                $permissions = Permission::all();
-                return view('admin.roles.edit', compact('role', 'permissions'));
-            }
-
-            /**
-            * Update the specified resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function update(Request $request, Role $role)
-            {
-                $request->validate([
-                    'name' => 'required',
-                    'permissions' => 'required'
-                ]);
-
-                $role->permissions()->sync($request->permissions);
-
-                return redirect()->route('admin.roles.edit', $role);
-            }
-
-            /**
-            * Remove the specified resource from storage.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function destroy(Role $role)
-            {
-                $role->delete();
-                return redirect()->route('admin.roles.index')->with('info', 'El rol se eliminó con éxito');
-            }
-        }
-1. Modificar vista **resources\views\admin\roles\index.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Lista de roles</h1>
-        @stop
-
-        @section('content')
-            @if (session('info'))
-                <div class="alert alert-primary" role="alert">
-                    <strong>¡Éxito!</strong> {{ session('info') }}
-                    important alert message.
-                </div>
-                
-            @endif
-
-            <div class="card">
-                <div class="card-header">
-                    <a href="{{ route('admin.roles.create') }}">Crear rol</a>
-                </div>
-                <div class="card-body">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th colspan="2"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($roles as $role)
-                                <tr>
-                                    <td>{{ $role->id }}</td>
-                                    <td>{{ $role->name }}</td>
-                                    <td width="10px">
-                                        <a class="btn btn-secondary" href="{{ route('admin.roles.edit', $role) }}">Editar</a>
-                                    </td>
-                                    <td width="10px">
-                                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST">
-                                            @method('delete')
-                                            @csrf
-                                            <button class="btn btn-danger" type="submit">Eliminar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4">No hay ningún rol registrado</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-1. Publicar vista de AdminLTE:
-    >
-        $ php artisan adminlte:install --only=main_views
-    #### En **resources\views\vendor\adminlte\page.blade.php** es de donde se extienden las plantillas.
-1. Instalar Laravel Collective:
-    >
-        $ composer require laravelcollective/html
-    ##### https://laravelcollective.com/docs/6.x/html
-1. Modificar vista **resources\views\admin\roles\create.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Crear nuevo rol</h1>
-        @stop
-
-        @section('content')
-            <div class="card">
-                <div class="card-body">
-                    {!! Form::open(['route' => 'admin.roles.store']) !!}
-                        @include('admin.roles.partials.form')
-                        {!! Form::submit('Crear Rol', ['class' => 'btn btn-primary mt-2']) !!}
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-1. Crear formulario para el rol como **resources\views\admin\roles\partials\form.blade.php**:
-    >
-        <div class="form-group">
-            {!! Form::label('name', 'Nombre: ') !!}
-            {!! Form::text('name', null, ['class' => 'form-control' . ($errors->has('name') ? ' is-invalid' :  ''), 'placeholder' => 'Escriba un nombre']) !!}
-            @error('name')
-                <span class="invalid-feedback">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
-        <strong>Permisos</strong>
-        @error('permissions')
-            <br>
-            <small class="text-danger">
-                <strong>{{ $message }}</strong>
-            </small>
-            <br>
-        @enderror
-        @foreach ($permissions as $permission)
-            <div>
-                <label>
-                    {!! Form::checkbox('permissions[]', $permission->id, null, ['class' => 'mr-1']) !!}
-                    {{ $permission->name }}
-                </label>
-            </div>
-        @endforeach
-1. Modificar vista **resources\views\admin\roles\edit.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Editar rol</h1>
-        @stop
-
-        @section('content')
-            <div class="card">
-                <div class="card-body">
-                    {!! Form::model($role, ['route' => ['admin.roles.update', $role], 'method' => 'put']) !!}
-                        @include('admin.roles.partials.form')
-                        {!! Form::submit('Actualizar Rol', ['class' => 'btn btn-primary mt-2']) !!}
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-
-
-### Video 31. Crear un CRUD para usuarios
-1. Modificar el método **update** del controlador **app\Http\Controllers\Admin\RoleController.php**:
-    >
-        public function update(Request $request, Role $role)
-        {
-            $request->validate([
-                'name' => 'required',
-                'permissions' => 'required'
-            ]);
-
-            $role->update([
-                'name' => $request->name
-            ]);
-
-            $role->permissions()->sync($request->permissions);
-
-            return redirect()->route('admin.roles.edit', $role);
-        }
-1. Modificar el archivo de configuración **config\adminlte.php**:
-    >
-        <?php
-
-        return [
-            ≡
-            'menu' => [
-                [
-                    'text'      => 'search',
-                    'search'    => true,
-                    'topnav'    => true,
-                ],
-                [
-                    'text' => 'blog',
-                    'url'  => 'admin/blog',
-                    'can'  => 'manage-blog',
-                ],
-                [
-                    'text'  => 'Dashboard',
-                    'route' => 'admin.home',
-                    'icon'  => 'fas fa-fw fa-tachometer-alt',
-                ],
-                [
-                    'text'      => 'Lista de roles',
-                    'route'     => 'admin.roles.index',
-                    'icon'      => 'fas fa-fw fa-users-cog',
-                    'active'    => ['admin/roles*'],
-                ],
-                [
-                    'text'      => 'Usuarios',
-                    'route'     => 'admin.users.index',
-                    'icon'      => 'fas fa-fw fa-users',
-                    'active'    => ['admin/users*'],
-                ],
-                ≡
-            ],
-            ≡
-            'livewire' => true,
-        ];
-1. Crear controlador **User** para CRUD de usuarios:
-    >
-        $ php artisan make:controller Admin\UserController -r
-1. Programar el controlador **app\Http\Controllers\Admin\UserController.php**:
-    >
-        <?php
-
-        namespace App\Http\Controllers\Admin;
-
-        use App\Http\Controllers\Controller;
-        use App\Models\User;
-        use Illuminate\Http\Request;
-        use Spatie\Permission\Models\Role;
-
-        class UserController extends Controller
-        {
-            /**
-            * Display a listing of the resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function index()
-            {
-                return view('admin.users.index');
-            }
-
-            /**
-            * Show the form for editing the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function edit(User $user)
-            {
-                $roles = Role::all();
-                return view('admin.users.edit', compact('user', 'roles'));
-            }
-
-            /**
-            * Update the specified resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function update(Request $request, User $user)
-            {
-                $user->roles()->sync($request->roles);
-                return redirect()->route('admin.users.edit', $user);
-            }
-        }
-1. Crear las vistas para el CRUD **User**:
-    **resources\views\admin\users\index.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Lista de usuarios</h1>
-        @stop
-
-        @section('content')
-            @livewire('admin-users')
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-    **resources\views\admin\users\edit.blade.php**:
-    >
-        @extends('adminlte::page')
-
-        @section('title', 'Coders Free')
-
-        @section('content_header')
-            <h1>Editar usuario</h1>
-        @stop
-
-        @section('content')
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="h5">Nombre:</h1>
-                    <p class="form-control">{{ $user->name }}</p>
-                    <h1 class="h5">Lista de roles</h1>
-                    {!! Form::model($user, ['route' => ['admin.users.update', $user], 'method' => 'put']) !!}
-                        @foreach ($roles as $role)
-                            <div>
-                                <label>
-                                    {!! Form::checkbox('roles[]', $role->id, null, ['class' => 'mr-1']) !!}
-                                    {{ $role->name }}
-                                </label>
-                            </div>
-                        @endforeach
-                        {!! Form::submit('Asignar rol', ['class' => 'btn btn-primary mt-2']) !!}
-                    {!! Form::close() !!}
-                </div>
-            </div>
-        @stop
-
-        @section('css')
-            <link rel="stylesheet" href="/css/admin_custom.css">
-        @stop
-
-        @section('js')
-            <script> console.log('Hi!'); </script>
-        @stop
-1. Crear ruta para el CRUD **User** en routes\admin.php:
-    >
-        Route::resource('users', UserController::class)->only(['index', 'edit', 'update'])->names('users');
-    Importar controlador **User**:
-    >
-        use App\Http\Controllers\Admin\UserController;
-1. Crear componente de livewire para administrar usuarios:
-    >
-        $ php artisan make:livewire admin-users
-1. Programar controlador del componente **app\Http\Livewire\AdminUsers.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire;
-
-        use App\Models\User;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-
-        class AdminUsers extends Component
-        {
-            use WithPagination;
-
-            protected $paginationTheme = "bootstrap";
-
-            public $search;
-
-            public function render()
-            {
-                $users = User::where('name', 'LIKE', '%' . $this->search . '%')
-                            ->orWhere('email', 'LIKE', '%' . $this->search . '%')
-                            ->paginate(8);
-                return view('livewire.admin-users', compact('users'));
-            }
-
-            public function limpiar_page(){
-                $this->reset('page');
-            }
-        }
-1. Diseñar vista del componente **resources\views\livewire\admin-users.blade.php**:
-    >
-        <div>
-            <div class="card">
-                <div class="card-header">
-                    <input wire:keydown="limpiar_page" wire:model="search" class="form-control w-100" placeholder="Escriba un nombre ...">
-                </div>
-                @if ($users->count())
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
-                                    <th>Email</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($users as $user)
-                                    <tr>
-                                        <td>{{ $user->id }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td width="10px">
-                                            <a class="btn btn-primary" href="{{ route('admin.users.edit', $user) }}">Editar</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        {{ $users->links() }}
-                    </div>
-                @else
-                    <div class="card-body">
-                        <strong>No hay registros ...</strong>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-
-### Video 32. Restringir botones y rutas por permisos
-1. Modificar plantilla **resources\views\navigation-dropdown.blade.php**:
-    >
-        ≡
-        <nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow">
-            <!-- Primary Navigation Menu -->
-            <div class="container">
-                <div class="flex justify-between h-16">
+                <div class="hidden sm:flex sm:items-center sm:ml-6">
                     ≡
                     <!-- Settings Dropdown -->
-                    <div class="hidden sm:flex sm:items-center sm:ml-6">
+                    <div class="ml-3 relative">
                         @auth
                             <x-jet-dropdown align="right" width="48">
                                 ≡
@@ -3744,8 +2873,9 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                                     <div class="block px-4 py-2 text-xs text-gray-400">
                                         {{ __('Manage Account') }}
                                     </div>
+
                                     <x-jet-dropdown-link href="{{ route('profile.show') }}">
-                                        Perfil
+                                        {{ __('Profile') }}
                                     </x-jet-dropdown-link>
 
                                     @can('Leer cursos')
@@ -3759,12 +2889,6 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                                             Administrador
                                         </x-jet-dropdown-link>
                                     @endcan
-
-                                    @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                        <x-jet-dropdown-link href="{{ route('api-tokens.index') }}">
-                                            {{ __('API Tokens') }}
-                                        </x-jet-dropdown-link>
-                                    @endif
                                     ≡
                                 </x-slot>
                             </x-jet-dropdown>
@@ -3772,69 +2896,336 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                             ≡
                         @endauth
                     </div>
-
-                    <!-- Hamburger -->
-                    ≡
                 </div>
-            </div>
-
-            <!-- Responsive Navigation Menu -->
-            <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
                 ≡
-                <!-- Responsive Settings Options -->
-                @auth
-                    <div class="pt-4 pb-1 border-t border-gray-200">
-                        ≡
+            </div>
+        </div>
 
-                        <div class="mt-3 space-y-1">
-                            <!-- Account Management -->
-                            <x-jet-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                                Perfil
-                            </x-jet-responsive-nav-link>
-                            
-                            @can('Leer cursos')
-                                <x-jet-responsive-nav-link href="{{ route('instructor.courses.index') }}" :active="request()->routeIs('instructor.courses.index')">
-                                    Instructor
-                                </x-jet-responsive-nav-link>
-                            @endcan
-                    
-                            @can('Ver dashboard')
-                                <x-jet-responsive-nav-link href="{{ route('admin.home') }}" :active="request()->routeIs('admin.home')">
-                                    Administrador
-                                </x-jet-responsive-nav-link>
-                            @endcan
-
-                            ≡
-                        </div>
-                    </div>
-                @else
+        <!-- Responsive Navigation Menu -->
+        <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+            ≡
+            <!-- Responsive Settings Options -->
+            @auth
+                <div class="pt-4 pb-1 border-t border-gray-200">
                     ≡
-                @endauth
-            </div>  
-        </nav>
-1. Modificar ruta **courses.index** en **routes\instructor.php**:
-    >
-        Route::get('courses', InstructorCourses::class)->middleware('can:Leer cursos')->name('courses.index');
-2. Modificar el método **run** del seeder **database\seeders\UserSeeder.php**:
-    >
-        public function run()
+                    <div class="mt-3 space-y-1">
+                        <!-- Account Management -->
+                        <x-jet-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
+                            {{ __('Profile') }}
+                        </x-jet-responsive-nav-link>
+
+                        @can('Leer cursos')
+                            <x-jet-responsive-nav-link href="{{ route('instructor.courses.index') }}" :active="request()->routeIs('instructor.courses.index')">
+                                Instructor
+                            </x-jet-responsive-nav-link>
+                        @endcan
+                
+                        @can('Ver dashboard')
+                            <x-jet-responsive-nav-link href="{{ route('admin.home') }}" :active="request()->routeIs('admin.home')">
+                                Administrador
+                            </x-jet-responsive-nav-link>
+                        @endcan    
+                        ≡
+                    </div>
+                </div>
+            @else
+                ≡
+            @endauth
+        </div>
+    </nav>
+    ```
+6. Crear controlador para administrar roles:
+    + $ php artisan make:controller Admin/RoleController -r
+7. Definir los métodos del controlador **app\Http\Controllers\Admin\RoleController.php**:
+    ```php
+    ≡
+    class RoleController extends Controller
+    {
+        ≡
+        public function index()
         {
-            $user = User::create([
-                'name' => 'Pedro Jesús Bazó Canelón',
-                'email' => 'bazo.pedro@gmail.com',
-                'password' => bcrypt('12345678')
+            $roles = Role::all();
+            return view('admin.roles.index', compact('roles'));
+        }
+
+        ≡
+        public function create()
+        {
+            $permissions = Permission::all();
+            return view('admin.roles.create', compact('permissions'));
+        }
+
+        ≡
+        public function store(Request $request)
+        {
+            $request->validate([
+                'name' => 'required',
+                'permissions' => 'required'
+            ]);
+            
+            $role = Role::create([
+                'name' => $request->name
             ]);
 
-            $user->assignRole('Admin');
+            $role->permissions()->attach($request->permissions);
 
-            User::factory(99)->create();
-        }  
-3. Ejecutar:
-    >
-        $ php artisan migrate:fresh --seed
-4. Modificar archivo de configuración **config\adminlte.php**:
-    >
+            return redirect()->route('admin.roles.index')->with('info', 'El rol se creo satisfactoriamente');
+        }
+
         ≡
+        public function show(Role $role)
+        {
+            return view('admin.roles.show', compact('role'));
+        }
+
+        ≡
+        public function edit(Role $role)
+        {
+            $permissions = Permission::all();
+            return view('admin.roles.edit', compact('role', 'permissions'));
+        }
+
+        ≡
+        public function update(Request $request, Role $role)
+        {
+            $request->validate([
+                'name' => 'required',
+                'permissions' => 'required'
+            ]);
+
+            $role->update([
+                'name' => $request->name
+            ]);
+
+            $role->permissions()->sync($request->permissions);
+            
+            return redirect()->route('admin.roles.edit', $role);
+        }
+
+        ≡
+        public function destroy(Role $role)
+        {
+            $role->delete();
+            return redirect()->route('admin.roles.index')->with('info', 'El rol se eliminó con éxito');
+        }
+    }
+    ```
+    + Importar la definición de los modelos **Permission** y **Role**:
+    ```php
+    use Spatie\Permission\Models\Permission;
+    use Spatie\Permission\Models\Role;
+    ```
+8. Publicar vista de AdminLTE:
+    + $ php artisan adminlte:install --only=main_views
+    + **Nota**: En **resources\views\vendor\adminlte\page.blade.php** es de donde se extienden las plantillas.
+9. Instalar Laravel Collective para hacer formularios:
+    + $ composer require laravelcollective/html
+    + [Documentación Laravel Collective](https://laravelcollective.com/docs/6.x/html)
+10. Crear vistas del CRUD Role **resources\views\admin\roles\index.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'Roles | Sefar Univeral')
+
+    @section('content_header')
+        <h1>Lista de roles</h1>
+    @stop
+
+    @section('content')
+        @if (session('info'))
+            <div class="alert alert-primary" role="alert">
+                <strong>¡Éxito!</strong> {{ session('info') }}
+                important alert message.
+            </div>
+            
+        @endif
+
+        <div class="card">
+            <div class="card-header">
+                <a href="{{ route('admin.roles.create') }}">Crear rol</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($roles as $role)
+                            <tr>
+                                <td>{{ $role->id }}</td>
+                                <td>{{ $role->name }}</td>
+                                <td width="10px">
+                                    <a class="btn btn-secondary" href="{{ route('admin.roles.edit', $role) }}">Editar</a>
+                                </td>
+                                <td width="10px">
+                                    <form action="{{ route('admin.roles.destroy', $role) }}" method="POST">
+                                        @method('delete')
+                                        @csrf
+                                        <button class="btn btn-danger" type="submit">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4">No hay ningún rol registrado</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="/css/admin_custom.css">
+    @stop
+
+    @section('js')
+        <script> console.log('Hi!'); </script>
+    @stop
+    ```
+11. Crear vistas del CRUD Role **resources\views\admin\roles\create.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'Crear rol | Sefar Universal')
+
+    @section('content_header')
+        <h1>Crear nuevo rol</h1>
+    @stop
+
+    @section('content')
+        <div class="card">
+            <div class="card-body">
+                {!! Form::open(['route' => 'admin.roles.store']) !!}
+                    @include('admin.roles.partials.form')
+                    {!! Form::submit('Crear Rol', ['class' => 'btn btn-primary mt-2']) !!}
+                {!! Form::close() !!}
+            </div>
+        </div>
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="/css/admin_custom.css">
+    @stop
+
+    @section('js')
+        <script> console.log('Hi!'); </script>
+    @stop
+    ```
+12. Crear vistas del CRUD Role **resources\views\admin\roles\show.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'Sefar Universal')
+
+    @section('content_header')
+        <h1>Sefar Universal</h1>
+    @stop
+
+    @section('content')
+        <p>Welcome to this beautiful admin panel.</p>
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="/css/admin_custom.css">
+    @stop
+
+    @section('js')
+        <script> console.log('Hi!'); </script>
+    @stop
+    ```
+13. Crear vistas del CRUD Role **resources\views\admin\roles\edit.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'Editar rol | Sefar Universal')
+
+    @section('content_header')
+        <h1>Editar rol</h1>
+    @stop
+
+    @section('content')
+        <div class="card">
+            <div class="card-body">
+                {!! Form::model($role, ['route' => ['admin.roles.update', $role], 'method' => 'put']) !!}
+                    @include('admin.roles.partials.form')
+                    {!! Form::submit('Actualizar Rol', ['class' => 'btn btn-primary mt-2']) !!}
+                {!! Form::close() !!}
+            </div>
+        </div>
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="/css/admin_custom.css">
+    @stop
+
+    @section('js')
+        <script> console.log('Hi!'); </script>
+    @stop
+    ```
+14. Crear formulario para el rol como **resources\views\admin\roles\partials\form.blade.php**:
+    ```php
+    <div class="form-group">
+        {!! Form::label('name', 'Nombre: ') !!}
+        {!! Form::text('name', null, ['class' => 'form-control' . ($errors->has('name') ? ' is-invalid' :  ''), 'placeholder' => 'Escriba un nombre']) !!}
+        @error('name')
+            <span class="invalid-feedback">
+                <strong>{{ $message }}</strong>
+            </span>
+        @enderror
+    </div>
+    <strong>Permisos</strong>
+    @error('permissions')
+        <br>
+        <small class="text-danger">
+            <strong>{{ $message }}</strong>
+        </small>
+        <br>
+    @enderror
+    @foreach ($permissions as $permission)
+        <div>
+            <label>
+                {!! Form::checkbox('permissions[]', $permission->id, null, ['class' => 'mr-1']) !!}
+                {{ $permission->name }}
+            </label>
+        </div>
+    @endforeach
+    ```
+15. Modificar el archivo de rutas **routes\admin.php**:
+    ```php
+    <?php
+
+    use Illuminate\Support\Facades\Route;
+    use App\Http\Controllers\Admin\HomeController;
+    use App\Http\Controllers\Admin\RoleController;
+    use App\Http\Controllers\Admin\UserController;
+
+    Route::get('', [HomeController::class, 'index'])->middleware('can:Ver dashboard')->name('home');
+
+    Route::resource('roles', RoleController::class)->names('roles');
+
+    Route::resource('users', UserController::class)->only(['index', 'edit', 'update'])->names('users');
+    ```
+16. Modificar el archivo de configuración **config\adminlte.php**:
+    ```php
+    <?php
+
+    return [
+        ≡
+        'logo' => '<b>Sefar</b> Universal',
+        'logo_img' => 'images/logo.png',
+        ≡
+        'logo_img_alt' => 'Logo Sefar',
+
+        ≡
+        'dashboard_url' => '/',
+        ≡
+
         'menu' => [
             [
                 'text'      => 'search',
@@ -3866,33 +3257,285 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                 'can'       => 'Leer usuarios',
                 'active'    => ['admin/users*'],
             ],
-            ≡
-5. Proteger ruta **home** en **routes\admin.php**:
-    >
-        Route::get('', [HomeController::class, 'index'])->middleware('can:Ver dashboard')->name('home');
-6. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\RoleController.php** para proteger las rutas **roles**:
-    >
+            ['header' => 'OPCIONES DE CURSO'],
+            [
+                'text' => 'Categoría',
+                /* 'route'  => 'admin.categories.index', */
+                'icon' => 'fas fa-fw fa-cogs',
+            ],
+            [
+                'text' => 'Niveles',
+                /* 'route'  => 'admin.levels.index', */
+                'icon' => 'fas fa-fw fa-chart-line',
+            ],
+            [
+                'text' => 'Precios',
+                /* 'route'  => 'admin.prices.index', */
+                'icon' => 'fab fa-fw fa-cc-visa',
+            ],
+            [
+                'text' => 'Pendientes de aprobación',
+                /* 'route'  => 'admin.courses.index', */
+                'icon' => 'fas fa-fw fa-user',
+            ],
+        ],
         ≡
-        class RoleController extends Controller
-        {
-            public function __construct(){
-                $this->middleware('can:Listar roles')->only('index');
-                $this->middleware('can:Crear role')->only('create', 'store');
-                $this->middleware('can:Editar role')->only('edit', 'update');
-                $this->middleware('can:Eliminar role')->only('destroy');
-            }
-            ≡
-7. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\UserController.php** para proteger las rutas **users**:
-    >
-        ≡
-        class UserController extends Controller
-        {
-            public function __construct(){
-                $this->middleware('can:Leer usuarios')->only('index');
-                $this->middleware('can:Editar usuarios')->only('edit', 'update');
-            }
-            ≡
+        'livewire' => true,
+    ];
+    ```
+17. Crear controlador **User** para CRUD de usuarios:
+    + $ php artisan make:controller Admin\UserController -r
+18. Programar el controlador **app\Http\Controllers\Admin\UserController.php**:
+    ```php
+    <?php
 
+    namespace App\Http\Controllers\Admin;
+
+    use App\Http\Controllers\Controller;
+    use App\Models\User;
+    use Illuminate\Http\Request;
+    use Spatie\Permission\Models\Role;
+
+    class UserController extends Controller
+    {
+        /**
+        * Display a listing of the resource.
+        *
+        * @return \Illuminate\Http\Response
+        */
+        public function index()
+        {
+            return view('admin.users.index');
+        }
+
+        /**
+        * Show the form for editing the specified resource.
+        *
+        * @param  int  $id
+        * @return \Illuminate\Http\Response
+        */
+        public function edit(User $user)
+        {
+            $roles = Role::all();
+            return view('admin.users.edit', compact('user', 'roles'));
+        }
+
+        /**
+        * Update the specified resource in storage.
+        *
+        * @param  \Illuminate\Http\Request  $request
+        * @param  int  $id
+        * @return \Illuminate\Http\Response
+        */
+        public function update(Request $request, User $user)
+        {
+            $user->roles()->sync($request->roles);
+            return redirect()->route('admin.users.edit', $user);
+        }
+    }
+    ```
+19. Crear vistas del CRUD User **resources\views\admin\users\index.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'usuarios | Sefar Universal')
+
+    @section('content_header')
+        <h1>Lista de usuarios</h1>
+    @stop
+
+    @section('content')
+        @livewire('admin-users')
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="/css/admin_custom.css">
+    @stop
+
+    @section('js')
+        <script> console.log('Hi!'); </script>
+    @stop
+    ```
+20. Crear vistas del CRUD User **resources\views\admin\users\edit.blade.php**:
+    ```php
+    @extends('adminlte::page')
+
+    @section('title', 'Editar usuario | Sefar Universal')
+
+    @section('content_header')
+        <h1>Editar usuario</h1>
+    @stop
+
+    @section('content')
+        <div class="card">
+            <div class="card-body">
+                <h1 class="h5">Nombre:</h1>
+                <p class="form-control">{{ $user->name }}</p>
+                <h1 class="h5">Lista de roles</h1>
+                {!! Form::model($user, ['route' => ['admin.users.update', $user], 'method' => 'put']) !!}
+                    @foreach ($roles as $role)
+                        <div>
+                            <label>
+                                {!! Form::checkbox('roles[]', $role->id, null, ['class' => 'mr-1']) !!}
+                                {{ $role->name }}
+                            </label>
+                        </div>
+                    @endforeach
+                    {!! Form::submit('Asignar rol', ['class' => 'btn btn-primary mt-2']) !!}
+                {!! Form::close() !!}
+            </div>
+        </div>
+    @stop
+
+    @section('css')
+        <link rel="stylesheet" href="/css/admin_custom.css">
+    @stop
+
+    @section('js')
+        <script> console.log('Hi!'); </script>
+    @stop
+    ```
+21. Crear componente de livewire para administrar usuarios:
+    + $ php artisan make:livewire admin-users
+22. Programar controlador del componente **app\Http\Livewire\AdminUsers.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Livewire;
+
+    use App\Models\User;
+    use Livewire\Component;
+    use Livewire\WithPagination;
+
+    class AdminUsers extends Component
+    {
+        use WithPagination;
+
+        protected $paginationTheme = "bootstrap";
+
+        public $search;
+
+        public function render()
+        {
+            $users = User::where('name', 'LIKE', '%' . $this->search . '%')
+                        ->orWhere('email', 'LIKE', '%' . $this->search . '%')
+                        ->paginate(8);
+            return view('livewire.admin-users', compact('users'));
+        }
+
+        public function limpiar_page(){
+            $this->reset('page');
+        }
+    }
+    ```
+23. Diseñar vista del componente **resources\views\livewire\admin-users.blade.php**:
+    ```php
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <input wire:keydown="limpiar_page" wire:model="search" class="form-control w-100" placeholder="Escriba un nombre ...">
+            </div>
+            @if ($users->count())
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($users as $user)
+                                <tr>
+                                    <td>{{ $user->id }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td width="10px">
+                                        <a class="btn btn-primary" href="{{ route('admin.users.edit', $user) }}">Editar</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    {{ $users->links() }}
+                </div>
+            @else
+                <div class="card-body">
+                    <strong>No hay registros ...</strong>
+                </div>
+            @endif
+        </div>
+    </div>
+    ```
+24. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\RoleController.php** para proteger las rutas **roles**:
+    ```php
+    ≡
+    class RoleController extends Controller
+    {
+        public function __construct(){
+            $this->middleware('can:Listar role')->only('index');
+            $this->middleware('can:Crear role')->only('create', 'store');
+            $this->middleware('can:Editar role')->only('edit', 'update');
+            $this->middleware('can:Eliminar role')->only('destroy');
+        }
+        ≡
+    }
+    ```
+    >
+
+25. Crear el método **__construct** en el controlador **app\Http\Controllers\Admin\UserController.php** para proteger las rutas **users**:
+    ```php
+    ≡
+    class UserController extends Controller
+    {
+        public function __construct(){
+            $this->middleware('can:Leer usuarios')->only('index');
+            $this->middleware('can:Editar usuarios')->only('edit', 'update');
+        }
+        ≡
+    }
+    ```
+26. Crear commit:
+    + $ git add .
+    + $ git commit -m "Implementación de roles y permisos"
+    + $ git push -u origin main
+
+
+
+
+
+
+
+
+
+≡
+    ```php
+    ***
+    ```
+mmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+mmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+
+***
+≡
+    ```php
+    ***
+    ```
+1. Crear commit:
+    + $ git add .
+    + $ git commit -m "Definición de las migraciones"
+    + $ git push -u origin main
+
+
+
+********* INICIO
 
 ## Sección 6: Instructores
 

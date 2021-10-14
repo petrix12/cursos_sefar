@@ -1,13 +1,13 @@
 @extends('adminlte::page')
 
-@section('title', 'Curso Sefar Universal')
+@section('title', 'Cursos Sefar Universal')
 
 @section('content_header')
-    <h1>Curso Sefar Universal</h1>
+    <h1>Cursos Sefar Universal</h1>
 @stop
 
 @section('content')
-    <p>Curso Sefar Universal</p>
+    <p>Cursos Sefar Universal</p>
 @stop
 
 @section('css')
