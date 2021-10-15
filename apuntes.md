@@ -3533,664 +3533,164 @@
     + $ git commit -m "Implementación de roles y permisos"
     + $ git push -u origin main
 
-
-
-
-
-
-
-
-
-≡
+## Implementación del módulo instructores
++ https://ckeditor.com
++ https://ckeditor.com/ckeditor-5/download
+1. Diseñar la vista **resources\views\livewire\instructor\courses-index.blade.php**:
     ```php
-    ***
-    ```
-mmmmmmmmmmmmmmmmmmmmmmmmmmm
-
-mmmmmmmmmmmmmmmmmmmmmmmmmmm
-
-
-
-***
-≡
-    ```php
-    ***
-    ```
-1. Crear commit:
-    + $ git add .
-    + $ git commit -m "Definición de las migraciones"
-    + $ git push -u origin main
-
-
-
-********* INICIO
-
-## Sección 6: Instructores
-
-
-### Video 33. Mostrar el listado de cursos de un instructor
-1. Diseñar la vista **resources\views\livewire\instructor-courses.blade.php**:
-    ##### https://tailwindui.com/preview
-    >
-        <div class="container py-8">
-            <x-table-responsive>
-                <div class="px-6 py-4">
-                    <input wire:keydown="limpiar_page" wire:model="search" class="form-input w-full shadow-sm" placeholder="Ingrese el nombre de un curso ...">
-                </div>
-                @if ($courses->count())
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+    <div class="container py-8">
+        <x-table-responsive>
+            <div class="px-6 py-4">
+                <input wire:keydown="limpiar_page" wire:model="search" class="form-input w-full shadow-sm" placeholder="Ingrese el nombre de un curso ...">
+                <a class="btn btn-danger ml-2" href="{{ route('instructor.courses.create') }}">Crear nuevo curso</a>
+            </div>
+            @if ($courses->count())
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Matriculados
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Calificación
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Edit</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($courses as $course)
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nombre
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Matriculados
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Calificación
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Edit</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($courses as $course)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full" src="{{ Storage::url($course->image->url) }}" alt="">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            @isset($course->image)
+                                                <img class="h-10 w-10 rounded-full object-cover object-center" src="{{ Storage::url($course->image->url) }}" alt="">
+                                            @else
+                                                <img class="h-10 w-10 rounded-full object-cover object-center" src="https://images.pexels.com/photos/5940721/pexels-photo-5940721.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="">   
+                                            @endisset
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $course->title }}
                                             </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $course->title }}
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    {{ $course->category->name }}
-                                                </div>
+                                            <div class="text-sm text-gray-500">
+                                                {{ $course->category->name }}
                                             </div>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $course->students->count() }}</div>
-                                        <div class="text-sm text-gray-500">Alumnos matriculados</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 flex items-center">
-                                            {{ $course->rating }}
-                                            <ul class="flex text-sm ml-2">
-                                                <li class="mr-1">
-                                                    <i class="fas fa-star text-{{ $course->rating >= 1 ? 'yellow' : 'gray' }}-400"></i>
-                                                </li>
-                                                <li class="mr-1">
-                                                    <i class="fas fa-star text-{{ $course->rating >= 2 ? 'yellow' : 'gray' }}-400"></i>
-                                                </li>
-                                                <li class="mr-1">
-                                                    <i class="fas fa-star text-{{ $course->rating >= 3 ? 'yellow' : 'gray' }}-400"></i>
-                                                </li>
-                                                <li class="mr-1">
-                                                    <i class="fas fa-star text-{{ $course->rating >= 4 ? 'yellow' : 'gray' }}-400"></i>
-                                                </li>
-                                                <li class="mr-1">
-                                                    <i class="fas fa-star text-{{ $course->rating == 5 ? 'yellow' : 'gray' }}-400"></i>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="text-sm text-gray-500">Valoración del curso</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @switch($course->status)
-                                            @case(1)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                    Borrador
-                                                </span>   
-                                                @break
-                                            @case(2)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                    Revisión
-                                                </span>   
-                                                @break
-                                            @case(3)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Publicado
-                                                </span>   
-                                                @break
-                                            @default        
-                                        @endswitch
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    </td>
-                                </tr>  
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="px-6 py-4">
-                        {{ $courses->links() }}
-                    </div>
-                @else
-                    <div class="px-6 py-4">
-                        No hay ningún registro coincidente
-                    </div>
-                @endif
-            </x-table-responsive>
-        </div>
-1. Crear componente **resources\views\components\table-responsive.blade.php**:
-    >
-        <div class="flex flex-col">
-            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $course->students->count() }}</div>
+                                    <div class="text-sm text-gray-500">Alumnos matriculados</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 flex items-center">
+                                        {{ $course->rating }}
+                                        <ul class="flex text-sm ml-2">
+                                            <li class="mr-1">
+                                                <i class="fas fa-star text-{{ $course->rating >= 1 ? 'yellow' : 'gray' }}-400"></i>
+                                            </li>
+                                            <li class="mr-1">
+                                                <i class="fas fa-star text-{{ $course->rating >= 2 ? 'yellow' : 'gray' }}-400"></i>
+                                            </li>
+                                            <li class="mr-1">
+                                                <i class="fas fa-star text-{{ $course->rating >= 3 ? 'yellow' : 'gray' }}-400"></i>
+                                            </li>
+                                            <li class="mr-1">
+                                                <i class="fas fa-star text-{{ $course->rating >= 4 ? 'yellow' : 'gray' }}-400"></i>
+                                            </li>
+                                            <li class="mr-1">
+                                                <i class="fas fa-star text-{{ $course->rating == 5 ? 'yellow' : 'gray' }}-400"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="text-sm text-gray-500">Valoración del curso</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @switch($course->status)
+                                        @case(1)
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Borrador
+                                            </span>   
+                                            @break
+                                        @case(2)
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                Revisión
+                                            </span>   
+                                            @break
+                                        @case(3)
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Publicado
+                                            </span>   
+                                            @break
+                                        @default        
+                                    @endswitch
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="{{ route('instructor.courses.edit', $course) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                </td>
+                            </tr>  
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="px-6 py-4">
+                    {{ $courses->links() }}
+                </div>
+            @else
+                <div class="px-6 py-4">
+                    No hay ningún registro coincidente
+                </div>
+            @endif
+        </x-table-responsive>
+    </div>
+    ```
+    + https://tailwindui.com/preview
+2. Crear componente **resources\views\components\table-responsive.blade.php**:
+    ```php
+    <div class="flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                        {{ $slot }}
+                    {{ $slot }}
 
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
+    ```
+3. Programar controlador **app\Http\Controllers\Instructor\CourseController.php**:
+    ```php
+    ≡
+    use App\Models\Category;
+    use App\Models\Course;
+    use App\Models\Level;
+    use App\Models\Price;
+    use Illuminate\Support\Facades\Storage;
+    ≡
 
-
-### Video 34. Reorganizar rutas
-1. Modificar archivo de rutas **routes\instructor.php**:
-    >
-        <?php
-
-        use App\Http\Controllers\Instructor\CourseController;
-        use Illuminate\Support\Facades\Route;
-
-        Route::redirect('', 'instructor/courses');
-
-        Route::resource('courses', CourseController::class)->names('courses');
-1. Programar controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
-        <?php
-
-        namespace App\Http\Controllers\Instructor;
-
-        use App\Http\Controllers\Controller;
-        use App\Models\Course;
-        use Illuminate\Http\Request;
-
-        class CourseController extends Controller
-        {
-            /**
-            * Display a listing of the resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function index()
-            {
-                return view('instructor.courses.index');
-            }
-
-            /**
-            * Show the form for creating a new resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function create()
-            {
-                return view('instructor.courses.create');
-            }
-
-            /**
-            * Store a newly created resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @return \Illuminate\Http\Response
-            */
-            public function store(Request $request)
-            {
-                //
-            }
-
-            /**
-            * Display the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function show(Course $course)
-            {
-                return view('instructor.courses.show', compact('course'));
-            }
-
-            /**
-            * Show the form for editing the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function edit(Course $course)
-            {
-                return view('instructor.courses.edit', compact('course'));
-            }
-
-            /**
-            * Update the specified resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function update(Request $request, Course $course)
-            {
-                //
-            }
-
-            /**
-            * Remove the specified resource from storage.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function destroy(Course $course)
-            {
-                //
-            }
+    class CourseController extends Controller
+    {
+        public function __construct(){
+            $this->middleware('can:Leer cursos')->only('index');
+            $this->middleware('can:Crear cursos')->only('create', 'store');
+            $this->middleware('can:Actualizar cursos')->only('edit', 'update', 'goals');
+            $this->middleware('can:Eliminar cursos')->only('destroy');
         }
-1. Crear las vistas para el controlador anterior:
-    **resources\views\instructor\courses\index.blade.php**:
-    >
-        <x-app-layout>
-            @livewire('instructor.courses-index')
-        </x-app-layout>
-    **resources\views\instructor\courses\create.blade.php**:
-    >
-        <x-app-layout></x-app-layout>
-    **resources\views\instructor\courses\edit.blade.php**:
-    >
-        <x-app-layout></x-app-layout>
-    **resources\views\instructor\courses\show.blade.php**:
-    >
-        <x-app-layout></x-app-layout>
-
-
-### Video 35. Formulario para actualizar información básica de curso
-###### https://ckeditor.com/
-###### https://ckeditor.com/ckeditor-5/download/
-1. En resources\views\livewire\instructor\courses-index.blade.php:
-    Cambiar:
-    >
-        <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-    Por:
-    >
-        <a href="{{ route('instructor.courses.edit', $course) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-1. Diseñar la vista **resources\views\instructor\courses\edit.blade.php**:
-    >
-        <x-app-layout>
-            <div class="container py-8 grid grid-cols-5">
-                <aside>
-                    <h1 class="font-bold text-lg mb-4">Edición del curso</h1>
-                    <ul class="text-sm text-gray-600">
-                        <li class="leading-7 mb-1 border-l-4 border-indigo-400 pl-2">
-                            <a href="">Información del curso</a>
-                        </li>
-                        <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                            <a href="">Lecciones del curso</a>
-                        </li>
-                        <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                            <a href="">Metas del curso</a>
-                        </li>
-                        <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                            <a href="">Estudiantes</a>
-                        </li>
-                    </ul>
-                </aside>
-                <div class="col-span-4 card">
-                    <div class="card-body text-gray-600">
-                        <h1 class="text-2xl font-bold">INFORMACIÓN DEL CURSO</h1>
-                        <hr class="mt-2 mb-6">
-                        {!! Form::model($course, ['route' => ['instructor.courses.update', $course], 'method' => 'put', 'files' => true]) !!}
-                            <div class="mb-4">
-                                {!! Form::label('title', 'Título del curso') !!}
-                                {!! Form::text('title', null, ['class' => 'form-input block w-full mt-1']) !!}
-                            </div>
-                            <div class="mb-4">
-                                {!! Form::label('slug', 'Slug del curso') !!}
-                                {!! Form::text('slug', null, ['class' => 'form-input block w-full mt-1']) !!}
-                            </div>
-                            <div class="mb-4">
-                                {!! Form::label('subtitle', 'Subtítulo del curso') !!}
-                                {!! Form::text('subtitle', null, ['class' => 'form-input block w-full mt-1']) !!}
-                            </div>
-                            <div class="mb-4">
-                                {!! Form::label('description', 'Descripción del curso') !!}
-                                {!! Form::textarea('description', null, ['class' => 'form-input block w-full mt-1']) !!}
-                            </div>
-                            <div class="grid grid-cols-3 gap-4">
-                                <div>
-                                    {!! Form::label('category_id', 'Categoría:') !!}
-                                    {!! Form::select('category_id', $categories, null, ['class' => 'form-input block w-full mt-1']) !!}
-                                </div>
-                                <div>
-                                    {!! Form::label('level_id', 'Niveles:') !!}
-                                    {!! Form::select('level_id', $levels, null, ['class' => 'form-input block w-full mt-1']) !!}
-                                </div>
-                                <div>
-                                    {!! Form::label('price_id', 'Precio:') !!}
-                                    {!! Form::select('price_id', $prices, null, ['class' => 'form-input block w-full mt-1']) !!}
-                                </div>
-                            </div>
-                            <h1 class="text-2xl font-bold mt-8 mb-2">Imagen del curso</h1>
-                            <div class="grid grid-cols-2 gap-4">
-                                <figure>
-                                    <img id="picture" class="w-full h-64 bg-cover bg-center" src="{{ Storage::url($course->image->url) }}" alt="">
-                                </figure>
-                                <div>
-                                    <p class="mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate recusandae nesciunt nostrum, tenetur ducimus fugiat aspernatur beatae alias magni! Accusantium libero aspernatur rem minus quidem quo voluptatem praesentium esse voluptatibus.</p>
-                                    {!! Form::file('file', ['class' => 'form-input w-full', 'id' => 'file']) !!}
-                                </div>
-                            </div>
-
-                            <div class="flex justify-end">
-                                {!! Form::submit('Actualizar información', ['class' => 'btn btn-primary']) !!}
-                            </div>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
-            </div>
-            <x-slot name="js">
-                <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
-                <script>
-                    //Slug automático
-                    document.getElementById("title").addEventListener('keyup', slugChange);
-
-                    function slugChange(){
-                        
-                        title = document.getElementById("title").value;
-                        document.getElementById("slug").value = slug(title);
-
-                    }
-
-                    function slug (str) {
-                        var $slug = '';
-                        var trimmed = str.trim(str);
-                        $slug = trimmed.replace(/[^a-z0-9-]/gi, '-').
-                        replace(/-+/g, '-').
-                        replace(/^-|-$/g, '');
-                        return $slug.toLowerCase();
-                    }
-
-                    //CKEDITOR
-                    // Copiado de https://ckeditor.com/docs/ckeditor5/latest/builds/guides/integration/configuration.html
-                    // Para habilitar todas las opciones: https://ckeditor.com/docs/ckeditor5/latest/builds/guides/quick-start.html
-                    ClassicEditor
-                        .create( document.querySelector( '#description' ), {
-                            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'blockQuote' ],
-                            heading: {
-                                options: [
-                                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
-                                ]
-                            }
-                        } )
-                        .catch( error => {
-                            console.log( error );
-                        } );
-
-                    //Cambiar imagen
-                    document.getElementById("file").addEventListener('change', cambiarImagen);
-
-                    function cambiarImagen(event){
-                        var file = event.target.files[0];
-
-                        var reader = new FileReader();
-                        reader.onload = (event) => {
-                            document.getElementById("picture").setAttribute('src', event.target.result); 
-                        };
-
-                        reader.readAsDataURL(file);
-                    }    
-                </script>
-            </x-slot>
-        </x-app-layout>
-1. Modificar la plantilla **resources\views\layouts\app.blade.php**:
-    >
-        <!DOCTYPE html>
-        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-            <head>
-                ≡
-            </head>
-            <body class="font-sans antialiased">
-                ≡
-
-                @livewireScripts
-
-                @isset($js)
-                    {{ $js }}  
-                @endisset
-            </body>
-        </html>
-1. Modificar el controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
-        <?php
-
-        namespace App\Http\Controllers\Instructor;
-
-        use App\Http\Controllers\Controller;
-        use App\Models\Category;
-        use App\Models\Course;
-        use App\Models\Level;
-        use App\Models\Price;
-        use Illuminate\Http\Request;
-
-        class CourseController extends Controller
+        ≡
+        public function index()
         {
-            /**
-            * Display a listing of the resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function index()
-            {
-                return view('instructor.courses.index');
-            }
-
-            /**
-            * Show the form for creating a new resource.
-            *
-            * @return \Illuminate\Http\Response
-            */
-            public function create()
-            {
-                return view('instructor.courses.create');
-            }
-
-            /**
-            * Store a newly created resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @return \Illuminate\Http\Response
-            */
-            public function store(Request $request)
-            {
-                //
-            }
-
-            /**
-            * Display the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function show(Course $course)
-            {
-                return view('instructor.courses.show', compact('course'));
-            }
-
-            /**
-            * Show the form for editing the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function edit(Course $course)
-            {
-                // de esta forma recuperamos una colección con todos los nombres de las categorias y
-                // con el indice de las categorias a las que correponde
-                $categories = Category::pluck('name', 'id');
-                $levels = Level::pluck('name', 'id');
-                $prices = Price::pluck('name', 'id');
-                return view('instructor.courses.edit', compact('course','categories','levels','prices'));
-            }
-
-            /**
-            * Update the specified resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function update(Request $request, Course $course)
-            {
-                //
-            }
-
-            /**
-            * Remove the specified resource from storage.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-            */
-            public function destroy(Course $course)
-            {
-                //
-            }
+            return view('instructor.courses.index');
         }
-
-
-### Video 36. Formulario para crear un nuevo curso
-1. Modificar **resources\views\livewire\instructor\courses-index.blade.php**:
-    >
-        <div class="container py-8">
-            <x-table-responsive>
-                <div class="px-6 py-4 flex">
-                    <input wire:keydown="limpiar_page" wire:model="search" class="form-input flex-1 shadow-sm" placeholder="Ingrese el nombre de un curso ...">
-                    <a class="btn btn-danger ml-2" href="{{ route('instructor.courses.create') }}">Crear nuevo curso</a>
-                </div>
-                ≡
-1. Modificar la vista **resources\views\instructor\courses\create.blade.php**:
-    >
-        <x-app-layout>
-            <div class="container py-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h1 class="text-2xl font-bold">CREAR NUEVO CURSO</h1>
-                        <hr class="mt-2 mb-6">
-                        {!! Form::open(['route' => 'instructor.courses.store','files' => true, 'autocomplet' => 'off']) !!}
-                            {!! Form::hidden('user_id', auth()->user()->id) !!}
-
-                            @include('instructor.courses.partials.form')
-
-                            <div class="flex justify-end">
-                                {!! Form::submit('Crear curso', ['class' => 'btn btn-primary cursor-pointer']) !!}
-                            </div>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
-            </div>
-            <x-slot name="js">
-                <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
-                <script src="{{ asset('js\instructor\courses\form.js') }}"></script>
-            </x-slot>
-        </x-app-layout>
-1. Crar vista **resources\views\instructor\courses\partials\form.blade.php**:
-    >
-        <div class="mb-4">
-            {!! Form::label('title', 'Título del curso') !!}
-            {!! Form::text('title', null, ['class' => 'form-input block w-full mt-1']) !!}
-        </div>
-        <div class="mb-4">
-            {!! Form::label('slug', 'Slug del curso') !!}
-            {!! Form::text('slug', null, ['class' => 'form-input block w-full mt-1']) !!}
-        </div>
-        <div class="mb-4">
-            {!! Form::label('subtitle', 'Subtítulo del curso') !!}
-            {!! Form::text('subtitle', null, ['class' => 'form-input block w-full mt-1']) !!}
-        </div>
-        <div class="mb-4">
-            {!! Form::label('description', 'Descripción del curso') !!}
-            {!! Form::textarea('description', null, ['class' => 'form-input block w-full mt-1']) !!}
-        </div>
-        <div class="grid grid-cols-3 gap-4">
-            <div>
-                {!! Form::label('category_id', 'Categoría:') !!}
-                {!! Form::select('category_id', $categories, null, ['class' => 'form-input block w-full mt-1']) !!}
-            </div>
-            <div>
-                {!! Form::label('level_id', 'Niveles:') !!}
-                {!! Form::select('level_id', $levels, null, ['class' => 'form-input block w-full mt-1']) !!}
-            </div>
-            <div>
-                {!! Form::label('price_id', 'Precio:') !!}
-                {!! Form::select('price_id', $prices, null, ['class' => 'form-input block w-full mt-1']) !!}
-            </div>
-        </div>
-        <h1 class="text-2xl font-bold mt-8 mb-2">Imagen del curso</h1>
-        <div class="grid grid-cols-2 gap-4">
-            <figure>
-                @isset($course)
-                    <img id="picture" class="w-full h-64 object-cover object-center" src="{{ Storage::url($course->image->url) }}" alt="">
-                @else
-                    <img id="picture" class="w-full h-64 object-cover object-center" src="https://images.pexels.com/photos/5940721/pexels-photo-5940721.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="">
-                @endisset
-            </figure>
-            <div>
-                <p class="mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate recusandae nesciunt nostrum, tenetur ducimus fugiat aspernatur beatae alias magni! Accusantium libero aspernatur rem minus quidem quo voluptatem praesentium esse voluptatibus.</p>
-                {!! Form::file('file', ['class' => 'form-input w-full', 'id' => 'file']) !!}
-            </div>
-        </div>
-    ##### Ir a https://www.pexels.com/es-es/buscar/course/ y copiar la dirección de una imagen
-1. Modificar vista **resources\views\instructor\courses\edit.blade.php**:
-    >
-        <x-app-layout>
-            <div class="container py-8 grid grid-cols-5">
-                <aside>
-                    <h1 class="font-bold text-lg mb-4">Edición del curso</h1>
-                    <ul class="text-sm text-gray-600">
-                        <li class="leading-7 mb-1 border-l-4 border-indigo-400 pl-2">
-                            <a href="">Información del curso</a>
-                        </li>
-                        <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                            <a href="">Lecciones del curso</a>
-                        </li>
-                        <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                            <a href="">Metas del curso</a>
-                        </li>
-                        <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                            <a href="">Estudiantes</a>
-                        </li>
-                    </ul>
-                </aside>
-                <div class="col-span-4 card">
-                    <div class="card-body text-gray-600">
-                        <h1 class="text-2xl font-bold">INFORMACIÓN DEL CURSO</h1>
-                        <hr class="mt-2 mb-6">
-                        {!! Form::model($course, ['route' => ['instructor.courses.update', $course], 'method' => 'put', 'files' => true]) !!}
-
-                            @include('instructor.courses.partials.form')
-
-                            <div class="flex justify-end">
-                                {!! Form::submit('Actualizar información', ['class' => 'btn btn-primary']) !!}
-                            </div>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
-            </div>
-            <x-slot name="js">
-                <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
-                <script src="{{ asset('js\instructor\courses\form.js') }}"></script>
-            </x-slot>
-        </x-app-layout>
-1. Modificar método **create** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
+        ≡
         public function create()
         {
             // de esta forma recuperamos una colección con todos los nombres de las categorias y
@@ -4200,63 +3700,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
             $prices = Price::pluck('name', 'id');
             return view('instructor.courses.create', compact('categories','levels','prices'));
         }
-1. Crear archivo js en **public\js\instructor\courses\form.js**:
-    >
-        //Slug automático
-        document.getElementById("title").addEventListener('keyup', slugChange);
-
-        function slugChange(){
-            
-            title = document.getElementById("title").value;
-            document.getElementById("slug").value = slug(title);
-
-        }
-
-        function slug (str) {
-            var $slug = '';
-            var trimmed = str.trim(str);
-            $slug = trimmed.replace(/[^a-z0-9-]/gi, '-').
-            replace(/-+/g, '-').
-            replace(/^-|-$/g, '');
-            return $slug.toLowerCase();
-        }
-
-        //CKEDITOR
-        // Copiado de https://ckeditor.com/docs/ckeditor5/latest/builds/guides/integration/configuration.html
-        // Para habilitar todas las opciones: https://ckeditor.com/docs/ckeditor5/latest/builds/guides/quick-start.html
-        ClassicEditor
-            .create( document.querySelector( '#description' ), {
-                toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'blockQuote' ],
-                heading: {
-                    options: [
-                        { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                        { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                        { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
-                    ]
-                }
-            } )
-            .catch( error => {
-                console.log( error );
-            } );
-
-        //Cambiar imagen
-        document.getElementById("file").addEventListener('change', cambiarImagen);
-
-        function cambiarImagen(event){
-            var file = event.target.files[0];
-
-            var reader = new FileReader();
-            reader.onload = (event) => {
-                document.getElementById("picture").setAttribute('src', event.target.result); 
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-
-### Video 37. Crear nuevo curso
-1. Programar método **store** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
+        ≡
         public function store(Request $request)
         {
             $request->validate([
@@ -4267,6 +3711,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                 'category_id' => 'required',
                 'level_id' => 'required',
                 'price_id' => 'required',
+                'file' => 'image'
             ]);
 
             $course = Course::create($request->all());
@@ -4286,101 +3731,26 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
 
             return redirect()->route('instructor.courses.edit', $course);
         }
-    Importar Facades:
-    >
-        use Illuminate\Support\Facades\Storage;
-1. Incluir los errores de validación en la vista **resources\views\instructor\courses\partials\form.blade.php**:
-    >
-        <div class="mb-4">
-            {!! Form::label('title', 'Título del curso') !!}
-            {!! Form::text('title', null, ['class' => 'form-input block w-full mt-1' . ($errors->has('title') ? ' border-red-600' : '')]) !!}
-            @error('title')
-                <strong class="text-xs text-red-600">{{ $message }}</strong>
-            @enderror
-        </div>
-        <div class="mb-4">
-            {!! Form::label('slug', 'Slug del curso') !!}
-            {!! Form::text('slug', null, ['readonly' => 'readonly','class' => 'form-input block w-full mt-1' . ($errors->has('slug') ? ' border-red-600' : '')]) !!}
-            @error('slug')
-                <strong class="text-xs text-red-600">{{ $message }}</strong>
-            @enderror
-        </div>
-        <div class="mb-4">
-            {!! Form::label('subtitle', 'Subtítulo del curso') !!}
-            {!! Form::text('subtitle', null, ['class' => 'form-input block w-full mt-1' . ($errors->has('subtitle') ? ' border-red-600' : '')]) !!}
-            @error('subtitle')
-                <strong class="text-xs text-red-600">{{ $message }}</strong>
-            @enderror
-        </div>
-        <div class="mb-4">
-            {!! Form::label('description', 'Descripción del curso') !!}
-            {!! Form::textarea('description', null, ['class' => 'form-input block w-full mt-1' . ($errors->has('description') ? ' border-red-600' : '')]) !!}
-            @error('description')
-                <strong class="text-xs text-red-600">{{ $message }}</strong>
-            @enderror
-        </div>
-        <div class="grid grid-cols-3 gap-4">
-            <div>
-                {!! Form::label('category_id', 'Categoría:') !!}
-                {!! Form::select('category_id', $categories, null, ['class' => 'form-input block w-full mt-1']) !!}
-            </div>
-            <div>
-                {!! Form::label('level_id', 'Niveles:') !!}
-                {!! Form::select('level_id', $levels, null, ['class' => 'form-input block w-full mt-1']) !!}
-            </div>
-            <div>
-                {!! Form::label('price_id', 'Precio:') !!}
-                {!! Form::select('price_id', $prices, null, ['class' => 'form-input block w-full mt-1']) !!}
-            </div>
-        </div>
-        <h1 class="text-2xl font-bold mt-8 mb-2">Imagen del curso</h1>
-        <div class="grid grid-cols-2 gap-4">
-            <figure>
-                @isset($course->image)
-                    <img id="picture" class="w-full h-64 object-cover object-center" src="{{ Storage::url($course->image->url) }}" alt="">
-                @else
-                    <img id="picture" class="w-full h-64 object-cover object-center" src="https://images.pexels.com/photos/5940721/pexels-photo-5940721.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="">
-                @endisset
-            </figure>
-            <div>
-                <p class="mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate recusandae nesciunt nostrum, tenetur ducimus fugiat aspernatur beatae alias magni! Accusantium libero aspernatur rem minus quidem quo voluptatem praesentium esse voluptatibus.</p>
-                {!! Form::file('file', ['class' => 'form-input w-full', 'id' => 'file']) !!}
-            </div>
-        </div>
-1. En **resources\views\livewire\instructor\courses-index.blade.php**:
-    Reemplazar:
-    >
-        <img class="h-10 w-10 rounded-full" src="{{ Storage::url($course->image->url) }}" alt="">
-    Por:
-    >
-        @isset($course->image)
-            <img class="h-10 w-10 rounded-full object-cover object-center" src="{{ Storage::url($course->image->url) }}" alt="">
-        @else
-            <img class="h-10 w-10 rounded-full object-cover object-center" src="https://images.pexels.com/photos/5940721/pexels-photo-5940721.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="">   
-        @endisset       
-1. En **app\Http\Livewire\Instructor\CoursesIndex.php**:
-    Reemplazar:
-    >
-        $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
-                            ->where('user_id', auth()->user()->id)
-                            ->paginate(8);
-    Por:
-    >
-        $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
-                            ->where('user_id', auth()->user()->id)
-                            ->latest('id')
-                            ->paginate(8);
-3. Borrar el directorio **storage\app\public\cursos**.
-4. Ejecutar:
-    >
-        $ php artisan migrate:fresh --seed
-
-
-### Video 38. Actualizar información de curso
-1. Programar método **update** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
+        ≡
+        public function show(Course $course)
+        {
+            return view('instructor.courses.show', compact('course'));
+        }
+        ≡
+        public function edit(Course $course)
+        {
+            $this->authorize('dicatated', $course);
+            // de esta forma recuperamos una colección con todos los nombres de las categorias y
+            // con el indice de las categorias a las que correponde
+            $categories = Category::pluck('name', 'id');
+            $levels = Level::pluck('name', 'id');
+            $prices = Price::pluck('name', 'id');
+            return view('instructor.courses.edit', compact('course','categories','levels','prices'));
+        }
+        ≡    
         public function update(Request $request, Course $course)
         {
+            $this->authorize('dicatated', $course);
             $request->validate([
                 'title' => 'required',
                 'slug' => 'required|unique:courses,slug,' . $course->id,
@@ -4389,6 +3759,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                 'category_id' => 'required',
                 'level_id' => 'required',
                 'price_id' => 'required',
+                'file' => 'image'
             ]);
 
             $course->update($request->all());
@@ -4412,1773 +3783,1374 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                     ]);
                 }
             }
-
             return redirect()->route('instructor.courses.edit', $course);
         }
+        ≡
 
+        public function goals(Course $course){
+            $this->authorize('dicatated', $course);
+            return view('instructor.courses.goals', compact('course'));
+        }
+    }
+    ```
+4. Crear vista **resources\views\instructor\courses\index.blade.php**:
+    ```php
+    <x-app-layout>
+        @livewire('instructor.courses-index')
+    </x-app-layout>
+    ```
+5. Crear vista **resources\views\instructor\courses\create.blade.php**:
+    ```php
+    <x-app-layout>
+        <div class="container py-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="text-2xl font-bold">CREAR NUEVO CURSO</h1>
+                    <hr class="mt-2 mb-6">
+                    {!! Form::open(['route' => 'instructor.courses.store','files' => true, 'autocomplet' => 'off']) !!}
+                        {!! Form::hidden('user_id', auth()->user()->id) !!}
 
-### Video 39. Agregar regla de validación para las imagenes
-1. Modificar formulario **resources\views\instructor\courses\partials\form.blade.php**:
-    Reemplazar:
-    >
-        {!! Form::file('file', ['class' => 'form-input w-full', 'id' => 'file']) !!}
-    Por:
-    >
-        {!! Form::file('file', ['class' => 'form-input w-full'. ($errors->has('file') ? ' border-red-600' : ''), 'id' => 'file', 'accept' => 'image/*']) !!}
-        @error('file')
+                        @include('instructor.courses.partials.form')
+
+                        <div class="flex justify-end">
+                            {!! Form::submit('Crear curso', ['class' => 'btn btn-primary cursor-pointer']) !!}
+                        </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+        <x-slot name="js">
+            <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
+            <script src="{{ asset('js\instructor\courses\form.js') }}"></script>
+        </x-slot>
+    </x-app-layout>
+    ```
+6. Crear vista **resources\views\instructor\courses\edit.blade.php**:
+    ```php
+    <x-instructor-layout :course="$course">
+        <h1 class="text-2xl font-bold">INFORMACIÓN DEL CURSO</h1>
+        <hr class="mt-2 mb-6">
+        {!! Form::model($course, ['route' => ['instructor.courses.update', $course], 'method' => 'put', 'files' => true]) !!}
+
+            @include('instructor.courses.partials.form')
+
+            <div class="flex justify-end">
+                {!! Form::submit('Actualizar información', ['class' => 'btn btn-primary']) !!}
+            </div>
+        {!! Form::close() !!}
+
+        <x-slot name="js">
+            <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
+            <script src="{{ asset('js\instructor\courses\form.js') }}"></script>
+        </x-slot>
+    </x-instructor-layout>
+    ```
+7. Crear vista **resources\views\instructor\courses\show.blade.php**:
+    ```php
+    <x-app-layout>
+    </x-app-layout>
+    ```
+8. Crear vista **resources\views\instructor\courses\partials\form.blade.php**:
+    ```php
+    <div class="mb-4">
+        {!! Form::label('title', 'Título del curso') !!}
+        {!! Form::text('title', null, ['class' => 'form-input block w-full mt-1' . ($errors->has('title') ? ' border-red-600' : '')]) !!}
+        @error('title')
             <strong class="text-xs text-red-600">{{ $message }}</strong>
         @enderror
-1. Modificar reglas de validación en el controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
-        ≡
-        public function store(Request $request)
-        {
-            $request->validate([
-                'title' => 'required',
-                'slug' => 'required|unique:courses',
-                'subtitle' => 'required',
-                'description' => 'required',
-                'category_id' => 'required',
-                'level_id' => 'required',
-                'price_id' => 'required',
-                'file' => 'image'
-            ]);
+    </div>
+    <div class="mb-4">
+        {!! Form::label('slug', 'Slug del curso') !!}
+        {!! Form::text('slug', null, ['readonly' => 'readonly','class' => 'form-input block w-full mt-1' . ($errors->has('slug') ? ' border-red-600' : '')]) !!}
+        @error('slug')
+            <strong class="text-xs text-red-600">{{ $message }}</strong>
+        @enderror
+    </div>
+    <div class="mb-4">
+        {!! Form::label('subtitle', 'Subtítulo del curso') !!}
+        {!! Form::text('subtitle', null, ['class' => 'form-input block w-full mt-1' . ($errors->has('subtitle') ? ' border-red-600' : '')]) !!}
+        @error('subtitle')
+            <strong class="text-xs text-red-600">{{ $message }}</strong>
+        @enderror
+    </div>
+    <div class="mb-4">
+        {!! Form::label('description', 'Descripción del curso') !!}
+        {!! Form::textarea('description', null, ['class' => 'form-input block w-full mt-1' . ($errors->has('description') ? ' border-red-600' : '')]) !!}
+        @error('description')
+            <strong class="text-xs text-red-600">{{ $message }}</strong>
+        @enderror
+    </div>
+    <div class="grid grid-cols-3 gap-4">
+        <div>
+            {!! Form::label('category_id', 'Categoría:') !!}
+            {!! Form::select('category_id', $categories, null, ['class' => 'form-input block w-full mt-1']) !!}
+        </div>
+        <div>
+            {!! Form::label('level_id', 'Niveles:') !!}
+            {!! Form::select('level_id', $levels, null, ['class' => 'form-input block w-full mt-1']) !!}
+        </div>
+        <div>
+            {!! Form::label('price_id', 'Precio:') !!}
+            {!! Form::select('price_id', $prices, null, ['class' => 'form-input block w-full mt-1']) !!}
+        </div>
+    </div>
+    <h1 class="text-2xl font-bold mt-8 mb-2">Imagen del curso</h1>
+    <div class="grid grid-cols-2 gap-4">
+        <figure>
+            @isset($course->image)
+                <img id="picture" class="w-full h-64 object-cover object-center" src="{{ Storage::url($course->image->url) }}" alt="">
+            @else
+                <img id="picture" class="w-full h-64 object-cover object-center" src="https://images.pexels.com/photos/5940721/pexels-photo-5940721.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="">
+            @endisset
+        </figure>
+        <div>
+            <p class="mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate recusandae nesciunt nostrum, tenetur ducimus fugiat aspernatur beatae alias magni! Accusantium libero aspernatur rem minus quidem quo voluptatem praesentium esse voluptatibus.</p>
+            {!! Form::file('file', ['class' => 'form-input w-full'. ($errors->has('file') ? ' border-red-600' : ''), 'id' => 'file', 'accept' => 'image/*']) !!}
+            @error('file')
+                <strong class="text-xs text-red-600">{{ $message }}</strong>
+            @enderror
+        </div>
+    </div>
+    ```
+9. Modificar la plantilla **resources\views\layouts\app.blade.php**:
+    ```php
+    <!DOCTYPE html>
+    <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+        <head>
             ≡
-        }
-        ≡
-        public function update(Request $request, Course $course)
-        {
-            $request->validate([
-                'title' => 'required',
-                'slug' => 'required|unique:courses,slug,' . $course->id,
-                'subtitle' => 'required',
-                'description' => 'required',
-                'category_id' => 'required',
-                'level_id' => 'required',
-                'price_id' => 'required',
-                'file' => 'image'
-            ]);
+        </head>
+        <body class="font-sans antialiased">
             ≡
-        }
 
+            @livewireScripts
 
-### Video 40. Lo que desarrollaremos
-###### Breve explicación de lo que haremos.
+            @isset($js)
+                {{ $js }}  
+            @endisset
+        </body>
+    </html>
+    ```
+10. Crear archivo JavaScript en **public\js\instructor\courses\form.js**:
+    ```js
+    //Slug automático
+    document.getElementById("title").addEventListener('keyup', slugChange);
 
+    function slugChange(){
+        
+        title = document.getElementById("title").value;
+        document.getElementById("slug").value = slug(title);
 
-### Video 41. Crear nueva plantilla para instructores
-1. Duplicar la vista **resources\views\layouts\app.blade.php** y renombrarla como **resources\views\layouts\instructor.blade.php**.
-1. Rediseñar la nueva plantilla **resources\views\layouts\instructor.blade.php**:
-    >
-        <!DOCTYPE html>
-        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <meta name="csrf-token" content="{{ csrf_token() }}">
+    }
 
-                <title>{{ config('app.name', 'Laravel') }}</title>
+    function slug (str) {
+        var $slug = '';
+        var trimmed = str.trim(str);
+        $slug = trimmed.replace(/[^a-z0-9-]/gi, '-').
+        replace(/-+/g, '-').
+        replace(/^-|-$/g, '');
+        return $slug.toLowerCase();
+    }
 
-                <!-- Fonts -->
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    //CKEDITOR
+    // Copiado de https://ckeditor.com/docs/ckeditor5/latest/builds/guides/integration/configuration.html
+    // Para habilitar todas las opciones: https://ckeditor.com/docs/ckeditor5/latest/builds/guides/quick-start.html
+    ClassicEditor
+        .create( document.querySelector( '#description' ), {
+            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'blockQuote' ],
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                ]
+            }
+        } )
+        .catch( error => {
+            console.log( error );
+        } );
 
-                <!-- Styles -->
-                <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-                <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
+    //Cambiar imagen
+    document.getElementById("file").addEventListener('change', cambiarImagen);
 
-                @livewireStyles
+    function cambiarImagen(event){
+        var file = event.target.files[0];
 
-                <!-- Scripts -->
-                <script src="{{ mix('js/app.js') }}" defer></script>
-            </head>
-            <body class="font-sans antialiased">
-                <div class="min-h-screen bg-gray-100">
-                    @livewire('navigation-dropdown')
+        var reader = new FileReader();
+        reader.onload = (event) => {
+            document.getElementById("picture").setAttribute('src', event.target.result); 
+        };
 
-                    <!-- Page Content -->
-                    <div class="container py-8 grid grid-cols-5">
-                        <aside>
-                            <h1 class="font-bold text-lg mb-4">Edición del curso</h1>
-                            <ul class="text-sm text-gray-600">
-                                <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.edit', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                                    <a href="{{ route('instructor.courses.edit', $course) }}">Información del curso</a>
-                                </li>
-                                <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.curriculum', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                                    <a href="{{ route('instructor.courses.curriculum', $course) }}">Lecciones del curso</a>
-                                </li>
-                                <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                                    <a href="">Metas del curso</a>
-                                </li>
-                                <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                                    <a href="">Estudiantes</a>
-                                </li>
-                            </ul>
-                        </aside>
-                        <div class="col-span-4 card">
-                            <main class="card-body text-gray-600">
-                                {{ $slot }}
-                            </main>
-                        </div>
-                    </div>
-                </div>
-
-                @stack('modals')
-
-                @livewireScripts
-
-                @isset($js)
-                    {{ $js }}  
-                @endisset
-            </body>
-        </html>
-1. Rediseñar la vista **resources\views\instructor\courses\edit.blade.php**:
-    >
-        <x-instructor-layout>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
-            <h1 class="text-2xl font-bold">INFORMACIÓN DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-            {!! Form::model($course, ['route' => ['instructor.courses.update', $course], 'method' => 'put', 'files' => true]) !!}
-
-                @include('instructor.courses.partials.form')
-
-                <div class="flex justify-end">
-                    {!! Form::submit('Actualizar información', ['class' => 'btn btn-primary']) !!}
-                </div>
-            {!! Form::close() !!}
-
-            <x-slot name="js">
-                <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
-                <script src="{{ asset('js\instructor\courses\form.js') }}"></script>
-            </x-slot>
-        </x-instructor-layout>
-1. Crea componente de clase para extender la nueva plantilla **resources\views\layouts\instructor.blade.php**:
-    >
-        $ php artisan make:component InstructorLayout
-1. Cambiar la vista del método render del controlador del nuevo componente en **app\View\Components\InstructorLayout.php**:
-    Cambiar:
-    + return view('components.instructor-layout');
+        reader.readAsDataURL(file);
+    }
+    ```
+11. En el controlador **app\Http\Livewire\Instructor\CoursesIndex.php**:
+    Reemplazar:
+    ```php
+    $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
+                        ->where('user_id', auth()->user()->id)
+                        ->paginate(8);
+    ```
     Por:
-    + return view('layouts.instructor');
-1. Eliminar la vista **resources\views\components\instructor-layout.blade.php**.
-1. Modificar el archivo de rutas **routes\instructor.php**:
-    >
-        <?php
+    ```php
+    $courses = Course::where('title', 'LIKE', '%' . $this->search . '%')
+                        ->where('user_id', auth()->user()->id)
+                        ->latest('id')
+                        ->paginate(8);
+    ```
+12. Crear plantilla **resources\views\layouts\instructor.blade.php**:
+    ```php
+    <!DOCTYPE html>
+    <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        use App\Http\Controllers\Instructor\CourseController;
-        use App\Http\Livewire\Instructor\CoursesCurriculum;
-        use Illuminate\Support\Facades\Route;
+            <title>{{ config('app.name', 'Laravel') }}</title>
 
-        Route::redirect('', 'instructor/courses');
+            <!-- Fonts -->
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
-        Route::resource('courses', CourseController::class)->names('courses');
+            <!-- Styles -->
+            <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+            <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
 
-        Route::get('courses/{course}/curriculum', CoursesCurriculum::class)->name('courses.curriculum');
-1. Para el control de la rutas **courses.curriculum** crearemos un componente de livewire:
-    >
-        $ php artisan make:livewire Instructor/CoursesCurriculum
-1. Reprogramar el controlador **app\Http\Livewire\Instructor\CoursesCurriculum.php**:
-    >
-        <?php
+            @livewireStyles
 
-        namespace App\Http\Livewire\Instructor;
+            <!-- Scripts -->
+            <script src="{{ mix('js/app.js') }}" defer></script>
+        </head>
+        <body class="font-sans antialiased">
+            <div class="min-h-screen bg-gray-100">
+                @livewire('navigation-menu')
 
-        use App\Models\Course;
-        use Livewire\Component;
-
-        class CoursesCurriculum extends Component
-        {
-            public $course;
-
-            public function mount(Course $course){
-                $this->course = $course;
-            }
-
-            public function render()
-            {
-                // Le indicaremos que queremos utilizar una plantilla con la vista
-                return view('livewire.instructor.courses-curriculum')->layout('layouts.instructor');
-            }
-        }
-1. Diseñar vista **resources\views\livewire\instructor\courses-curriculum.blade.php**:
-    >
-        <div>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
-        </div>
-1. Generar nuevas directivas de Blade modificando **app\Providers\AppServiceProvider.php**:
-    >
-        <?php
-
-        namespace App\Providers;
-
-        use Illuminate\Support\Facades\Blade;
-        use Illuminate\Support\ServiceProvider;
-
-        class AppServiceProvider extends ServiceProvider
-        {
-            /**
-            * Register any application services.
-            *
-            * @return void
-            */
-            public function register()
-            {
-                //
-            }
-
-            /**
-            * Bootstrap any application services.
-            *
-            * @return void
-            */
-            public function boot()
-            {
-                Blade::directive('routeIs', function ($expression) {
-                    return "<?php if(Request::url() == route($expression)) : ?>";
-                });
-            }
-        }
-
-
-### Video 42. Agregar un crud para las secciones de un curso
-1. Modificar vista **resources\views\livewire\instructor\courses-curriculum.blade.php**:
-    >
-        <div>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
-
-            <h1 class="text-2xl font-bold">LECCIONES DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-            @foreach ($course->sections as $item)
-                <article class="card mb-6">
-                    <div class="card-body bg-gray-100">
-                        @if ($section->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <input wire:model="section.name" type="text" class="form-input w-full" placeholder="Ingrese el nombre de la sección">
-                                @error('section.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-                            </form>
-                        @else
-                            <header class="flex justify-between items-center">
-                                <h1 class="cursor-pointer"><strong>Sección:</strong> {{ $item->name }}</h1>
-                                <div>
-                                    <i class="fas fa-edit cursor-pointer text-blue-500" wire:click="edit({{ $item }})"></i>
-                                    <i class="fas fa-eraser cursor-pointer text-red-500" wire:click="destroy({{ $item }})"></i>
-                                </div>
-                            </header>
-                        @endif
+                <!-- Page Content -->
+                <div class="container py-8 grid grid-cols-5">
+                    <aside>
+                        <h1 class="font-bold text-lg mb-4">Edición del curso</h1>
+                        <ul class="text-sm text-gray-600">
+                            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.edit', $course) border-indigo-400 @else border-transparent @endif pl-2">
+                                <a href="{{ route('instructor.courses.edit', $course) }}">Información del curso</a>
+                            </li>
+                            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.curriculum', $course) border-indigo-400 @else border-transparent @endif pl-2">
+                                <a href="{{ route('instructor.courses.curriculum', $course) }}">Lecciones del curso</a>
+                            </li>
+                            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.goals', $course) border-indigo-400 @else border-transparent @endif pl-2">
+                                <a href="{{ route('instructor.courses.goals', $course) }}">Metas del curso</a>
+                            </li>
+                            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.students', $course) border-indigo-400 @else border-transparent @endif pl-2">
+                                <a href="{{ route('instructor.courses.students', $course) }}">Estudiantes</a>
+                            </li>
+                        </ul>
+                    </aside>
+                    <div class="col-span-4 card">
+                        <main class="card-body text-gray-600">
+                            {{ $slot }}
+                        </main>
                     </div>
-                </article>
-            @endforeach
-
-            <div x-data="{ open: false }">
-                <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
-                    <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
-                    Agregar nueva sección
-                </a>
-                <article class="card" x-show="open">
-                    <div class="card-body bg-gray-100">
-                        <h1 class="text-xl font-bold mb-4">Agregar nueva sección</h1>
-                        <div class="mb-4">
-                            <input wire:model="name" class="form-input w-full" placeholder="Escriba el nombre de la sección">
-                            @error('name')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="flex justify-end">
-                            <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
-                            <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
-                        </div>
-                    </div>
-                </article>
+                </div>
             </div>
-        </div>
-1. Modificar controlador **app\Http\Livewire\Instructor\CoursesCurriculum.php**:
-    >
-        <?php
 
-        namespace App\Http\Livewire\Instructor;
+            @stack('modals')
 
-        use App\Models\Course;
-        use App\Models\Section;
-        use Livewire\Component;
+            @livewireScripts
 
-        class CoursesCurriculum extends Component
-        {
-            public $course, $section, $name;
+            @isset($js)
+                {{ $js }}  
+            @endisset
+        </body>
+    </html>
+    ```
+13. Crea componente de clase para extender la nueva plantilla **resources\views\layouts\instructor.blade.php**:
+    + $ php artisan make:component InstructorLayout
+14. Cambiar la vista del método **render** del controlador del nuevo componente en **app\View\Components\InstructorLayout.php**:
+    Cambiar:
+    ```php
+    public function render()
+    {
+        return view('layouts.instructor');
+    }
+    ```
+15. Eliminar la vista **resources\views\components\instructor-layout.blade.php**.
+16. Para el control de la rutas **courses.curriculum** crearemos un componente de livewire:
+    + $ php artisan make:livewire Instructor/CoursesCurriculum
+17. Modificar el archivo de rutas **routes\instructor.php**:
+    ```php
+    <?php
 
-            protected $rules = [
-                'section.name' => 'required'
-            ];
+    use App\Http\Controllers\Instructor\CourseController;
+    use App\Http\Livewire\Instructor\CoursesCurriculum;
+    use App\Http\Livewire\Instructor\CoursesStudents;
+    use Illuminate\Support\Facades\Route;
 
-            public function mount(Course $course){
-                $this->course = $course;
-                $this->section = new Section();
-            }
+    Route::redirect('', 'instructor/courses');
 
-            public function render()
-            {
-                // Le indicaremos que queremos utilizar una plantilla con la vista
-                return view('livewire.instructor.courses-curriculum')->layout('layouts.instructor');
-            }
+    Route::resource('courses', CourseController::class)->names('courses');
 
-            public function store(){
-                $this->validate([
-                    'name' => 'required'
-                ]);
-                Section::create([
-                    'name' => $this->name,
-                    'course_id' => $this->course->id
-                ]);
-                $this->reset('name');
-                // Refresca la información de la vista
-                $this->course = Course::find($this->course->id);
-            }
+    Route::get('courses/{course}/curriculum', CoursesCurriculum::class)->middleware('can:Actualizar cursos')->name('courses.curriculum');
 
-            public function edit(Section $section){
-                $this->section = $section;
-            }
+    Route::get('courses/{course}/goals', [CourseController::class, 'goals'])->name('courses.goals');
 
-            public function update(){
-                $this->validate();  // valida lo indicado en protected $rules = [..]
-                $this->section->save();
-                $this->section = new Section();
-                // Refresca la información de la vista
-                $this->course = Course::find($this->course->id);
-            }
+    Route::get('courses/{course}/students', CoursesStudents::class)->middleware('can:Actualizar cursos')->name('courses.students');
+    ```
+18. Reprogramar el controlador **app\Http\Livewire\Instructor\CoursesCurriculum.php**:
+    ```php
+    <?php
 
-            public function destroy(Section $section){
-                $section->delete();
-                // Refresca la información de la vista
-                $this->course = Course::find($this->course->id);
-            }
+    namespace App\Http\Livewire\Instructor;
+
+    use App\Models\Course;
+    use App\Models\Section;
+    use Livewire\Component;
+    use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+    class CoursesCurriculum extends Component
+    {
+        use AuthorizesRequests;
+
+        public $course, $section, $name;
+
+        protected $rules = [
+            'section.name' => 'required'
+        ];
+
+        public function mount(Course $course){
+            $this->course = $course;
+            $this->section = new Section();
+            $this->authorize('dicatated', $course);
         }
 
-
-### Video 43. Agregar un crud para las lecciones de un curso
-1. Crear componente livewire para lecciones:
-    >
-        $ php artisan make:livewire Instructor/CoursesLesson
-1. Modificar vista **resources\views\livewire\instructor\courses-curriculum.blade.php** para llamar al nuevo componente:
-    >
-        <div>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
-
-            <h1 class="text-2xl font-bold">LECCIONES DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-            @foreach ($course->sections as $item)
-                <article class="card mb-6">
-                    <div class="card-body bg-gray-100">
-                        @if ($section->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <input wire:model="section.name" type="text" class="form-input w-full" placeholder="Ingrese el nombre de la sección">
-                                @error('section.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-                            </form>
-                        @else
-                            <header class="flex justify-between items-center">
-                                <h1 class="cursor-pointer"><strong>Sección:</strong> {{ $item->name }}</h1>
-                                <div>
-                                    <i class="fas fa-edit cursor-pointer text-blue-500" wire:click="edit({{ $item }})"></i>
-                                    <i class="fas fa-eraser cursor-pointer text-red-500" wire:click="destroy({{ $item }})"></i>
-                                </div>
-                            </header>
-                            <div>
-                                @livewire('instructor.courses-lesson', ['section' => $item], key($item->id))
-                            </div>
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <div x-data="{ open: false }">
-                <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
-                    <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
-                    Agregar nueva sección
-                </a>
-                <article class="card" x-show="open">
-                    <div class="card-body bg-gray-100">
-                        <h1 class="text-xl font-bold mb-4">Agregar nueva sección</h1>
-                        <div class="mb-4">
-                            <input wire:model="name" class="form-input w-full" placeholder="Escriba el nombre de la sección">
-                            @error('name')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="flex justify-end">
-                            <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
-                            <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-1. Programar el controlador **app\Http\Livewire\Instructor\CoursesLesson.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Lesson;
-        use App\Models\Platform;
-        use App\Models\Section;
-        use Livewire\Component;
-
-        class CoursesLesson extends Component
+        public function render()
         {
-            public $section, $lesson, $platforms, $name, $platform_id = 1, $url;
-
-            protected $rules = [
-                'lesson.name' => 'required',
-                'lesson.platform_id' => 'required',
-                //Validación youtube
-                'lesson.url' => ['required', 'regex:%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x']
-            ];
-
-            public function mount(Section $section){
-                $this->section = $section;
-                $this->platforms = Platform::all();
-                $this->lesson = new Lesson();
-            }
-
-            public function render()
-            {
-                return view('livewire.instructor.courses-lesson');
-            }
-
-            public function store(){
-                $rules = [
-                    'name' => 'required',
-                    'platform_id' => 'required',
-                    //Validación youtube
-                    'url' => ['required', 'regex:%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x']
-                ];
-
-                if($this->platform_id == 2){
-                    $rules['url'] = ['required', 'regex:/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/'];
-                }
-
-                $this->validate($rules);
-
-                Lesson::create([
-                    'name' => $this->name,
-                    'platform_id' => $this->platform_id,
-                    'url' => $this->url,
-                    'section_id' => $this->section->id
-                ]);
-
-                $this->reset(['name', 'platform_id', 'url']);
-                // Para actualizar la vista
-                $this->section = Section::find($this->section->id);
-            }
-
-            public function edit(Lesson $lesson){
-                $this->resetValidation();
-                $this->lesson = $lesson;
-            }
-
-            public function update(){
-                if($this->lesson->platform_id == 2){
-                    $this->rules['lesson.url'] = ['required', 'regex:/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/'];
-                }
-                $this->validate();
-                $this->lesson->save();
-                $this->lesson = new Lesson();
-                // Para actualizar la vista
-                $this->section = Section::find($this->section->id);
-            }
-
-            public function destroy(Lesson $lesson){
-                $lesson->delete();
-                // Refresca la información de la vista
-                $this->section = Section::find($this->section->id);
-            }
-
-            public function cancel(){
-                $this->lesson = new Lesson();
-            }
-        }
-1. Diseñar vista **resources\views\livewire\instructor\courses-lesson.blade.php**:
-    >
-        <div>
-            @foreach ($section->lessons as $item)
-                <article class="card mt-4">
-                    <div class="card-body">
-                        @if ($lesson->id == $item->id)
-                            <div>
-                                <div class="flex items-center">
-                                    <label class="w-32">Nombre:</label>
-                                    <input wire:model="lesson.name" class="form-input w-full">
-                                </div>
-                                @error('lesson.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-
-                                <div class="flex items-center mt-4">
-                                    <label class="w-32">Plataforma: </label>
-                                    <select wire:model="lesson.platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                        @foreach ($platforms as $platform)
-                                            <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="flex items-center mt-4">
-                                    <label class="w-32">URL:</label>
-                                    <input wire:model="lesson.url" class="form-input w-full">
-                                </div>
-                                @error('lesson.url')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-
-                                <div class="mt-4 flex justify-end">
-                                    <button class="btn btn-danger" wire:click="cancel">Cancelar</button>
-                                    <button class="btn btn-primary ml-2" wire:click="update">Actualizar</button>
-                                </div>
-                            </div>
-                        @else
-                            <header>
-                                <h1><i class="far fa-play-circle text-blue-500 mr-1"></i> Lección: {{ $item->name }}</h1>
-                            </header>
-                            <div>
-                                <hr class="my-2">
-                                <p class="text-sm">Plataforma: {{ $item->platform->name }}</p>
-                                <p class="text-sm">Enlace: <a class="text-blue-600" href="{{ $item->url }}" target="_blank">{{ $item->url }}</a></p>
-                                <div class="mt-2">
-                                    <button class="btn btn-primary text-sm" wire:click="edit({{ $item }})">Editar</button>
-                                    <button class="btn btn-danger text-sm" wire:click="destroy({{ $item }})">Eliminar</button>
-                                </div>
-                            </div>     
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <div class="mt-4" x-data="{ open: false }">
-                <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
-                    <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
-                    Agregar nueva lección
-                </a>
-                <article class="card" x-show="open">
-                    <div class="card-body">
-                        <h1 class="text-xl font-bold mb-4">Agregar nueva lección</h1>
-                        <div class="mb-4">
-                            <div class="flex items-center">
-                                <label class="w-32">Nombre:</label>
-                                <input wire:model="name" class="form-input w-full">
-                            </div>
-                            @error('name')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-
-                            <div class="flex items-center mt-4">
-                                <label class="w-32">Plataforma: </label>
-                                <select wire:model="platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    @foreach ($platforms as $platform)
-                                        <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('platform_id')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-
-                            <div class="flex items-center mt-4">
-                                <label class="w-32">URL:</label>
-                                <input wire:model="url" class="form-input w-full">
-                            </div>
-                            @error('url')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="flex justify-end">
-                            <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
-                            <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-1. Crear observer para el modelo **Lesson**:
-    >
-        $ php artisan make:observer LessonObserver
-1. Programar el observer **app\Observers\LessonObserver.php**:
-    >
-        <?php
-
-        namespace App\Observers;
-
-        use App\Models\Lesson;
-
-        class LessonObserver
-        {
-            // Este método se ejecutará solo cuando creemos un nuevo registro en la tabla lessons
-            public function creating(Lesson $lesson){
-                $url = $lesson->url;
-                $platform_id = $lesson->platform_id;
-
-                if($platform_id == 1){
-                    $patron = '%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x';
-                    $array = preg_match($patron, $url, $parte);
-                    $lesson->iframe = '<iframe width="560" height="315" src="https://www.youtube.com/embed/'. $parte[1] .'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-                }else{
-                    $patron = '/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/';
-                    $array = preg_match($patron, $url, $parte);
-                    $lesson->iframe = '<iframe src="https://player.vimeo.com/video/' . $parte[2] . '" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
-                }
-            }
-
-            // Este método se ejecutará solo cuando actualicemos algún registro de la tabla lessons
-            public function updating(Lesson $lesson){
-                $url = $lesson->url;
-                $platform_id = $lesson->platform_id;
-
-                if($platform_id == 1){
-                    $patron = '%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x';
-                    $array = preg_match($patron, $url, $parte);
-                    $lesson->iframe = '<iframe width="560" height="315" src="https://www.youtube.com/embed/'. $parte[1] .'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-                }else{
-                    $patron = '/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/';
-                    $array = preg_match($patron, $url, $parte);
-                    $lesson->iframe = '<iframe src="https://player.vimeo.com/video/' . $parte[2] . '" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
-                }
-            }
-        }
-1. Modificar el archivo **app\Providers\AppServiceProvider.php** para registrar el observer **LessonObserver**
-    >
-        <?php
-
-        namespace App\Providers;
-
-        use Illuminate\Support\Facades\Blade;
-        use Illuminate\Support\ServiceProvider;
-        use App\Models\Lesson;
-        use App\Observers\LessonObserver;
-
-        class AppServiceProvider extends ServiceProvider
-        {
-            /**
-            * Register any application services.
-            *
-            * @return void
-            */
-            public function register()
-            {
-                //
-            }
-
-            /**
-            * Bootstrap any application services.
-            *
-            * @return void
-            */
-            public function boot()
-            {
-                Lesson::observe(LessonObserver::class);
-                Blade::directive('routeIs', function ($expression) {
-                    return "<?php if(Request::url() == route($expression)) : ?>";
-                });
-            }
+            // Le indicaremos que queremos utilizar una plantilla con la vista
+            return view('livewire.instructor.courses-curriculum')->layout('layouts.instructor');
         }
 
-
-### Video 44. Agregar descripción a una lección
-1. Modificar vista **resources\views\livewire\instructor\courses-lesson.blade.php**:
-    >
-        <div>
-            @foreach ($section->lessons as $item)
-                <article class="card mt-4">
-                    <div class="card-body">
-                        @if ($lesson->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <div class="flex items-center">
-                                    <label class="w-32">Nombre:</label>
-                                    <input wire:model="lesson.name" class="form-input w-full">
-                                </div>
-                                @error('lesson.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-
-                                <div class="flex items-center mt-4">
-                                    <label class="w-32">Plataforma: </label>
-                                    <select wire:model="lesson.platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                        @foreach ($platforms as $platform)
-                                            <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="flex items-center mt-4">
-                                    <label class="w-32">URL:</label>
-                                    <input wire:model="lesson.url" class="form-input w-full">
-                                </div>
-                                @error('lesson.url')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-
-                                <div class="mt-4 flex justify-end">
-                                    <button type="button" class="btn btn-danger" wire:click="cancel">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary ml-2">Actualizar</button>
-                                </div>
-                            </form>
-                        @else
-                            <header>
-                                <h1><i class="far fa-play-circle text-blue-500 mr-1"></i> Lección: {{ $item->name }}</h1>
-                            </header>
-                            <div>
-                                <hr class="my-2">
-                                <p class="text-sm">Plataforma: {{ $item->platform->name }}</p>
-                                <p class="text-sm">Enlace: <a class="text-blue-600" href="{{ $item->url }}" target="_blank">{{ $item->url }}</a></p>
-                                <div class="my-2">
-                                    <button class="btn btn-primary text-sm" wire:click="edit({{ $item }})">Editar</button>
-                                    <button class="btn btn-danger text-sm" wire:click="destroy({{ $item }})">Eliminar</button>
-                                </div>
-
-                                <div>
-                                    @livewire('instructor.lesson-description', ['lesson' => $item], key($item->id))
-                                </div>
-                            </div>     
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <div class="mt-4" x-data="{ open: false }">
-                <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
-                    <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
-                    Agregar nueva lección
-                </a>
-                <article class="card" x-show="open">
-                    <div class="card-body">
-                        <h1 class="text-xl font-bold mb-4">Agregar nueva lección</h1>
-                        <div class="mb-4">
-                            <div class="flex items-center">
-                                <label class="w-32">Nombre:</label>
-                                <input wire:model="name" class="form-input w-full">
-                            </div>
-                            @error('name')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-
-                            <div class="flex items-center mt-4">
-                                <label class="w-32">Plataforma: </label>
-                                <select wire:model="platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    @foreach ($platforms as $platform)
-                                        <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('platform_id')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-
-                            <div class="flex items-center mt-4">
-                                <label class="w-32">URL:</label>
-                                <input wire:model="url" class="form-input w-full">
-                            </div>
-                            @error('url')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="flex justify-end">
-                            <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
-                            <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-1. Crear componente de livewire:
-    >
-        $ php artisan make:livewire Instructor/LessonDescription
-1. Programar el controlador del componente **app\Http\Livewire\Instructor\LessonDescription.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Lesson;
-        use Livewire\Component;
-
-        class LessonDescription extends Component
-        {
-            public $lesson, $description, $name;
-
-            protected $rules = [
-                'description.name' => 'required'
-            ];
-
-            public function mount(Lesson $lesson){
-                $this->lesson = $lesson;
-                if($lesson->description){
-                    $this->description = $lesson->description;
-                }
-            }
-
-            public function render()
-            {
-                return view('livewire.instructor.lesson-description');
-            }
-
-            public function store(){
-                // Crea un nuevo registro en la tabla description y lo relaciona con el registro lesson
-                $this->description = $this->lesson->description()->create([
-                    'name' => $this->name
-                ]);
-                $this->reset('name');
-                $this->lesson = Lesson::find($this->lesson->id);
-            }
-
-            public function update(){
-                $this->validate();
-                $this->description->save();
-            }
-
-            public function destroy(){
-                $this->description->delete();
-                $this->reset('description');
-                $this->lesson = Lesson::find($this->lesson->id);
-            }
+        public function store(){
+            $this->validate([
+                'name' => 'required'
+            ]);
+            Section::create([
+                'name' => $this->name,
+                'course_id' => $this->course->id
+            ]);
+            $this->reset('name');
+            // Refresca la información de la vista
+            $this->course = Course::find($this->course->id);
         }
-1. Diseñar la vista del componente **resources\views\livewire\instructor\lesson-description.blade.php**:
-    >
-        <div>
-            <article class="card" x-data="{open: false}">
+
+        public function edit(Section $section){
+            $this->section = $section;
+        }
+
+        public function update(){
+            $this->validate();  // valida lo indicado en protected $rules = [..]
+            $this->section->save();
+            $this->section = new Section();
+            // Refresca la información de la vista
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function destroy(Section $section){
+            $section->delete();
+            // Refresca la información de la vista
+            $this->course = Course::find($this->course->id);
+        }
+    }
+    ```
+19. Diseñar vista **resources\views\livewire\instructor\courses-curriculum.blade.php**:
+    ```php
+    <div>
+        <x-slot name="course">
+            {{ $course->slug }}
+        </x-slot>
+
+        <h1 class="text-2xl font-bold">LECCIONES DEL CURSO</h1>
+        <hr class="mt-2 mb-6">
+        @foreach ($course->sections as $item)
+            <article class="card mb-6" x-data="{open: true}">
                 <div class="card-body bg-gray-100">
-                    <header>
-                        <h1 x-on:click="open = !open" class="cursor-pointer">Descripción de la lección</h1>
-                    </header>
-                    <div x-show="open">
-                        <hr class="my-2">
-                        @if ($lesson->description)
-                            <form wire:submit.prevent="update">
-                                <textarea wire:model="description.name" class="form-input w-full"></textarea>
-                                @error('description.name')
-                                    <span class="text-sm text-red-500">{{ $message }}</span>
-                                @enderror
-
-                                <div class="flex justify-end">
-                                    <button wire:click="destroy" class="btn btn-danger text-sm" type="button">Eliminar</button>
-                                    <button class="btn btn-primary text-sm ml-2" type="submit">Actualizar</button>
-                                </div>
-                            </form>
-                        @else
+                    @if ($section->id == $item->id)
+                        <form wire:submit.prevent="update">
+                            <input wire:model="section.name" type="text" class="form-input w-full" placeholder="Ingrese el nombre de la sección">
+                            @error('section.name')
+                                <span class="text-xs text-red-500">{{ $message }}</span>
+                            @enderror
+                        </form>
+                    @else
+                        <header class="flex justify-between items-center">
+                            <h1 x-on:click="open = !open" class="cursor-pointer"><strong>Sección:</strong> {{ $item->name }}</h1>
                             <div>
-                                <textarea wire:model="name" class="form-input w-full" placeholder="Agregue una descripción de la lección ..."></textarea>
-                                @error('name')
-                                    <span class="text-sm text-red-500">{{ $message }}</span>
-                                @enderror
+                                <i class="fas fa-edit cursor-pointer text-blue-500" wire:click="edit({{ $item }})"></i>
+                                <i class="fas fa-eraser cursor-pointer text-red-500" wire:click="destroy({{ $item }})"></i>
+                            </div>
+                        </header>
+                        <div x-show="open">
+                            @livewire('instructor.courses-lesson', ['section' => $item], key($item->id))
+                        </div>
+                    @endif
+                </div>
+            </article>
+        @endforeach
 
-                                <div class="flex justify-end">
-                                    <button wire:click="store" class="btn btn-primary text-sm ml-2">Agregar</button>
-                                </div>
-                            <div>
-                        @endif
+        <div x-data="{ open: false }">
+            <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
+                <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
+                Agregar nueva sección
+            </a>
+            <article class="card" x-show="open">
+                <div class="card-body bg-gray-100">
+                    <h1 class="text-xl font-bold mb-4">Agregar nueva sección</h1>
+                    <div class="mb-4">
+                        <input wire:model="name" class="form-input w-full" placeholder="Escriba el nombre de la sección">
+                        @error('name')
+                            <span class="text-xs text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
+                        <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
                     </div>
                 </div>
             </article>
         </div>
+    </div>
+    ```
+20. Crear observers para los modelos **Lesson** y **Section**:
+    + $ php artisan make:observer LessonObserver
+    + $ php artisan make:observer SectionObserver
+21. Generar nuevas directivas de Blade modificando el método **boot** del provider **app\Providers\AppServiceProvider.php** y registrar el observer **LessonObserver**:
+    ```php
+    public function boot()
+    {
+        Lesson::observe(LessonObserver::class);
+        Section::observe(SectionObserver::class);
+        Blade::directive('routeIs', function ($expression) {
+            return "<?php if(Request::url() == route($expression)) : ?>";
+        });
+    }
+    ```
+    + Importar las siguientes definiciones de clases:
+    ```php
+    use App\Models\Lesson;
+    use App\Models\Section;
+    use App\Observers\LessonObserver;
+    use App\Observers\SectionObserver;
+    use Illuminate\Support\Facades\Blade;
+    ```
+22. Crear componentes livewire para administrar los cursos:
+    + $ php artisan make:livewire Instructor/CoursesLesson
+    + $ php artisan make:livewire Instructor/LessonDescription
+    + $ php artisan make:livewire Instructor/LessonResources
+    + $ php artisan make:livewire Instructor/CoursesGoals
+    + $ php artisan make:livewire Instructor/CoursesRequirements
+    + $ php artisan make:livewire Instructor/CoursesAudiences
+    + $ php artisan make:livewire Instructor/CoursesStudents
+23. Programar el controlador **app\Http\Livewire\Instructor\CoursesLesson.php**:
+    ```php
+        <?php
 
+    namespace App\Http\Livewire\Instructor;
 
-### Video 45. Agregar recursos a un lección
-1. Crear componente livewire para los recursos de los cursos:
-    >
-        $ php artisan make:livewire Instructor/LessonResources
-1. Modificar la vista **resources\views\livewire\instructor\courses-lesson.blade.php** para incluir el componente de recursos:
-    >
-        <div>
-            @foreach ($section->lessons as $item)
-                <article class="card mt-4" x-data="{open: false}">
-                    <div class="card-body">
-                        @if ($lesson->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <div class="flex items-center">
-                                    <label class="w-32">Nombre:</label>
-                                    <input wire:model="lesson.name" class="form-input w-full">
-                                </div>
-                                @error('lesson.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
+    use App\Models\Lesson;
+    use App\Models\Platform;
+    use App\Models\Section;
+    use Livewire\Component;
 
-                                <div class="flex items-center mt-4">
-                                    <label class="w-32">Plataforma: </label>
-                                    <select wire:model="lesson.platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                        @foreach ($platforms as $platform)
-                                            <option value="{{ $platform->id }}">{{ $platform->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+    class CoursesLesson extends Component
+    {
+        public $section, $lesson, $platforms, $name, $platform_id = 1, $url;
 
-                                <div class="flex items-center mt-4">
-                                    <label class="w-32">URL:</label>
-                                    <input wire:model="lesson.url" class="form-input w-full">
-                                </div>
-                                @error('lesson.url')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
+        protected $rules = [
+            'lesson.name' => 'required',
+            'lesson.platform_id' => 'required',
+            //Validación youtube
+            'lesson.url' => ['required', 'regex:%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x']
+        ];
 
-                                <div class="mt-4 flex justify-end">
-                                    <button type="button" class="btn btn-danger" wire:click="cancel">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary ml-2">Actualizar</button>
-                                </div>
-                            </form>
-                        @else
-                            <header>
-                                <h1 x-on:click="open = !open" class="cursor-pointer"><i class="far fa-play-circle text-blue-500 mr-1"></i> Lección: {{ $item->name }}</h1>
-                            </header>
-                            <div x-show="open">
-                                <hr class="my-2">
-                                <p class="text-sm">Plataforma: {{ $item->platform->name }}</p>
-                                <p class="text-sm">Enlace: <a class="text-blue-600" href="{{ $item->url }}" target="_blank">{{ $item->url }}</a></p>
-                                <div class="my-2">
-                                    <button class="btn btn-primary text-sm" wire:click="edit({{ $item }})">Editar</button>
-                                    <button class="btn btn-danger text-sm" wire:click="destroy({{ $item }})">Eliminar</button>
-                                </div>
+        public function mount(Section $section){
+            $this->section = $section;
+            $this->platforms = Platform::all();
+            $this->lesson = new Lesson();
+        }
 
-                                <div class="mb-4">
-                                    @livewire('instructor.lesson-description', ['lesson' => $item], key($item->id))
-                                </div>
+        public function render()
+        {
+            return view('livewire.instructor.courses-lesson');
+        }
 
-                                <div>
-                                    @livewire('instructor.lesson-resources', ['lesson' => $item], key($item->id))
-                                </div>
-                            </div>     
-                        @endif
-                    </div>
-                </article>
-            @endforeach
+        public function store(){
+            $rules = [
+                'name' => 'required',
+                'platform_id' => 'required',
+                //Validación youtube
+                'url' => ['required', 'regex:%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x']
+            ];
 
-            <div class="mt-4" x-data="{ open: false }">
-                <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
-                    <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
-                    Agregar nueva lección
-                </a>
-                <article class="card" x-show="open">
-                    <div class="card-body">
-                        <h1 class="text-xl font-bold mb-4">Agregar nueva lección</h1>
-                        <div class="mb-4">
+            if($this->platform_id == 2){
+                $rules['url'] = ['required', 'regex:/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/'];
+            }
+
+            $this->validate($rules);
+
+            Lesson::create([
+                'name' => $this->name,
+                'platform_id' => $this->platform_id,
+                'url' => $this->url,
+                'section_id' => $this->section->id
+            ]);
+
+            $this->reset(['name', 'platform_id', 'url']);
+            // Para actualizar la vista
+            $this->section = Section::find($this->section->id);
+        }
+
+        public function edit(Lesson $lesson){
+            $this->resetValidation();
+            $this->lesson = $lesson;
+        }
+
+        public function update(){
+            if($this->lesson->platform_id == 2){
+                $this->rules['lesson.url'] = ['required', 'regex:/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/'];
+            }
+            $this->validate();
+            $this->lesson->save();
+            $this->lesson = new Lesson();
+            // Para actualizar la vista
+            $this->section = Section::find($this->section->id);
+        }
+
+        public function destroy(Lesson $lesson){
+            $lesson->delete();
+            // Refresca la información de la vista
+            $this->section = Section::find($this->section->id);
+        }
+
+        public function cancel(){
+            $this->lesson = new Lesson();
+        }
+    }
+    ```
+24. Diseñar vista **resources\views\livewire\instructor\courses-lesson.blade.php**:
+    ```php
+    <div>
+        @foreach ($section->lessons as $item)
+            <article class="card mt-4" x-data="{open: false}">
+                <div class="card-body">
+                    @if ($lesson->id == $item->id)
+                        <form wire:submit.prevent="update">
                             <div class="flex items-center">
                                 <label class="w-32">Nombre:</label>
-                                <input wire:model="name" class="form-input w-full">
+                                <input wire:model="lesson.name" class="form-input w-full">
                             </div>
-                            @error('name')
+                            @error('lesson.name')
                                 <span class="text-xs text-red-500">{{ $message }}</span>
                             @enderror
 
                             <div class="flex items-center mt-4">
                                 <label class="w-32">Plataforma: </label>
-                                <select wire:model="platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <select wire:model="lesson.platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     @foreach ($platforms as $platform)
                                         <option value="{{ $platform->id }}">{{ $platform->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            @error('platform_id')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
 
                             <div class="flex items-center mt-4">
                                 <label class="w-32">URL:</label>
-                                <input wire:model="url" class="form-input w-full">
+                                <input wire:model="lesson.url" class="form-input w-full">
                             </div>
-                            @error('url')
+                            @error('lesson.url')
                                 <span class="text-xs text-red-500">{{ $message }}</span>
                             @enderror
-                        </div>
-                        <div class="flex justify-end">
-                            <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
-                            <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-1. Programar controlador del componente **app\Http\Livewire\Instructor\LessonResources.php**:
-    >
-        <?php
 
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Lesson;
-        use Illuminate\Support\Facades\Storage;
-        use Livewire\Component;
-        use Livewire\WithFileUploads;
-
-        class LessonResources extends Component
-        {
-            use WithFileUploads;
-
-            public $lesson, $file;
-
-            public function mount(Lesson $lesson){
-                $this->lesson = $lesson;
-            }
-
-            public function render()
-            {
-                return view('livewire.instructor.lesson-resources');
-            }
-
-            public function save(){
-                $this->validate([
-                    'file' => 'required'
-                ]);
-
-                $url = $this->file->store('resources');
-
-                $this->lesson->resource()->create([
-                    'url' => $url
-                ]);
-
-                $this->lesson = Lesson::find($this->lesson->id);
-            }
-
-            public function destroy(){
-                Storage::delete($this->lesson->resource->url);
-                $this->lesson->resource->delete();
-                $this->lesson = Lesson::find($this->lesson->id);
-            }
-
-            public function download(){
-                return response()->download(storage_path('app/public/' . $this->lesson->resource->url));
-            }
-        }
-1. Diseñar vista del componente **resources\views\livewire\instructor\lesson-resources.blade.php**:
-    >
-        <div class="card" x-data="{ open: false }">
-            <div class="card-body bg-gray-100">
-                <header>
-                    <h1 x-on:click="open = !open" class="cursor-pointer">Recursos de la lección</h1>
-                </header>
-
-                <div x-show="open">
-                    <hr class="my-2">
-
-                    @if ($lesson->resource)
-                        <div class="flex justify-between items-center">
-                            <p><i wire:click="download" class="fas fa-download text-gray-500 mr-2 cursor-pointer"></i> {{ $lesson->resource->url }}</p>
-                            <i wire:click="destroy" class="fas fa-trash text-red-500 cursor-pointer"></i>
-                        </div>
-                    @else
-                        <form wire:submit.prevent="save">
-                            <div class="flex items-center">
-                                <input wire:model="file" type="file" class="form-input flex-1">
-                                <button type="submit" class="btn btn-primary text-sm ml-2">Guardar</button>
+                            <div class="mt-4 flex justify-end">
+                                <button type="button" class="btn btn-danger" wire:click="cancel">Cancelar</button>
+                                <button type="submit" class="btn btn-primary ml-2">Actualizar</button>
                             </div>
-                            <div class="text-blue-500 font-bold mt-1" wire:loading wire:target="file">
-                                Cargando ...
-                            </div>
-                            @error('file')
-                                <span class="text-xs text-red-500">{{ $message }}</span>
-                            @enderror
                         </form>
+                    @else
+                        <header>
+                            <h1 x-on:click="open = !open" class="cursor-pointer"><i class="far fa-play-circle text-blue-500 mr-1"></i> Lección: {{ $item->name }}</h1>
+                        </header>
+                        <div x-show="open">
+                            <hr class="my-2">
+                            <p class="text-sm">Plataforma: {{ $item->platform->name }}</p>
+                            <p class="text-sm">Enlace: <a class="text-blue-600" href="{{ $item->url }}" target="_blank">{{ $item->url }}</a></p>
+                            <div class="my-2">
+                                <button class="btn btn-primary text-sm" wire:click="edit({{ $item }})">Editar</button>
+                                <button class="btn btn-danger text-sm" wire:click="destroy({{ $item }})">Eliminar</button>
+                            </div>
+
+                            <div class="mb-4">
+                                @livewire('instructor.lesson-description', ['lesson' => $item], key('lesson-description' . $item->id))
+                            </div>
+
+                            <div>
+                                @livewire('instructor.lesson-resources', ['lesson' => $item], key('lesson-resources' . $item->id))
+                            </div>
+                        </div>     
                     @endif
                 </div>
-            </div>
+            </article>
+        @endforeach
+
+        <div class="mt-4" x-data="{ open: false }">
+            <a x-show="!open" x-on:click="open = true" class="flex items-center cursor-pointer">
+                <i class="far fa-plus-square text-2xl text-red-500 mr-2"></i>
+                Agregar nueva lección
+            </a>
+            <article class="card" x-show="open">
+                <div class="card-body">
+                    <h1 class="text-xl font-bold mb-4">Agregar nueva lección</h1>
+                    <div class="mb-4">
+                        <div class="flex items-center">
+                            <label class="w-32">Nombre:</label>
+                            <input wire:model="name" class="form-input w-full">
+                        </div>
+                        @error('name')
+                            <span class="text-xs text-red-500">{{ $message }}</span>
+                        @enderror
+
+                        <div class="flex items-center mt-4">
+                            <label class="w-32">Plataforma: </label>
+                            <select wire:model="platform_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                @foreach ($platforms as $platform)
+                                    <option value="{{ $platform->id }}">{{ $platform->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @error('platform_id')
+                            <span class="text-xs text-red-500">{{ $message }}</span>
+                        @enderror
+
+                        <div class="flex items-center mt-4">
+                            <label class="w-32">URL:</label>
+                            <input wire:model="url" class="form-input w-full">
+                        </div>
+                        @error('url')
+                            <span class="text-xs text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="btn btn-danger" x-on:click="open = false">Cancelar</button>
+                        <button class="btn btn-primary ml-2" wire:click="store">Agregar</button>
+                    </div>
+                </div>
+            </article>
         </div>
-1. Agregar el método **deleting** en **app\Observers\LessonObserver.php**:
-    >
+    </div>
+    ```
+25. Programar el observer **app\Observers\LessonObserver.php**:
+    ```php
+    <?php
+
+    namespace App\Observers;
+
+    use App\Models\Lesson;
+    use Illuminate\Support\Facades\Storage;
+
+    class LessonObserver
+    {
+        // Este método se ejecutará solo cuando creemos un nuevo registro en la tabla lessons
+        public function creating(Lesson $lesson){
+            $url = $lesson->url;
+            $platform_id = $lesson->platform_id;
+
+            if($platform_id == 1){
+                $patron = '%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x';
+                $array = preg_match($patron, $url, $parte);
+                $lesson->iframe = '<iframe width="560" height="315" src="https://www.youtube.com/embed/'. $parte[1] .'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            }else{
+                $patron = '/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/';
+                $array = preg_match($patron, $url, $parte);
+                $lesson->iframe = '<iframe src="https://player.vimeo.com/video/' . $parte[2] . '" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+            }
+        }
+
+        // Este método se ejecutará solo cuando actualicemos algún registro de la tabla lessons
+        public function updating(Lesson $lesson){
+            $url = $lesson->url;
+            $platform_id = $lesson->platform_id;
+
+            if($platform_id == 1){
+                $patron = '%^ (?:https?://)? (?:www\.)? (?: youtu\.be/ | youtube\.com (?: /embed/ | /v/ | /watch\?v= ) ) ([\w-]{10,12}) $%x';
+                $array = preg_match($patron, $url, $parte);
+                $lesson->iframe = '<iframe width="560" height="315" src="https://www.youtube.com/embed/'. $parte[1] .'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            }else{
+                $patron = '/\/\/(www\.)?vimeo.com\/(\d+)($|\/)/';
+                $array = preg_match($patron, $url, $parte);
+                $lesson->iframe = '<iframe src="https://player.vimeo.com/video/' . $parte[2] . '" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+            }
+        }
+
         public function deleting(Lesson $lesson){
             if($lesson->resource){
                 Storage::delete($lesson->resource->url);
                 $lesson->resource->delete();
             }
         }
-    Importar facade **Storage**:
-    >
-        use Illuminate\Support\Facades\Storage;
-1. Crear un observador para el modelo **Section**:
-    >
-        $ php artisan make:observer SectionObserver
-1. Registrar el observador SectionObserever en **app\Providers\AppServiceProvider.php**:
-    >
-        <?php
+    }
+    ```
+26. Programar el controlador del componente **app\Http\Livewire\Instructor\LessonDescription.php**:
+    ```php
+    <?php
 
-        namespace App\Providers;
+    namespace App\Http\Livewire\Instructor;
 
-        use Illuminate\Support\Facades\Blade;
-        use Illuminate\Support\ServiceProvider;
-        use App\Models\Lesson;
-        use App\Models\Section;
-        use App\Observers\LessonObserver;
-        use App\Observers\SectionObserver;
+    use App\Models\Lesson;
+    use Livewire\Component;
 
-        class AppServiceProvider extends ServiceProvider
-        {
-            /**
-            * Register any application services.
-            *
-            * @return void
-            */
-            public function register()
-            {
-                //
-            }
+    class LessonDescription extends Component
+    {
+        public $lesson, $description, $name;
 
-            /**
-            * Bootstrap any application services.
-            *
-            * @return void
-            */
-            public function boot()
-            {
-                Lesson::observe(LessonObserver::class);
-                Section::observe(SectionObserver::class);
-                Blade::directive('routeIs', function ($expression) {
-                    return "<?php if(Request::url() == route($expression)) : ?>";
-                });
+        protected $rules = [
+            'description.name' => 'required'
+        ];
+
+        public function mount(Lesson $lesson){
+            $this->lesson = $lesson;
+            if($lesson->description){
+                $this->description = $lesson->description;
             }
         }
-1. Programar **app\Observers\SectionObserver.php**:
-    >
-        <?php
 
-        namespace App\Observers;
-
-        use App\Models\Section;
-        use Illuminate\Support\Facades\Storage;
-
-        class SectionObserver
+        public function render()
         {
-            public function deleting(Section $section){
-                foreach ($section->lessons as $lesson) {
-                    if($lesson->resource){
-                        Storage::delete($lesson->resource->url);
-                        $lesson->resource->delete();
-                    }
+            return view('livewire.instructor.lesson-description');
+        }
+
+        public function store(){
+            // Crea un nuevo registro en la tabla description y lo relaciona con el registro lesson
+            $this->description = $this->lesson->description()->create([
+                'name' => $this->name
+            ]);
+            $this->reset('name');
+            $this->lesson = Lesson::find($this->lesson->id);
+        }
+
+        public function update(){
+            $this->validate();
+            $this->description->save();
+        }
+
+        public function destroy(){
+            $this->description->delete();
+            $this->reset('description');
+            $this->lesson = Lesson::find($this->lesson->id);
+        }
+    }
+    ```
+27. Diseñar la vista del componente **resources\views\livewire\instructor\lesson-description.blade.php**:
+    ```php
+    <div>
+        <article class="card" x-data="{open: false}">
+            <div class="card-body bg-gray-100">
+                <header>
+                    <h1 x-on:click="open = !open" class="cursor-pointer">Descripción de la lección</h1>
+                </header>
+                <div x-show="open">
+                    <hr class="my-2">
+                    @if ($lesson->description)
+                        <form wire:submit.prevent="update">
+                            <textarea wire:model="description.name" class="form-input w-full"></textarea>
+                            @error('description.name')
+                                <span class="text-sm text-red-500">{{ $message }}</span>
+                            @enderror
+
+                            <div class="flex justify-end">
+                                <button wire:click="destroy" class="btn btn-danger text-sm" type="button">Eliminar</button>
+                                <button class="btn btn-primary text-sm ml-2" type="submit">Actualizar</button>
+                            </div>
+                        </form>
+                    @else
+                        <div>
+                            <textarea wire:model="name" class="form-input w-full" placeholder="Agregue una descripción de la lección ..."></textarea>
+                            @error('name')
+                                <span class="text-sm text-red-500">{{ $message }}</span>
+                            @enderror
+
+                            <div class="flex justify-end">
+                                <button wire:click="store" class="btn btn-primary text-sm ml-2">Agregar</button>
+                            </div>
+                        <div>
+                    @endif
+                </div>
+            </div>
+        </article>
+    </div>
+    ```
+28. Programar controlador del componente **app\Http\Livewire\Instructor\LessonResources.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Livewire\Instructor;
+
+    use App\Models\Lesson;
+    use Illuminate\Support\Facades\Storage;
+    use Livewire\Component;
+    use Livewire\WithFileUploads;
+
+    class LessonResources extends Component
+    {
+        use WithFileUploads;
+
+        public $lesson, $file;
+
+        public function mount(Lesson $lesson){
+            $this->lesson = $lesson;
+        }
+
+        public function render()
+        {
+            return view('livewire.instructor.lesson-resources');
+        }
+
+        public function save(){
+            $this->validate([
+                'file' => 'required'
+            ]);
+
+            $url = $this->file->store('resources');
+
+            $this->lesson->resource()->create([
+                'url' => $url
+            ]);
+
+            $this->lesson = Lesson::find($this->lesson->id);
+        }
+
+        public function destroy(){
+            Storage::delete($this->lesson->resource->url);
+            $this->lesson->resource->delete();
+            $this->lesson = Lesson::find($this->lesson->id);
+        }
+
+        public function download(){
+            return response()->download(storage_path('app/public/' . $this->lesson->resource->url));
+        }
+    }
+    ```
+29. Diseñar vista del componente **resources\views\livewire\instructor\lesson-resources.blade.php**:
+    ```php
+    <div class="card" x-data="{ open: false }">
+        <div class="card-body bg-gray-100">
+            <header>
+                <h1 x-on:click="open = !open" class="cursor-pointer">Recursos de la lección</h1>
+            </header>
+
+            <div x-show="open">
+                <hr class="my-2">
+
+                @if ($lesson->resource)
+                    <div class="flex justify-between items-center">
+                        <p><i wire:click="download" class="fas fa-download text-gray-500 mr-2 cursor-pointer"></i> {{ $lesson->resource->url }}</p>
+                        <i wire:click="destroy" class="fas fa-trash text-red-500 cursor-pointer"></i>
+                    </div>
+                @else
+                    <form wire:submit.prevent="save">
+                        <div class="flex items-center">
+                            <input wire:model="file" type="file" class="form-input flex-1">
+                            <button type="submit" class="btn btn-primary text-sm ml-2">Guardar</button>
+                        </div>
+                        <div class="text-blue-500 font-bold mt-1" wire:loading wire:target="file">
+                            Cargando ...
+                        </div>
+                        @error('file')
+                            <span class="text-xs text-red-500">{{ $message }}</span>
+                        @enderror
+                    </form>
+                @endif
+            </div>
+        </div>
+    </div>
+    ```
+30. Programar **app\Observers\SectionObserver.php**:
+    ```php
+    <?php
+
+    namespace App\Observers;
+
+    use App\Models\Section;
+    use Illuminate\Support\Facades\Storage;
+
+    class SectionObserver
+    {
+        public function deleting(Section $section){
+            foreach ($section->lessons as $lesson) {
+                if($lesson->resource){
+                    Storage::delete($lesson->resource->url);
+                    $lesson->resource->delete();
                 }
             }
         }
-1. Modificar la vista **resources\views\livewire\instructor\courses-lesson.blade.php**:
-    >
-        <div>
-            @foreach ($section->lessons as $item)
-                <article class="card mt-4" x-data="{open: false}">
-                    <div class="card-body">
-                        @if ($lesson->id == $item->id)
-                            ≡
-                        @else
-                            <header>
-                                <h1 x-on:click="open = !open" class="cursor-pointer"><i class="far fa-play-circle text-blue-500 mr-1"></i> Lección: {{ $item->name }}</h1>
-                            </header>
-                            <div x-show="open">
-                                ≡
-                            </div>     
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-            ≡
-        </div>
-1. Modificar la vista **resources\views\livewire\instructor\courses-curriculum.blade.php**:
-    >
-        <div>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
+    }
+    ```
+31. Crear vista **resources\views\instructor\courses\goals.blade.php**:
+    ```php
+    <x-instructor-layout>
+        <x-slot name="course">
+            {{ $course->slug }}
+        </x-slot>
 
-            <h1 class="text-2xl font-bold">LECCIONES DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-            @foreach ($course->sections as $item)
-                <article class="card mb-6" x-data="{open: true}">
-                    <div class="card-body bg-gray-100">
-                        @if ($section->id == $item->id)
-                            ≡
-                        @else
-                            <header class="flex justify-between items-center">
-                                <h1 x-on:click="open = !open" class="cursor-pointer"><strong>Sección:</strong> {{ $item->name }}</h1>
-                                ≡
-                            </header>
-                            <div x-show="open">
-                                @livewire('instructor.courses-lesson', ['section' => $item], key($item->id))
+        <div>
+            @livewire('instructor.courses-goals', ['course' => $course], key('courses-goals' . $course->id))
+        </div>
+
+        <div class="my-8">
+            @livewire('instructor.courses-requirements', ['course' => $course], key('courses-requirements' . $course->id))
+        </div>
+
+        <div>
+            @livewire('instructor.courses-audiences', ['course' => $course], key('courses-audiences' . $course->id))
+        </div>
+    </x-instructor-layout>
+    ```
+32. Programar controlador del componente **app\Http\Livewire\Instructor\CoursesGoals.php**:
+    ```php
+    <?php
+
+    namespace App\Http\Livewire\Instructor;
+
+    use App\Models\Course;
+    use App\Models\Goal;
+    use Livewire\Component;
+
+    class CoursesGoals extends Component
+    {
+        public $course, $goal, $name;
+
+        protected $rules = [
+            'goal.name' => 'required'
+        ];
+
+        public function mount(Course $course){
+            $this->course = $course;
+            $this->goal = new Goal();
+        }
+
+        public function render()
+        {
+            return view('livewire.instructor.courses-goals');
+        }
+
+        public function store(){
+            $this->validate([
+                'name' => 'required'
+            ]);
+            $this->course->goals()->create([
+                'name' => $this->name
+            ]);
+            $this->reset('name');
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function edit(Goal $goal){
+            $this->goal = $goal;
+        }
+
+        public function update(){
+            $this->validate();
+            $this->goal->save();
+            $this->goal = new Goal();
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function destroy(Goal $goal){
+            $goal->delete();
+            $this->course = Course::find($this->course->id);
+        }
+    }
+    ```
+33. Diseñar vista del componente **resources\views\livewire\instructor\courses-goals.blade.php**:
+    ```php
+    <section>
+        <h1 class="text-2xl font-bold">METAS DEL CURSO</h1>
+        <hr class="mt-2 mb-6">
+
+        @foreach ($course->goals as $item)
+            <article class="card mb-4">
+                <div class="card-body bg-gray-100">
+                    @if ($goal->id == $item->id)
+                        <form wire:submit.prevent="update">
+                            <input wire:model="goal.name" class="form-input w-full">
+                            @error('goal.name')
+                                <span class="text-xs text-red-500">{{ $message }}</span>
+                            @enderror
+                        </form>
+                    @else
+                        <header class="flex justify-between">
+                            <h1>{{ $item->name }}</h1>
+                            <div>
+                                <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
+                                <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
                             </div>
-                        @endif
+                        </header>
+                    @endif
+                </div>
+            </article>
+        @endforeach
+
+        <article class="card">
+            <div class="card-body bg-gray-100">
+                <form wire:submit.prevent="store">
+                    <input wire:model="name" class="form-input w-full" placeholder="Agregar el nombre de la meta">
+                    @error('name')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                    <div class="flex justify-end mt-2">
+                        <button type="submit" class="btn btn-primary">Agregar meta</button>
                     </div>
-                </article>
-            @endforeach
-            ≡
-        </div>
-
-
-### Video 46. Pequeña corrección
-1. Corregir asignación de llaves en componentes en la vista **resources\views\livewire\instructor\courses-lesson.blade.php**:
-    >
-        ≡
-        <div class="mb-4">
-            @livewire('instructor.lesson-description', ['lesson' => $item], key('lesson-description' . $item->id))
-        </div>
-
-        <div>
-            @livewire('instructor.lesson-resources', ['lesson' => $item], key('lesson-resources' . $item->id))
-        </div>
-        ≡
-
-
-### Video 47. Metas del curso
-1. Crear ruta para metas del curso en **routes\instructor.php**:
-    >
-        Route::get('courses/{course}/goals', [CourseController::class, 'goals'])->name('courses.goals');
-1. Crear método **goals** en el controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
-        public function goals(Course $course){
-            return view('instructor.courses.goals', compact('course'));
-        }
-1. Crear vista **resources\views\instructor\courses\goals.blade.php**:
-    >
-        <x-instructor-layout>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
-
-            <div>
-                @livewire('instructor.courses-goals', ['course' => $course], key('courses-goals' . $course->id))
+                </form>
             </div>
+        </article>
+    </section>
+    ```
+34. Programar controlador del componente **app\Http\Livewire\Instructor\CoursesRequirements.php**:
+    ```php
+    <?php
 
-            <div class="my-8">
-                @livewire('instructor.courses-requirements', ['course' => $course], key('courses-requirements' . $course->id))
+    namespace App\Http\Livewire\Instructor;
+
+    use App\Models\Course;
+    use App\Models\Requeriment;
+    use Livewire\Component;
+
+    class CoursesRequirements extends Component
+    {
+        public $course, $requirement, $name;
+
+        protected $rules = [
+            'requirement.name' => 'required'
+        ];
+
+        public function mount(Course $course){
+            $this->course = $course;
+            $this->requirement = new Requeriment();
+        }
+
+        public function render()
+        {
+            return view('livewire.instructor.courses-requirements');
+        }
+
+        public function store(){
+            $this->validate([
+                'name' => 'required'
+            ]);
+            $this->course->requirements()->create([
+                'name' => $this->name
+            ]);
+            $this->reset('name');
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function edit(Requeriment $requirement){
+            $this->requirement = $requirement;
+        }
+
+        public function update(){
+            $this->validate();
+            $this->requirement->save();
+            $this->requirement = new Requeriment();
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function destroy(Requeriment $requirement){
+            $requirement->delete();
+            $this->course = Course::find($this->course->id);
+        }
+    }
+    ```
+35. Diseñar vista del componente **resources\views\livewire\instructor\courses-requirements.blade.php**:
+    ```php
+    <section>
+        <h1 class="text-2xl font-bold">REQUERIMIENTOS DEL CURSO</h1>
+        <hr class="mt-2 mb-6">
+
+        @foreach ($course->requirements as $item)
+            <article class="card mb-4">
+                <div class="card-body bg-gray-100">
+                    @if ($requirement->id == $item->id)
+                        <form wire:submit.prevent="update">
+                            <input wire:model="requirement.name" class="form-input w-full">
+                            @error('requirement.name')
+                                <span class="text-xs text-red-500">{{ $message }}</span>
+                            @enderror
+                        </form>
+                    @else
+                        <header class="flex justify-between">
+                            <h1>{{ $item->name }}</h1>
+                            <div>
+                                <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
+                                <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
+                            </div>
+                        </header>
+                    @endif
+                </div>
+            </article>
+        @endforeach
+
+        <article class="card">
+            <div class="card-body bg-gray-100">
+                <form wire:submit.prevent="store">
+                    <input wire:model="name" class="form-input w-full" placeholder="Agregar el nombre de un requerimiento">
+                    @error('name')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                    <div class="flex justify-end mt-2">
+                        <button type="submit" class="btn btn-primary">Agregar requerimiento</button>
+                    </div>
+                </form>
             </div>
+        </article>
+    </section>
+    ```
+36. Programar controlador del componente **app\Http\Livewire\Instructor\CoursesAudiences.php**:
+    ```php
+    <?php
 
-            <div>
-                @livewire('instructor.courses-audiences', ['course' => $course], key('courses-audiences' . $course->id))
+    namespace App\Http\Livewire\Instructor;
+
+    use App\Models\Audience;
+    use App\Models\Course;
+    use Livewire\Component;
+
+    class CoursesAudiences extends Component
+    {
+        public $course, $audience, $name;
+
+        protected $rules = [
+            'audience.name' => 'required'
+        ];
+
+        public function mount(Course $course){
+            $this->course = $course;
+            $this->audience = new Audience();
+        }
+
+        public function render()
+        {
+            return view('livewire.instructor.courses-audiences');
+        }
+
+        public function store(){
+            $this->validate([
+                'name' => 'required'
+            ]);
+            $this->course->audiences()->create([
+                'name' => $this->name
+            ]);
+            $this->reset('name');
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function edit(Audience $audience){
+            $this->audience = $audience;
+        }
+
+        public function update(){
+            $this->validate();
+            $this->audience->save();
+            $this->audience = new Audience();
+            $this->course = Course::find($this->course->id);
+        }
+
+        public function destroy(Audience $audience){
+            $audience->delete();
+            $this->course = Course::find($this->course->id);
+        }
+    }
+    ```
+37. Diseñar vista del componente **resources\views\livewire\instructor\courses-audiences.blade.php**:
+    ```php
+    <section>
+        <h1 class="text-2xl font-bold">AUDIENCIA DEL CURSO</h1>
+        <hr class="mt-2 mb-6">
+
+        @foreach ($course->audiences as $item)
+            <article class="card mb-4">
+                <div class="card-body bg-gray-100">
+                    @if ($audience->id == $item->id)
+                        <form wire:submit.prevent="update">
+                            <input wire:model="audience.name" class="form-input w-full">
+                            @error('audience.name')
+                                <span class="text-xs text-red-500">{{ $message }}</span>
+                            @enderror
+                        </form>
+                    @else
+                        <header class="flex justify-between">
+                            <h1>{{ $item->name }}</h1>
+                            <div>
+                                <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
+                                <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
+                            </div>
+                        </header>
+                    @endif
+                </div>
+            </article>
+        @endforeach
+
+        <article class="card">
+            <div class="card-body bg-gray-100">
+                <form wire:submit.prevent="store">
+                    <input wire:model="name" class="form-input w-full" placeholder="Agregar la audiencia del curso">
+                    @error('name')
+                        <span class="text-xs text-red-500">{{ $message }}</span>
+                    @enderror
+                    <div class="flex justify-end mt-2">
+                        <button type="submit" class="btn btn-primary">Agregar audiencia</button>
+                    </div>
+                </form>
             </div>
-        </x-instructor-layout>
-1. Modificar plantilla **resources\views\layouts\instructor.blade.php**:
-    >
-        ≡
-        <h1 class="font-bold text-lg mb-4">Edición del curso</h1>
-        <ul class="text-sm text-gray-600">
-            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.edit', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                <a href="{{ route('instructor.courses.edit', $course) }}">Información del curso</a>
-            </li>
-            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.curriculum', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                <a href="{{ route('instructor.courses.curriculum', $course) }}">Lecciones del curso</a>
-            </li>
-            <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.goals', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                <a href="{{ route('instructor.courses.goals', $course) }}">Metas del curso</a>
-            </li>
-            <li class="leading-7 mb-1 border-l-4 border-transparent pl-2">
-                <a href="">Estudiantes</a>
-            </li>
-        </ul>
-        ≡
-1. Crear componentes livewire:
-    >
-        $ php artisan make:livewire Instructor/CoursesGoals
-        $ php artisan make:livewire Instructor/CoursesRequirements
-        $ php artisan make:livewire Instructor/CoursesAudiences
-1. Programar controlador del componente **app\Http\Livewire\Instructor\CoursesGoals.php**:
-    >
-        <?php
+        </article>
+    </section>
+    ```
+38. Programar el controlador del componente **app\Http\Livewire\Instructor\CoursesStudents.php**:
+    ```php
+    <?php
 
-        namespace App\Http\Livewire\Instructor;
+    namespace App\Http\Livewire\Instructor;
 
-        use App\Models\Course;
-        use App\Models\Goal;
-        use Livewire\Component;
+    use App\Models\Course;
+    use Livewire\Component;
+    use Livewire\WithPagination;
+    use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-        class CoursesGoals extends Component
-        {
-            public $course, $goal, $name;
+    class CoursesStudents extends Component
+    {
+        use WithPagination;
+        use AuthorizesRequests;
 
-            protected $rules = [
-                'goal.name' => 'required'
-            ];
+        public $course, $search;
 
-            public function mount(Course $course){
-                $this->course = $course;
-                $this->goal = new Goal();
-            }
-
-            public function render()
-            {
-                return view('livewire.instructor.courses-goals');
-            }
-
-            public function store(){
-                $this->validate([
-                    'name' => 'required'
-                ]);
-                $this->course->goals()->create([
-                    'name' => $this->name
-                ]);
-                $this->reset('name');
-                $this->course = Course::find($this->course->id);
-            }
-
-            public function edit(Goal $goal){
-                $this->goal = $goal;
-            }
-
-            public function update(){
-                $this->validate();
-                $this->goal->save();
-                $this->goal = new Goal();
-                $this->course = Course::find($this->course->id);
-            }
-
-            public function destroy(Goal $goal){
-                $goal->delete();
-                $this->course = Course::find($this->course->id);
-            }
+        public function mount(Course $course){
+            $this->course = $course;
+            $this->authorize('dicatated', $course);
         }
-1. Diseñar vista del componente **resources\views\livewire\instructor\courses-goals.blade.php**:
-    >
-        <section>
-            <h1 class="text-2xl font-bold">METAS DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
 
-            @foreach ($course->goals as $item)
-                <article class="card mb-4">
-                    <div class="card-body bg-gray-100">
-                        @if ($goal->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <input wire:model="goal.name" class="form-input w-full">
-                                @error('goal.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-                            </form>
-                        @else
-                            <header class="flex justify-between">
-                                <h1>{{ $item->name }}</h1>
-                                <div>
-                                    <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
-                                    <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
-                                </div>
-                            </header>
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <article class="card">
-                <div class="card-body bg-gray-100">
-                    <form wire:submit.prevent="store">
-                        <input wire:model="name" class="form-input w-full" placeholder="Agregar el nombre de la meta">
-                        @error('name')
-                            <span class="text-xs text-red-500">{{ $message }}</span>
-                        @enderror
-                        <div class="flex justify-end mt-2">
-                            <button type="submit" class="btn btn-primary">Agregar meta</button>
-                        </div>
-                    </form>
-                </div>
-            </article>
-        </section>
-1. Programar controlador del componente **app\Http\Livewire\Instructor\CoursesRequirements.php**:
-    >
-        <section>
-            <h1 class="text-2xl font-bold">METAS DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-
-            @foreach ($course->goals as $item)
-                <article class="card mb-4">
-                    <div class="card-body bg-gray-100">
-                        @if ($goal->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <input wire:model="goal.name" class="form-input w-full">
-                                @error('goal.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-                            </form>
-                        @else
-                            <header class="flex justify-between">
-                                <h1>{{ $item->name }}</h1>
-                                <div>
-                                    <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
-                                    <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
-                                </div>
-                            </header>
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <article class="card">
-                <div class="card-body bg-gray-100">
-                    <form wire:submit.prevent="store">
-                        <input wire:model="name" class="form-input w-full" placeholder="Agregar el nombre de la meta">
-                        @error('name')
-                            <span class="text-xs text-red-500">{{ $message }}</span>
-                        @enderror
-                        <div class="flex justify-end mt-2">
-                            <button type="submit" class="btn btn-primary">Agregar meta</button>
-                        </div>
-                    </form>
-                </div>
-            </article>
-        </section>
-1. Diseñar vista del componente **resources\views\livewire\instructor\courses-requirements.blade.php**:
-    >
-        <section>
-            <h1 class="text-2xl font-bold">REQUERIMIENTOS DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-
-            @foreach ($course->requirements as $item)
-                <article class="card mb-4">
-                    <div class="card-body bg-gray-100">
-                        @if ($requirement->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <input wire:model="requirement.name" class="form-input w-full">
-                                @error('requirement.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-                            </form>
-                        @else
-                            <header class="flex justify-between">
-                                <h1>{{ $item->name }}</h1>
-                                <div>
-                                    <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
-                                    <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
-                                </div>
-                            </header>
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <article class="card">
-                <div class="card-body bg-gray-100">
-                    <form wire:submit.prevent="store">
-                        <input wire:model="name" class="form-input w-full" placeholder="Agregar el nombre de un requerimiento">
-                        @error('name')
-                            <span class="text-xs text-red-500">{{ $message }}</span>
-                        @enderror
-                        <div class="flex justify-end mt-2">
-                            <button type="submit" class="btn btn-primary">Agregar requerimiento</button>
-                        </div>
-                    </form>
-                </div>
-            </article>
-        </section>
-1. Programar controlador del componente **app\Http\Livewire\Instructor\CoursesAudiences.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Audience;
-        use App\Models\Course;
-        use Livewire\Component;
-
-        class CoursesAudiences extends Component
-        {
-            public $course, $audience, $name;
-
-            protected $rules = [
-                'audience.name' => 'required'
-            ];
-
-            public function mount(Course $course){
-                $this->course = $course;
-                $this->audience = new Audience();
-            }
-
-            public function render()
-            {
-                return view('livewire.instructor.courses-audiences');
-            }
-
-            public function store(){
-                $this->validate([
-                    'name' => 'required'
-                ]);
-                $this->course->audiences()->create([
-                    'name' => $this->name
-                ]);
-                $this->reset('name');
-                $this->course = Course::find($this->course->id);
-            }
-
-            public function edit(Audience $audience){
-                $this->audience = $audience;
-            }
-
-            public function update(){
-                $this->validate();
-                $this->audience->save();
-                $this->audience = new Audience();
-                $this->course = Course::find($this->course->id);
-            }
-
-            public function destroy(Audience $audience){
-                $audience->delete();
-                $this->course = Course::find($this->course->id);
-            }
+        public function updatingSearch(){
+            $this->resetPage();
         }
-1. Diseñar vista del componente **resources\views\livewire\instructor\courses-audiences.blade.php**:
-    >
-        <section>
-            <h1 class="text-2xl font-bold">AUDIENCIA DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
 
-            @foreach ($course->audiences as $item)
-                <article class="card mb-4">
-                    <div class="card-body bg-gray-100">
-                        @if ($audience->id == $item->id)
-                            <form wire:submit.prevent="update">
-                                <input wire:model="audience.name" class="form-input w-full">
-                                @error('audience.name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
-                            </form>
-                        @else
-                            <header class="flex justify-between">
-                                <h1>{{ $item->name }}</h1>
-                                <div>
-                                    <i wire:click="edit({{ $item }})" class="fas fa-edit text-blue-500 cursor-pointer"></i>
-                                    <i wire:click="destroy({{ $item }})" class="fas fa-trash text-red-500 cursor-pointer ml-2"></i>
-                                </div>
-                            </header>
-                        @endif
-                    </div>
-                </article>
-            @endforeach
-
-            <article class="card">
-                <div class="card-body bg-gray-100">
-                    <form wire:submit.prevent="store">
-                        <input wire:model="name" class="form-input w-full" placeholder="Agregar la audiencia del curso">
-                        @error('name')
-                            <span class="text-xs text-red-500">{{ $message }}</span>
-                        @enderror
-                        <div class="flex justify-end mt-2">
-                            <button type="submit" class="btn btn-primary">Agregar audiencia</button>
-                        </div>
-                    </form>
-                </div>
-            </article>
-        </section>
-
-
-### Video 48. Estudiantes del curso
-1. Crear ruta **courses.estudents** en **routes\instructor.php**:
-    >
-        Route::get('courses/{course}/students', CoursesStudents::class)->name('courses.students');
-    Importar componente:
-    >
-        use App\Http\Livewire\Instructor\CoursesStudents;
-1. Crear componente de livewire para el control de la nueva ruta **courses.estudents**:
-    >
-        $ php artisan make:livewire Instructor/CoursesStudents
-1. Programar el controlador del componente **app\Http\Livewire\Instructor\CoursesStudents.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Course;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-
-        class CoursesStudents extends Component
+        public function render()
         {
-            use WithPagination;
-
-            public $course, $search;
-
-            public function mount(Course $course){
-                $this->course = $course;
-            }
-
-            public function updatingSearch(){
-                $this->resetPage();
-            }
-
-            public function render()
-            {
-                $students = $this->course->students()
-                            ->where('name', 'LIKE', '%' . $this->search . '%')
-                            ->paginate(4);
-                return view('livewire.instructor.courses-students', compact('students'))->layout('layouts.instructor');
-            }
+            $students = $this->course->students()
+                        ->where('name', 'LIKE', '%' . $this->search . '%')
+                        ->paginate(4);
+            return view('livewire.instructor.courses-students', compact('students'))->layout('layouts.instructor');
         }
-1. Diseñar la vista del componente **resources\views\livewire\instructor\courses-students.blade.php**:
-    >
-        <div>
-            <x-slot name="course">
-                {{ $course->slug }}
-            </x-slot>
+    }
+    ```
+39. Diseñar la vista del componente **resources\views\livewire\instructor\courses-students.blade.php**:
+    ```php
+    <div>
+        <x-slot name="course">
+            {{ $course->slug }}
+        </x-slot>
 
-            <h1 class="text-2xl font-bold mb-4">ESTUDIANTES DEL CURSO</h1>
+        <h1 class="text-2xl font-bold mb-4">ESTUDIANTES DEL CURSO</h1>
 
-            <x-table-responsive>
-                <div class="px-6 py-4">
-                    <input wire:model="search" class="form-input w-full shadow-sm" placeholder="Ingrese el nombre del estudiante ...">
-                </div>
-                @if ($students->count())
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+        <x-table-responsive>
+            <div class="px-6 py-4">
+                <input wire:model="search" class="form-input w-full shadow-sm" placeholder="Ingrese el nombre del estudiante ...">
+            </div>
+            @if ($students->count())
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Edit</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($students as $student)
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nombre
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email
-                                </th>
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Edit</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($students as $student)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img class="h-10 w-10 rounded-full object-cover object-center" src="{{ $student->profile_photo_url }}" alt="">
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $student->name }}
-                                                </div>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full object-cover object-center" src="{{ $student->profile_photo_url }}" alt="">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $student->name }}
                                             </div>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $student->email }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="" class="text-indigo-600 hover:text-indigo-900">Ver</a>
-                                    </td>
-                                </tr>  
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="px-6 py-4">
-                        {{ $students->links() }}
-                    </div>
-                @else
-                    <div class="px-6 py-4">
-                        No hay ningún registro coincidente
-                    </div>
-                @endif
-            </x-table-responsive>   
-        </div>
-1. Modificar plantilla **resources\views\layouts\instructor.blade.php**:
-    >
-        ≡
-        <aside>
-            <h1 class="font-bold text-lg mb-4">Edición del curso</h1>
-            <ul class="text-sm text-gray-600">
-                <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.edit', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                    <a href="{{ route('instructor.courses.edit', $course) }}">Información del curso</a>
-                </li>
-                <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.curriculum', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                    <a href="{{ route('instructor.courses.curriculum', $course) }}">Lecciones del curso</a>
-                </li>
-                <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.goals', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                    <a href="{{ route('instructor.courses.goals', $course) }}">Metas del curso</a>
-                </li>
-                <li class="leading-7 mb-1 border-l-4 @routeIs('instructor.courses.students', $course) border-indigo-400 @else border-transparent @endif pl-2">
-                    <a href="{{ route('instructor.courses.students', $course) }}">Estudiantes</a>
-                </li>
-            </ul>
-        </aside>
-        ≡
-
-### Video 49. Agregar policies a los cursos
-1. Crear método **dicatated** en **app\Policies\CoursePolicy.php**:
-    >
-        public function dicatated(User $user, Course $course){
-            if($course->user_id == $user->id){
-                return true;
-            }else{
-                return false;
-            }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $student->email }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="" class="text-indigo-600 hover:text-indigo-900">Ver</a>
+                                </td>
+                            </tr>  
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="px-6 py-4">
+                    {{ $students->links() }}
+                </div>
+            @else
+                <div class="px-6 py-4">
+                    No hay ningún registro coincidente
+                </div>
+            @endif
+        </x-table-responsive>   
+    </div>
+    ```
+40. Crear método **dicatated** en **app\Policies\CoursePolicy.php**:
+    ```php
+    public function dicatated(User $user, Course $course){
+        if($course->user_id == $user->id){
+            return true;
+        }else{
+            return false;
         }
-1. Agregar la siguiente línea de código al principio de los métodos **edit**, **update** y **goals** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
-        $this->authorize('dicatated', $course);
-1. Modificar el controlador del componente **app\Http\Livewire\Instructor\CoursesCurriculum.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Course;
-        use App\Models\Section;
-        use Livewire\Component;
-        use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-        class CoursesCurriculum extends Component
-        {
-            use AuthorizesRequests;
-
-            public $course, $section, $name;
-
-            protected $rules = [
-                'section.name' => 'required'
-            ];
-
-            public function mount(Course $course){
-                $this->course = $course;
-                $this->section = new Section();
-                $this->authorize('dicatated', $course);
-            }
-            ≡
-1. Modificar el controlador del componente **app\Http\Livewire\Instructor\CoursesStudents.php**:
-    >
-        <?php
-
-        namespace App\Http\Livewire\Instructor;
-
-        use App\Models\Course;
-        use Livewire\Component;
-        use Livewire\WithPagination;
-        use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-        class CoursesStudents extends Component
-        {
-            use WithPagination;
-            use AuthorizesRequests;
-
-            public $course, $search;
-
-            public function mount(Course $course){
-                $this->course = $course;
-                $this->authorize('dicatated', $course);
-            }
-            ≡
-1. Agregar el método **__construct** al principio de la clase **CourseController** del controlador **app\Http\Controllers\Instructor\CourseController.php**:
-    >
-        public function __construct(){
-            $this->middleware('can:Leer cursos')->only('index');
-            $this->middleware('can:Crear cursos')->only('create', 'store');
-            $this->middleware('can:Actualizar cursos')->only('edit', 'update', 'goals');
-            $this->middleware('can:Eliminar cursos')->only('destroy');
-        }
-1. Agregar middleware a las rutas del archivo routes\instructor.php:
-    >
-        <?php
-
-        use App\Http\Controllers\Instructor\CourseController;
-        use App\Http\Livewire\Instructor\CoursesCurriculum;
-        use Illuminate\Support\Facades\Route;
-        use App\Http\Livewire\Instructor\CoursesStudents;
-
-        Route::redirect('', 'instructor/courses');
-
-        Route::resource('courses', CourseController::class)->names('courses');
-
-        Route::get('courses/{course}/curriculum', CoursesCurriculum::class)->middleware('can:Actualizar cursos')->name('courses.curriculum');
-
-        Route::get('courses/{course}/goals', [CourseController::class, 'goals'])->name('courses.goals');
-
-        Route::get('courses/{course}/students', CoursesStudents::class)->middleware('can:Actualizar cursos')->name('courses.students');
+    }
+    ```
+41. Borrar el directorio **storage\app\public\cursos**.
+42. Reestablecer la base de datos y correr los seeders:
+    + $ php artisan migrate:fresh --seed
+43. Crear commit:
+    + $ git add .
+    + $ git commit -m "Implementación del módulo instructores"
+    + $ git push -u origin main
 
 
+≡
+    ```php
+    ***
+    ```
+mmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+mmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+## Herramientas temporales
+***
+≡
+    ```php
+    ***
+    ```
+1. Crear commit:
+    + $ git add .
+    + $ git commit -m "Definición de las migraciones"
+    + $ git push -u origin main
+
+
+
+********* INICIO
 ## Sección 7: Áprobación de un curso
-
-
 ### Video 50. Agregar botón que solicite aprobación
 1. Modificar plantilla **resources\views\layouts\instructor.blade.php**:
     >
@@ -6277,26 +5249,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
             $course->save();
             return back();
         }
-1. Modificar la vista **resources\views\instructor\courses\edit.blade.php**:
-    >
-        <x-instructor-layout :course="$course">
-            <h1 class="text-2xl font-bold">INFORMACIÓN DEL CURSO</h1>
-            <hr class="mt-2 mb-6">
-            {!! Form::model($course, ['route' => ['instructor.courses.update', $course], 'method' => 'put', 'files' => true]) !!}
-
-                @include('instructor.courses.partials.form')
-
-                <div class="flex justify-end">
-                    {!! Form::submit('Actualizar información', ['class' => 'btn btn-primary']) !!}
-                </div>
-            {!! Form::close() !!}
-
-            <x-slot name="js">
-                <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
-                <script src="{{ asset('js\instructor\courses\form.js') }}"></script>
-            </x-slot>
-        </x-instructor-layout>
-1. Modificar **app\View\Components\InstructorLayout.php**:
+2. Modificar **app\View\Components\InstructorLayout.php**:
     >
         <?php
 
@@ -6327,7 +5280,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                 return view('layouts.instructor');
             }
         }
-1. Modificar el método render del controlador **app\Http\Livewire\Instructor\CoursesCurriculum.php**:
+3. Modificar el método render del controlador **app\Http\Livewire\Instructor\CoursesCurriculum.php**:
     >
         public function render()
         {
@@ -6339,7 +5292,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
         <x-slot name="course">
             {{ $course->slug }}
         </x-slot>
-1. Modificar la vista **resources\views\instructor\courses\goals.blade.php**:
+2. Modificar la vista **resources\views\instructor\courses\goals.blade.php**:
     >
         <x-instructor-layout :course="$course">
             <div>
@@ -6354,7 +5307,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                 @livewire('instructor.courses-audiences', ['course' => $course], key('courses-audiences' . $course->id))
             </div>
         </x-instructor-layout>
-1. Modificar el método **render** del controlador del componente **app\Http\Livewire\Instructor\CoursesStudents.php**:
+3. Modificar el método **render** del controlador del componente **app\Http\Livewire\Instructor\CoursesStudents.php**:
     >
         public function render()
         {
@@ -6363,7 +5316,7 @@ mmmmmmmmmmmmmmmmmmmmmmmmmmm
                         ->paginate(4);
             return view('livewire.instructor.courses-students', compact('students'))->layout('layouts.instructor', ['course' => $this->course]);
         }
-1. Eliminar las siguientes líneas de código de la vista del componente **resources\views\livewire\instructor\courses-students.blade.php**:
+4. Eliminar las siguientes líneas de código de la vista del componente **resources\views\livewire\instructor\courses-students.blade.php**:
     >
         <x-slot name="course">
             {{ $course->slug }}
